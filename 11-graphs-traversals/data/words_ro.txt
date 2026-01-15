@@ -1,0 +1,45 @@
+INSERT algoritm implementare
+INSERT structura date
+INSERT tabela dispersie
+INSERT functie hash
+INSERT coliziune rezolvare
+INSERT chaining separata
+INSERT adresare deschisa
+INSERT linear probing
+INSERT double hashing
+INSERT factor incarcare
+INSERT redimensionare automata
+INSERT bucket slot
+INSERT distribuție uniforma
+INSERT clustering primar
+INSERT clustering secundar
+INSERT djb2 bernstein
+INSERT sdbm berkeley
+INSERT fnv1a fowler
+INSERT cheie valoare
+INSERT inserare rapida
+INSERT cautare eficienta
+INSERT stergere marker
+INSERT memorie dinamica
+INSERT pointer structura
+INSERT lista inlantuita
+INSERT arbore binar
+INSERT graf retea
+INSERT sortare cautare
+INSERT complexitate timp
+INSERT complexitate spatiu
+INSERT amortizat constant
+INSERT worst case
+INSERT best case
+INSERT average case
+INSERT student nota
+INSERT profesor curs
+INSERT universitate facultate
+INSERT examen test
+INSERT laborator seminar
+INSERT programare calculator
+INSERT compilator interpretor
+INSERT executie runtime
+STATS
+PRINT
+QUIT

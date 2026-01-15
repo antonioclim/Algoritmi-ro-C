@@ -1,0 +1,31 @@
+╔═══════════════════════════════════════════════════════════════╗
+║     EXERCIȚIUL 2: HASH TABLE CU OPEN ADDRESSING               ║
+╚═══════════════════════════════════════════════════════════════╝
+
+Comenzi disponibile:
+  INSERT <key> <value>  - inserează (linear probing)
+  INSERTD <key> <value> - inserează (double hashing)
+  SEARCH <key>          - caută o cheie
+  DELETE <key>          - șterge o cheie
+  STATS                 - afișează statisticile
+  CLUSTER               - analizează clustering-ul
+  VIS                   - vizualizează tabela
+  BENCHMARK <n>         - test cu n elemente
+  BENCHMARKD <n>        - benchmark double hashing
+  QUIT                  - termină programul
+
+[INSERT] alfa: 1 (ideal: 5, probes: 1)
+[INSERT] beta: 2 (ideal: 11, probes: 1)
+[INSERT] gamma: 3 (ideal: 14, probes: 1)
+[INSERT] delta: 4 (ideal: 8, probes: 1)
+[INSERT] epsilon: 5 (ideal: 3, probes: 1)
+[SEARCH] alfa: 1
+[SEARCH] gamma: 3
+[DELETE] beta: OK (marked DELETED)
+[SEARCH] beta: NOT FOUND
+[VIS] ...#.#..#...X..#..
+[VIS] Legend: . = EMPTY, X = DELETED, # = OCCUPIED
+[STATS] Size: 17, Count: 4, Deleted: 1, Load: 0.29
+[CLUSTER] Max: 1, NumClusters: 4, AvgCluster: 1.00, AvgProbes: 1.00
+
+[INFO] Memorie eliberată. Program terminat.

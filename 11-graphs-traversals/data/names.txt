@@ -1,0 +1,34 @@
+INSERT Ion 10
+INSERT Maria 9
+INSERT Andrei 8
+INSERT Elena 10
+INSERT Mihai 7
+INSERT Ana 9
+INSERT George 8
+INSERT Ioana 10
+INSERT Alexandru 6
+INSERT Cristina 9
+INSERT Vlad 8
+INSERT Diana 10
+INSERT Stefan 7
+INSERT Alina 9
+INSERT Bogdan 8
+INSERT Raluca 10
+INSERT Adrian 6
+INSERT Laura 9
+INSERT Marius 8
+INSERT Gabriela 10
+INSERT Daniel 7
+INSERT Simona 9
+INSERT Florin 8
+INSERT Monica 10
+INSERT Cosmin 6
+INSERT Andreea 9
+INSERT Razvan 8
+INSERT Irina 10
+INSERT Liviu 7
+INSERT Oana 9
+STATS
+CLUSTER
+VIS
+QUIT

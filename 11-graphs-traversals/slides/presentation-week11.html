@@ -1,0 +1,2068 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Săptămâna 11: Tabele de Dispersie (Hash Tables) | ATP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/c.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-yellow: #d29922;
+            --accent-red: #f85149;
+            --accent-purple: #a371f7;
+            --accent-orange: #f0883e;
+            --border-color: #30363d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            transition: width 0.3s ease;
+            z-index: 1000;
+        }
+
+        /* Slide Container */
+        .slides-container {
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 60px 80px;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 2.8em;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: 2.2em;
+            margin-bottom: 25px;
+            color: var(--accent-blue);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            font-size: 1.6em;
+            margin: 20px 0 15px;
+            color: var(--accent-green);
+        }
+
+        h4 {
+            font-size: 1.3em;
+            margin: 15px 0 10px;
+            color: var(--accent-yellow);
+        }
+
+        p {
+            font-size: 1.2em;
+            line-height: 1.7;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+
+        /* Lists */
+        ul, ol {
+            font-size: 1.15em;
+            line-height: 1.8;
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        li::marker {
+            color: var(--accent-blue);
+        }
+
+        /* Code Blocks */
+        .code-block {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .code-header {
+            background: var(--bg-tertiary);
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .code-header span:first-child {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+
+        .lang-badge {
+            background: var(--accent-blue);
+            color: var(--bg-primary);
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .code-block code {
+            font-family: 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        /* Inline Code */
+        code:not([class*="language-"]) {
+            background: var(--bg-tertiary);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9em;
+            color: var(--accent-orange);
+        }
+
+        /* Info Boxes */
+        .info-box {
+            padding: 20px 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid;
+        }
+
+        .info-box.tip {
+            background: rgba(63, 185, 80, 0.1);
+            border-color: var(--accent-green);
+        }
+
+        .info-box.warning {
+            background: rgba(210, 153, 34, 0.1);
+            border-color: var(--accent-yellow);
+        }
+
+        .info-box.danger {
+            background: rgba(248, 81, 73, 0.1);
+            border-color: var(--accent-red);
+        }
+
+        .info-box.info {
+            background: rgba(88, 166, 255, 0.1);
+            border-color: var(--accent-blue);
+        }
+
+        .info-box-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-box.tip .info-box-title { color: var(--accent-green); }
+        .info-box.warning .info-box-title { color: var(--accent-yellow); }
+        .info-box.danger .info-box-title { color: var(--accent-red); }
+        .info-box.info .info-box-title { color: var(--accent-blue); }
+
+        /* Two Column Layout */
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .column {
+            background: var(--bg-secondary);
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* ASCII Art Box */
+        .ascii-box {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85em;
+            line-height: 1.4;
+            white-space: pre;
+            overflow-x: auto;
+            color: var(--accent-green);
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 1em;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--bg-tertiary);
+            color: var(--accent-blue);
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: var(--bg-secondary);
+        }
+
+        /* Quote Box */
+        .quote-box {
+            background: var(--bg-secondary);
+            border-left: 4px solid var(--accent-purple);
+            padding: 25px 30px;
+            margin: 25px 0;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+            font-size: 1.2em;
+        }
+
+        .quote-author {
+            color: var(--accent-purple);
+            margin-top: 15px;
+            font-style: normal;
+            font-weight: bold;
+        }
+
+        /* Navigation */
+        .nav-container {
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: var(--accent-blue);
+            color: var(--bg-primary);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Slide Counter */
+        .slide-counter {
+            position: fixed;
+            bottom: 25px;
+            left: 30px;
+            font-size: 1em;
+            color: var(--text-secondary);
+            z-index: 100;
+        }
+
+        /* Title Slide Special Styling */
+        .title-slide {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            height: 100%;
+        }
+
+        .title-slide h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+        }
+
+        .title-slide .subtitle {
+            font-size: 1.8em;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+        }
+
+        .title-slide .meta {
+            color: var(--text-secondary);
+            font-size: 1.2em;
+        }
+
+        .title-slide .week-badge {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        /* Comparison Grid */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .comparison-item {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .comparison-item.good {
+            border-color: var(--accent-green);
+        }
+
+        .comparison-item.bad {
+            border-color: var(--accent-red);
+        }
+
+        .comparison-item h4 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Diagram Container */
+        .diagram-container {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 30px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        /* Key Points Grid */
+        .key-points {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .key-point {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .key-point-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .key-point-title {
+            color: var(--accent-blue);
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        /* Complexity Table Highlight */
+        .complexity-good { color: var(--accent-green); font-weight: bold; }
+        .complexity-ok { color: var(--accent-yellow); }
+        .complexity-bad { color: var(--accent-red); font-weight: bold; }
+
+        /* Person Card */
+        .person-card {
+            display: flex;
+            gap: 30px;
+            background: var(--bg-secondary);
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin: 20px 0;
+        }
+
+        .person-photo {
+            width: 200px;
+            height: 200px;
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5em;
+            color: var(--text-secondary);
+        }
+
+        .person-info {
+            flex: 1;
+        }
+
+        .person-info h3 {
+            margin-top: 0;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            margin: 30px 0;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--accent-blue);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 25px;
+            padding-left: 25px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -34px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+        }
+
+        .timeline-year {
+            color: var(--accent-purple);
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        /* Keyboard Shortcuts Info */
+        .shortcuts-info {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            z-index: 100;
+        }
+
+        .kbd {
+            background: var(--bg-tertiary);
+            padding: 3px 8px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            font-family: monospace;
+        }
+
+        /* Animation for slide content */
+        .slide.active .animate-in {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .slide {
+                padding: 40px 50px;
+            }
+            h1 { font-size: 2.2em; }
+            h2 { font-size: 1.8em; }
+            .two-columns, .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+            .key-points {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    
+    <div class="shortcuts-info">
+        <span class="kbd">←</span> <span class="kbd">→</span> Navigare | <span class="kbd">Home</span> <span class="kbd">End</span>
+    </div>
+
+    <div class="slides-container" id="slidesContainer">
+        
+        <!-- Slide 1: Title -->
+        <div class="slide active" data-slide="1">
+            <div class="title-slide">
+                <div class="week-badge">SĂPTĂMÂNA 11</div>
+                <h1>Tabele de Dispersie</h1>
+                <div class="subtitle">Hash Tables</div>
+                <p class="meta">
+                    Algoritmi și Tehnici de Programare (ATP)<br>
+                    Academia de Studii Economice București - CSIE<br>
+                    <br>
+                    Ianuarie 2026
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 2: Learning Objectives -->
+        <div class="slide" data-slide="2">
+            <h2>🎯 Obiective de Învățare</h2>
+            <div class="animate-in">
+                <ol>
+                    <li><strong>Rememorare:</strong> Principiile fundamentale ale tabelelor de dispersie și terminologia asociată</li>
+                    <li><strong>Înțelegere:</strong> Mecanismele funcțiilor hash și impactul distribuției cheilor</li>
+                    <li><strong>Aplicare:</strong> Tehnicile de rezolvare a coliziunilor: chaining și open addressing</li>
+                    <li><strong>Analiză:</strong> Complexitatea temporală și spațială pentru operațiile de bază</li>
+                    <li><strong>Evaluare:</strong> Compromisurile între diferite strategii de hashing</li>
+                    <li><strong>Creare:</strong> Implementări complete cu funcții hash personalizate și redimensionare</li>
+                </ol>
+            </div>
+            <div class="info-box tip animate-in">
+                <div class="info-box-title">💡 De reținut</div>
+                Hash tables oferă acces O(1) în medie - una dintre cele mai eficiente structuri de date!
+            </div>
+        </div>
+
+        <!-- Slide 3: Historical Context -->
+        <div class="slide" data-slide="3">
+            <h2>📜 Context Istoric</h2>
+            <div class="timeline animate-in">
+                <div class="timeline-item">
+                    <span class="timeline-year">1953</span>
+                    <p><strong>H.P. Luhn</strong> (IBM) - Primul brevet pentru indexare bazată pe hashing</p>
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-year">1956</span>
+                    <p><strong>Arnold Dumey</strong> - Prima descriere academică a hash tables în compilatoare</p>
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-year">1963</span>
+                    <p><strong>W.W. Peterson</strong> - Formalizarea analizei coliziunilor, linear probing</p>
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-year">1973</span>
+                    <p><strong>Donald Knuth</strong> - "The Art of Computer Programming" Vol. 3 - fundamente teoretice</p>
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-year">2001</span>
+                    <p><strong>Pagh & Rodler</strong> - Cuckoo Hashing - worst-case O(1) lookup</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Key Figure -->
+        <div class="slide" data-slide="4">
+            <h2>🏆 Personalitate Cheie</h2>
+            <div class="person-card animate-in">
+                <div class="person-photo">👨‍🔬</div>
+                <div class="person-info">
+                    <h3>Donald Ervin Knuth (1938-)</h3>
+                    <p>Profesor emerit la Universitatea Stanford, considerat "părintele analizei algoritmilor".</p>
+                    <h4>Contribuții la Hashing:</h4>
+                    <ul>
+                        <li>Analiza matematică riguroasă a linear probing</li>
+                        <li>Demonstrarea superiorității double hashing</li>
+                        <li>Conceptul de secondary clustering</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="quote-box animate-in">
+                "Premature optimization is the root of all evil."
+                <div class="quote-author">— Donald Knuth</div>
+            </div>
+        </div>
+
+        <!-- Slide 5: What is a Hash Table -->
+        <div class="slide" data-slide="5">
+            <h2>Ce este o Hash Table?</h2>
+            <p class="animate-in">O <strong>tabelă de dispersie</strong> este o structură de date care implementează un dicționar abstract, permițând asocierea eficientă a cheilor cu valori.</p>
+            
+            <div class="ascii-box animate-in">
+┌─────────────────────────────────────────────────────────────────┐
+│                    HASH TABLE ARCHITECTURE                       │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│    Key ──► Hash Function ──► Index ──► Bucket ──► Value         │
+│                                                                  │
+│    "Alice" ──► h("Alice") ──► 3 ──► table[3] ──► {data...}      │
+│    "Bob"   ──► h("Bob")   ──► 7 ──► table[7] ──► {data...}      │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+            </div>
+            
+            <div class="key-points animate-in">
+                <div class="key-point">
+                    <div class="key-point-icon">⚡</div>
+                    <div class="key-point-title">Rapiditate</div>
+                    <p>O(1) pentru insert, search, delete</p>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🎯</div>
+                    <div class="key-point-title">Acces Direct</div>
+                    <p>Calculează poziția din cheie</p>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">💾</div>
+                    <div class="key-point-title">Flexibilitate</div>
+                    <p>Orice tip de cheie/valoare</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Terminology -->
+        <div class="slide" data-slide="6">
+            <h2>📖 Terminologie Esențială</h2>
+            <table class="animate-in">
+                <tr>
+                    <th>Termen</th>
+                    <th>Definiție</th>
+                    <th>Exemplu</th>
+                </tr>
+                <tr>
+                    <td><code>Bucket / Slot</code></td>
+                    <td>Poziție individuală în tabelă</td>
+                    <td><code>table[5]</code></td>
+                </tr>
+                <tr>
+                    <td><code>Hash Function</code></td>
+                    <td>Funcția care convertește cheia în index</td>
+                    <td><code>h("Ana") = 7</code></td>
+                </tr>
+                <tr>
+                    <td><code>Collision</code></td>
+                    <td>Când h(k₁) = h(k₂) pentru k₁ ≠ k₂</td>
+                    <td><code>h("Ana") = h("Ion") = 7</code></td>
+                </tr>
+                <tr>
+                    <td><code>Load Factor (α)</code></td>
+                    <td>Raportul n/m (elemente/dimensiune)</td>
+                    <td><code>100 elem / 150 slots = 0.67</code></td>
+                </tr>
+                <tr>
+                    <td><code>Clustering</code></td>
+                    <td>Gruparea datelor în zone adiacente</td>
+                    <td>Slots 5,6,7,8 toate ocupate</td>
+                </tr>
+                <tr>
+                    <td><code>Probing</code></td>
+                    <td>Căutarea unui slot liber la coliziune</td>
+                    <td>Linear, Quadratic, Double</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Slide 7: Hash Function Concept -->
+        <div class="slide" data-slide="7">
+            <h2>🔑 Funcția Hash - Concept</h2>
+            <p class="animate-in">O funcție hash ideală trebuie să satisfacă proprietatea de <strong>distribuție uniformă</strong>: fiecare cheie să aibă probabilitate egală de a fi plasată în oricare bucket.</p>
+            
+            <div class="two-columns animate-in">
+                <div class="column">
+                    <h4>✅ Funcție Hash Bună</h4>
+                    <div class="ascii-box" style="font-size: 0.8em;">
+Keys: Ana, Bob, Carol, Dan, Eva
+      ↓     ↓     ↓      ↓    ↓
+      2     7     1      5    9
+
+[0][1][2][3][4][5][6][7][8][9]
+   C  A        D     B     E
+                    </div>
+                    <p style="color: var(--accent-green);">Distribuție uniformă</p>
+                </div>
+                <div class="column">
+                    <h4>❌ Funcție Hash Slabă</h4>
+                    <div class="ascii-box" style="font-size: 0.8em;">
+Keys: Ana, Bob, Carol, Dan, Eva
+      ↓     ↓     ↓      ↓    ↓
+      2     2     3      3    2
+
+[0][1][2][3][4][5][6][7][8][9]
+   ABECD                      
+                    </div>
+                    <p style="color: var(--accent-red);">Clustering sever</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Division Method -->
+        <div class="slide" data-slide="8">
+            <h2>Metoda Împărțirii (Division Method)</h2>
+            <p class="animate-in">Cea mai simplă și răspândită metodă: <code>h(k) = k mod m</code></p>
+            
+            <div class="code-block animate-in">
+                <div class="code-header">
+                    <span>Hash cu metoda împărțirii pentru șiruri</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">size_t hash_division(const char *key, size_t table_size) {
+    size_t hash = 0;
+    while (*key) {
+        hash = hash * 31 + (unsigned char)(*key++);
+    }
+    return hash % table_size;
+}
+
+/* Exemplu de utilizare */
+size_t index = hash_division("student", 101);
+/* 101 este număr prim - alegere bună pentru table_size */</code></pre>
+            </div>
+            
+            <div class="info-box warning animate-in">
+                <div class="info-box-title">⚠️ Atenție la alegerea lui m</div>
+                <ul>
+                    <li><strong>Evită puterile lui 2</strong> (m = 2^k) - folosește doar ultimii k biți</li>
+                    <li><strong>Evită m = 2^k - 1</strong> - permutările au același hash</li>
+                    <li><strong>Recomandare:</strong> m = număr prim, nu aproape de puteri ale lui 2</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 9: Multiplication Method -->
+        <div class="slide" data-slide="9">
+            <h2>Metoda Înmulțirii (Multiplication Method)</h2>
+            <p class="animate-in">Formula: <code>h(k) = ⌊m · (k·A mod 1)⌋</code> unde A este o constantă 0 &lt; A &lt; 1</p>
+            
+            <div class="code-block animate-in">
+                <div class="code-header">
+                    <span>Hash cu metoda înmulțirii</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">#define A 0.6180339887  /* (√5 - 1) / 2 - Golden Ratio */
+
+size_t hash_multiplication(unsigned int key, size_t table_size) {
+    double product = key * A;
+    double fractional = product - (unsigned long)product;
+    return (size_t)(table_size * fractional);
+}
+
+/* Avantaj: valoarea lui m nu este critică */
+/* Golden Ratio oferă distribuție foarte bună */</code></pre>
+            </div>
+            
+            <div class="info-box tip animate-in">
+                <div class="info-box-title">💡 De ce Golden Ratio?</div>
+                Knuth a demonstrat că A = (√5 - 1) / 2 ≈ 0.618 produce cea mai uniformă distribuție, minimizând clustering-ul.
+            </div>
+        </div>
+
+        <!-- Slide 10: String Hash Functions -->
+        <div class="slide" data-slide="10">
+            <h2>Funcții Hash pentru Șiruri</h2>
+            
+            <table class="animate-in">
+                <tr>
+                    <th>Funcție</th>
+                    <th>Formula</th>
+                    <th>Caracteristici</th>
+                </tr>
+                <tr>
+                    <td><code>djb2</code></td>
+                    <td>hash = hash × 33 + c</td>
+                    <td>Rapidă, distribuție bună</td>
+                </tr>
+                <tr>
+                    <td><code>sdbm</code></td>
+                    <td>hash = c + (hash &lt;&lt; 6) + (hash &lt;&lt; 16) - hash</td>
+                    <td>Distribuție excelentă</td>
+                </tr>
+                <tr>
+                    <td><code>FNV-1a</code></td>
+                    <td>hash = (hash ^ c) × 16777619</td>
+                    <td>Foarte uniformă, populară</td>
+                </tr>
+            </table>
+            
+            <div class="code-block animate-in">
+                <div class="code-header">
+                    <span>djb2 - Dan Bernstein</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">unsigned long hash_djb2(const char *str) {
+    unsigned long hash = 5381;
+    int c;
+    
+    while ((c = *str++))
+        hash = ((hash << 5) + hash) + c;  /* hash * 33 + c */
+    
+    return hash;
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 11: sdbm Hash -->
+        <div class="slide" data-slide="11">
+            <h2>Funcția sdbm</h2>
+            
+            <div class="code-block animate-in">
+                <div class="code-header">
+                    <span>sdbm - folosită în Berkeley DB</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">unsigned long hash_sdbm(const char *str) {
+    unsigned long hash = 0;
+    int c;
+    
+    while ((c = *str++))
+        hash = c + (hash << 6) + (hash << 16) - hash;
+    
+    return hash;
+}
+
+/* Echivalent matematic: hash = hash * 65599 + c */
+/* 65599 este un număr prim ales pentru distribuție optimă */</code></pre>
+            </div>
+            
+            <div class="code-block animate-in">
+                <div class="code-header">
+                    <span>FNV-1a (Fowler-Noll-Vo)</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">#define FNV_OFFSET 2166136261u
+#define FNV_PRIME  16777619u
+
+unsigned long hash_fnv1a(const char *str) {
+    unsigned long hash = FNV_OFFSET;
+    
+    while (*str) {
+        hash ^= (unsigned char)*str++;
+        hash *= FNV_PRIME;
+    }
+    
+    return hash;
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 12: Collisions Introduction -->
+        <div class="slide" data-slide="12">
+            <h2>💥 Problema Coliziunilor</h2>
+            <p class="animate-in">O <strong>coliziune</strong> apare când două chei diferite produc același index: h(k₁) = h(k₂) pentru k₁ ≠ k₂</p>
+            
+            <div class="ascii-box animate-in">
+┌──────────────────────────────────────────────────────────────────┐
+│                     COLIZIUNE                                     │
+├──────────────────────────────────────────────────────────────────┤
+│                                                                   │
+│    h("Alice") = 3   ────┐                                        │
+│                         ├────► table[3] = ???                    │
+│    h("Carol") = 3   ────┘                                        │
+│                                                                   │
+│    Ambele chei vor același slot! Ce facem?                       │
+│                                                                   │
+└──────────────────────────────────────────────────────────────────┘
+            </div>
+            
+            <div class="two-columns animate-in">
+                <div class="column">
+                    <h4>🔗 Separate Chaining</h4>
+                    <p>Fiecare bucket conține o listă înlănțuită de elemente cu același hash</p>
+                </div>
+                <div class="column">
+                    <h4>📍 Open Addressing</h4>
+                    <p>Căutăm alt slot liber în tabelă folosind o secvență de probing</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Separate Chaining -->
+        <div class="slide" data-slide="13">
+            <h2>🔗 Separate Chaining (Înlănțuire)</h2>
+            
+            <div class="ascii-box animate-in">
+┌─────────────────────────────────────────────────────────────┐
+│                    SEPARATE CHAINING                         │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  [0] ──► NULL                                               │
+│                                                              │
+│  [1] ──► ┌───────┐    ┌───────┐                             │
+│          │"Bob"  │───►│"Eve"  │───► NULL                    │
+│          └───────┘    └───────┘                             │
+│                                                              │
+│  [2] ──► NULL                                               │
+│                                                              │
+│  [3] ──► ┌───────┐    ┌───────┐    ┌───────┐               │
+│          │"Alice"│───►│"Carol"│───►│"Dave" │───► NULL       │
+│          └───────┘    └───────┘    └───────┘               │
+│                                                              │
+│  [4] ──► ┌───────┐                                          │
+│          │"Frank"│───► NULL                                 │
+│          └───────┘                                          │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+            </div>
+            
+            <div class="info-box info animate-in">
+                <div class="info-box-title">ℹ️ Caracteristici</div>
+                <ul>
+                    <li>Simplu de implementat</li>
+                    <li>Funcționează bine cu load factor &gt; 1</li>
+                    <li>Ștergerea este directă (eliminare din listă)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 14: Chaining Implementation -->
+        <div class="slide" data-slide="14">
+            <h2>Implementare Chaining</h2>
+            
+            <div class="code-block animate-in">
+                <div class="code-header">
+                    <span>Structuri de date pentru chaining</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">/* Nod în lista înlănțuită */
+typedef struct HashNode {
+    char *key;
+    void *value;
+    struct HashNode *next;
+} HashNode;
+
+/* Tabela de dispersie */
+typedef struct HashTable {
+    HashNode **buckets;    /* Array de pointeri la liste */
+    size_t size;           /* Dimensiunea tabelei */
+    size_t count;          /* Numărul de elemente */
+} HashTable;
+
+/* Creare tabelă */
+HashTable* ht_create(size_t size) {
+    HashTable *ht = malloc(sizeof(HashTable));
+    ht->buckets = calloc(size, sizeof(HashNode*));
+    ht->size = size;
+    ht->count = 0;
+    return ht;
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 15: Chaining Insert -->
+        <div class="slide" data-slide="15">
+            <h2>Chaining - Inserare</h2>
+            
+            <div class="code-block animate-in">
+                <div class="code-header">
+                    <span>Inserare în hash table cu chaining</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">void ht_insert(HashTable *ht, const char *key, void *value) {
+    /* Calculează indexul */
+    size_t index = hash_djb2(key) % ht->size;
+    
+    /* Verifică dacă cheia există deja */
+    HashNode *current = ht->buckets[index];
+    while (current) {
+        if (strcmp(current->key, key) == 0) {
+            current->value = value;  /* Actualizează valoarea */
+            return;
+        }
+        current = current->next;
+    }
+    
+    /* Creează nod nou - inserare la început (O(1)) */
+    HashNode *new_node = malloc(sizeof(HashNode));
+    new_node->key = strdup(key);
+    new_node->value = value;
+    new_node->next = ht->buckets[index];
+    ht->buckets[index] = new_node;
+    
+    ht->count++;
+    
+    /* Verifică load factor pentru redimensionare */
+    if ((double)ht->count / ht->size > 2.0) {
+        ht_resize(ht, ht->size * 2);
+    }
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 16: Chaining Search -->
+        <div class="slide" data-slide="16">
+            <h2>Chaining - Căutare și Ștergere</h2>
+            
+            <div class="code-block animate-in">
+                <div class="code-header">
+                    <span>Căutare</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">void* ht_search(HashTable *ht, const char *key) {
+    size_t index = hash_djb2(key) % ht->size;
+    
+    HashNode *current = ht->buckets[index];
+    while (current) {
+        if (strcmp(current->key, key) == 0)
+            return current->value;
+        current = current->next;
+    }
+    return NULL;  /* Nu a fost găsit */
+}</code></pre>
+            </div>
+            
+            <div class="code-block animate-in">
+                <div class="code-header">
+                    <span>Ștergere</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">bool ht_delete(HashTable *ht, const char *key) {
+    size_t index = hash_djb2(key) % ht->size;
+    
+    HashNode *current = ht->buckets[index];
+    HashNode *prev = NULL;
+    
+    while (current) {
+        if (strcmp(current->key, key) == 0) {
+            if (prev) prev->next = current->next;
+            else      ht->buckets[index] = current->next;
+            free(current->key);
+            free(current);
+            ht->count--;
+            return true;
+        }
+        prev = current;
+        current = current->next;
+    }
+    return false;
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 17: Open Addressing Intro -->
+        <div class="slide" data-slide="17">
+            <h2>📍 Open Addressing (Adresare Deschisă)</h2>
+            <p class="animate-in">Toate elementele sunt stocate direct în tabelă. La coliziune, căutăm alt slot liber.</p>
+            
+            <div class="ascii-box animate-in">
+┌─────────────────────────────────────────────────────────────┐
+│                    OPEN ADDRESSING                           │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  Insert "Carol" where h("Carol") = 3, but slot 3 is full:   │
+│                                                              │
+│  [0]     [1]     [2]     [3]     [4]     [5]     [6]        │
+│   -       -       -    "Alice"    -       -       -          │
+│                           ▲                                  │
+│                           │                                  │
+│                     h("Carol")=3                             │
+│                           │                                  │
+│                           ▼                                  │
+│   -       -       -    "Alice" "Carol"   -       -          │
+│                                   ▲                          │
+│                                   │                          │
+│                           Probe: (3+1) mod 7 = 4            │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+            </div>
+            
+            <div class="info-box warning animate-in">
+                <div class="info-box-title">⚠️ Restricții</div>
+                Load factor trebuie să fie α &lt; 1 (tabela nu poate fi plină)
+            </div>
+        </div>
+
+        <!-- Slide 18: Linear Probing -->
+        <div class="slide" data-slide="18">
+            <h2>Linear Probing</h2>
+            <p class="animate-in">Secvența de probing: <code>h(k, i) = (h'(k) + i) mod m</code></p>
+            
+            <div class="code-block animate-in">
+                <div class="code-header">
+                    <span>Inserare cu linear probing</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">#define EMPTY    NULL
+#define DELETED  ((void*)-1)
+
+void ht_insert_linear(HashTable *ht, const char *key, void *value) {
+    size_t index = hash_djb2(key) % ht->size;
+    size_t original = index;
+    
+    do {
+        if (ht->buckets[index] == EMPTY || 
+            ht->buckets[index] == DELETED) {
+            /* Slot disponibil */
+            HashNode *node = malloc(sizeof(HashNode));
+            node->key = strdup(key);
+            node->value = value;
+            ht->buckets[index] = node;
+            ht->count++;
+            return;
+        }
+        
+        if (strcmp(((HashNode*)ht->buckets[index])->key, key) == 0) {
+            /* Cheie existentă - actualizează */
+            ((HashNode*)ht->buckets[index])->value = value;
+            return;
+        }
+        
+        index = (index + 1) % ht->size;  /* Linear probe */
+    } while (index != original);
+    
+    /* Tabela plină - trebuie redimensionată */
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 19: Primary Clustering -->
+        <div class="slide" data-slide="19">
+            <h2>⚠️ Primary Clustering</h2>
+            <p class="animate-in">Linear probing suferă de <strong>primary clustering</strong>: elementele se grupează în zone contigue.</p>
+            
+            <div class="ascii-box animate-in">
+┌─────────────────────────────────────────────────────────────┐
+│                    PRIMARY CLUSTERING                        │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  După multe inserări:                                        │
+│                                                              │
+│  [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] [10][11][12][13]   │
+│   X   X   X   X   X   -   -   X   X   X   X   X   -   -     │
+│  └─────────────┘         └─────────────────────┘            │
+│      CLUSTER 1                  CLUSTER 2                    │
+│                                                              │
+│  Problema: Inserarea în cluster îl mărește!                 │
+│  Un element care hash-uiește la 2 va ajunge la 5            │
+│  → Clusterul crește → Performanța scade                     │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+            </div>
+            
+            <div class="info-box danger animate-in">
+                <div class="info-box-title">❌ Efect</div>
+                Pe măsură ce tabela se umple, căutările devin din ce în ce mai lente, apropiindu-se de O(n).
+            </div>
+        </div>
+
+        <!-- Slide 20: Quadratic Probing -->
+        <div class="slide" data-slide="20">
+            <h2>Quadratic Probing</h2>
+            <p class="animate-in">Secvența: <code>h(k, i) = (h'(k) + c₁·i + c₂·i²) mod m</code></p>
+            
+            <div class="code-block animate-in">
+                <div class="code-header">
+                    <span>Căutare cu quadratic probing</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">void* ht_search_quadratic(HashTable *ht, const char *key) {
+    size_t index = hash_djb2(key) % ht->size;
+    size_t i = 0;
+    
+    while (ht->buckets[index] != EMPTY) {
+        if (ht->buckets[index] != DELETED) {
+            HashNode *node = ht->buckets[index];
+            if (strcmp(node->key, key) == 0)
+                return node->value;
+        }
+        
+        i++;
+        /* Quadratic: c1=1, c2=1 -> 1, 2, 4, 7, 11, ... */
+        index = (hash_djb2(key) + i + i*i) % ht->size;
+        
+        if (i >= ht->size) break;  /* Am verificat toate sloturile */
+    }
+    
+    return NULL;
+}</code></pre>
+            </div>
+            
+            <div class="info-box tip animate-in">
+                <div class="info-box-title">💡 Avantaj</div>
+                Evită primary clustering, dar poate suferi de <strong>secondary clustering</strong> - cheile cu același hash urmează aceeași secvență.
+            </div>
+        </div>
+
+        <!-- Slide 21: Double Hashing -->
+        <div class="slide" data-slide="21">
+            <h2>Double Hashing</h2>
+            <p class="animate-in">Cea mai bună metodă de open addressing: <code>h(k, i) = (h₁(k) + i·h₂(k)) mod m</code></p>
+            
+            <div class="code-block animate-in">
+                <div class="code-header">
+                    <span>Double hashing</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">/* Funcție hash secundară - trebuie să returneze valoare != 0 */
+size_t hash2(const char *key, size_t table_size) {
+    size_t hash = hash_sdbm(key);
+    /* Asigură că rezultatul e nenul și relativ prim cu table_size */
+    return 1 + (hash % (table_size - 1));
+}
+
+void* ht_search_double(HashTable *ht, const char *key) {
+    size_t h1 = hash_djb2(key) % ht->size;
+    size_t h2 = hash2(key, ht->size);
+    size_t index = h1;
+    
+    for (size_t i = 0; i < ht->size; i++) {
+        if (ht->buckets[index] == EMPTY)
+            return NULL;
+            
+        if (ht->buckets[index] != DELETED) {
+            if (strcmp(((HashNode*)ht->buckets[index])->key, key) == 0)
+                return ((HashNode*)ht->buckets[index])->value;
+        }
+        
+        index = (h1 + i * h2) % ht->size;
+    }
+    
+    return NULL;
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 22: Probing Comparison -->
+        <div class="slide" data-slide="22">
+            <h2>Comparație Metode de Probing</h2>
+            
+            <table class="animate-in">
+                <tr>
+                    <th>Metodă</th>
+                    <th>Secvență</th>
+                    <th>Pro</th>
+                    <th>Contra</th>
+                </tr>
+                <tr>
+                    <td><strong>Linear</strong></td>
+                    <td>h + i</td>
+                    <td>Cache-friendly</td>
+                    <td>Primary clustering</td>
+                </tr>
+                <tr>
+                    <td><strong>Quadratic</strong></td>
+                    <td>h + i + i²</td>
+                    <td>Evită primary clustering</td>
+                    <td>Secondary clustering, poate rata sloturi</td>
+                </tr>
+                <tr>
+                    <td><strong>Double</strong></td>
+                    <td>h₁ + i·h₂</td>
+                    <td>Distribuție optimă</td>
+                    <td>Necesită 2 funcții hash</td>
+                </tr>
+            </table>
+            
+            <div class="ascii-box animate-in" style="font-size: 0.75em;">
+Linear:    0  1  2  3  4  5  6  7  8  9  (pas constant)
+Quadratic: 0  1  3  6  10 15 21 28 36 45 (pas crescător)  
+Double:    0  3  6  9  12 15 18 21 24 27 (pas = h2(k), ex: 3)
+            </div>
+        </div>
+
+        <!-- Slide 23: Deletion in Open Addressing -->
+        <div class="slide" data-slide="23">
+            <h2>⚠️ Ștergerea în Open Addressing</h2>
+            <p class="animate-in">Ștergerea este problematică - nu putem pur și simplu marca slotul ca gol!</p>
+            
+            <div class="ascii-box animate-in">
+┌─────────────────────────────────────────────────────────────┐
+│                    PROBLEMA ȘTERGERII                        │
+├─────────────────────────────────────────────────────────────┤
+│  Initial:                                                    │
+│  [0]    [1]    [2]    [3]    [4]    [5]                     │
+│  "A"    "B"    "C"     -      -      -                       │
+│   ↑      ↑      ↑                                            │
+│  h=0   h=0    h=0   (A,B,C toate hash la 0)                 │
+│                                                              │
+│  După ștergerea lui "B":                                     │
+│  [0]    [1]    [2]    [3]    [4]    [5]                     │
+│  "A"     ∅     "C"     -      -      -                       │
+│                 ↑                                             │
+│            !! "C" devine inaccesibil !!                      │
+│            (căutarea se oprește la ∅)                        │
+│                                                              │
+│  SOLUȚIE: Marker DELETED                                     │
+│  [0]    [1]    [2]    [3]    [4]    [5]                     │
+│  "A"   [DEL]  "C"     -      -      -                       │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+            </div>
+            
+            <div class="code-block animate-in">
+                <div class="code-header">
+                    <span>Ștergere cu marker DELETED</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">bool ht_delete_open(HashTable *ht, const char *key) {
+    size_t index = find_slot(ht, key);  /* Găsește slotul */
+    
+    if (index != INVALID && ht->buckets[index] != EMPTY) {
+        free(((HashNode*)ht->buckets[index])->key);
+        free(ht->buckets[index]);
+        ht->buckets[index] = DELETED;  /* NU EMPTY! */
+        ht->count--;
+        return true;
+    }
+    return false;
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 24: Complexity Analysis -->
+        <div class="slide" data-slide="24">
+            <h2>📊 Analiza Complexității</h2>
+            
+            <table class="animate-in">
+                <tr>
+                    <th>Operație</th>
+                    <th>Chaining (avg)</th>
+                    <th>Chaining (worst)</th>
+                    <th>Open Addr (avg)</th>
+                    <th>Open Addr (worst)</th>
+                </tr>
+                <tr>
+                    <td><strong>Insert</strong></td>
+                    <td class="complexity-good">O(1)</td>
+                    <td class="complexity-bad">O(n)</td>
+                    <td class="complexity-ok">O(1/(1-α))</td>
+                    <td class="complexity-bad">O(n)</td>
+                </tr>
+                <tr>
+                    <td><strong>Search</strong></td>
+                    <td class="complexity-good">O(1 + α)</td>
+                    <td class="complexity-bad">O(n)</td>
+                    <td class="complexity-ok">O(1/(1-α))</td>
+                    <td class="complexity-bad">O(n)</td>
+                </tr>
+                <tr>
+                    <td><strong>Delete</strong></td>
+                    <td class="complexity-good">O(1 + α)</td>
+                    <td class="complexity-bad">O(n)</td>
+                    <td class="complexity-ok">O(1/(1-α))</td>
+                    <td class="complexity-bad">O(n)</td>
+                </tr>
+                <tr>
+                    <td><strong>Space</strong></td>
+                    <td colspan="2">O(n + m)</td>
+                    <td colspan="2">O(m)</td>
+                </tr>
+            </table>
+            
+            <p class="animate-in" style="margin-top: 20px;">Unde: <code>α = n/m</code> (load factor), <code>n</code> = elemente, <code>m</code> = dimensiune tabelă</p>
+            
+            <div class="info-box info animate-in">
+                <div class="info-box-title">ℹ️ Praguri de redimensionare</div>
+                <ul>
+                    <li><strong>Chaining:</strong> Redimensionează când α &gt; 2.0</li>
+                    <li><strong>Open Addressing:</strong> Redimensionează când α &gt; 0.7</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 25: Resizing -->
+        <div class="slide" data-slide="25">
+            <h2>🔄 Redimensionarea Tabelei</h2>
+            
+            <div class="code-block animate-in">
+                <div class="code-header">
+                    <span>Redimensionare (rehashing)</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">void ht_resize(HashTable *ht, size_t new_size) {
+    HashNode **old_buckets = ht->buckets;
+    size_t old_size = ht->size;
+    
+    /* Alocă noua tabelă */
+    ht->buckets = calloc(new_size, sizeof(HashNode*));
+    ht->size = new_size;
+    ht->count = 0;
+    
+    /* Reinserează toate elementele */
+    for (size_t i = 0; i < old_size; i++) {
+        HashNode *current = old_buckets[i];
+        while (current) {
+            HashNode *next = current->next;
+            
+            /* Recalculează indexul pentru noua dimensiune */
+            size_t new_index = hash_djb2(current->key) % new_size;
+            
+            /* Inserează în noua poziție */
+            current->next = ht->buckets[new_index];
+            ht->buckets[new_index] = current;
+            ht->count++;
+            
+            current = next;
+        }
+    }
+    
+    free(old_buckets);
+}</code></pre>
+            </div>
+            
+            <div class="info-box warning animate-in">
+                <div class="info-box-title">⚠️ Complexitate</div>
+                Redimensionarea este O(n), dar se face rar. Amortizat, inserarea rămâne O(1).
+            </div>
+        </div>
+
+        <!-- Slide 26: POSIX hsearch -->
+        <div class="slide" data-slide="26">
+            <h2>🛠️ Biblioteca Standard: hsearch</h2>
+            
+            <div class="code-block animate-in">
+                <div class="code-header">
+                    <span>POSIX hsearch (search.h)</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">#include &lt;search.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main(void) {
+    ENTRY item, *found;
+    
+    /* Creează hash table cu 100 de sloturi */
+    if (hcreate(100) == 0) {
+        perror("hcreate");
+        return 1;
+    }
+    
+    /* Inserare */
+    item.key = "student_id";
+    item.data = (void *)"Ion Popescu";
+    hsearch(item, ENTER);
+    
+    item.key = "nota";
+    item.data = (void *)"10";
+    hsearch(item, ENTER);
+    
+    /* Căutare */
+    item.key = "student_id";
+    found = hsearch(item, FIND);
+    if (found)
+        printf("Student: %s\n", (char *)found->data);
+    
+    hdestroy();  /* Eliberează memoria */
+    return 0;
+}</code></pre>
+            </div>
+            
+            <div class="info-box warning animate-in">
+                <div class="info-box-title">⚠️ Limitări hsearch</div>
+                <ul>
+                    <li>O singură tabelă globală per proces</li>
+                    <li>Nu suportă ștergerea</li>
+                    <li>Dimensiunea fixă</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 27: Common Mistakes -->
+        <div class="slide" data-slide="27">
+            <h2>❌ Greșeli Frecvente</h2>
+            
+            <div class="comparison-grid animate-in">
+                <div class="comparison-item bad">
+                    <h4>❌ Funcție hash slabă</h4>
+                    <div class="code-block" style="margin: 10px 0;">
+                        <pre><code class="language-c">/* GREȘIT: Returnează doar primul caracter */
+size_t bad_hash(const char *s) {
+    return s[0];
+}</code></pre>
+                    </div>
+                    <p>Toate cuvintele cu aceeași literă inițială colizionează!</p>
+                </div>
+                
+                <div class="comparison-item good">
+                    <h4>✅ Funcție hash bună</h4>
+                    <div class="code-block" style="margin: 10px 0;">
+                        <pre><code class="language-c">/* CORECT: Consideră toate caracterele */
+size_t good_hash(const char *s) {
+    size_t h = 5381;
+    while (*s) h = h * 33 + *s++;
+    return h;
+}</code></pre>
+                    </div>
+                    <p>Distribuție uniformă pe întreg șirul</p>
+                </div>
+                
+                <div class="comparison-item bad">
+                    <h4>❌ Uitarea DELETED marker</h4>
+                    <div class="code-block" style="margin: 10px 0;">
+                        <pre><code class="language-c">/* GREȘIT în open addressing */
+ht->buckets[index] = NULL;</code></pre>
+                    </div>
+                    <p>Întrerupe lanțul de probing</p>
+                </div>
+                
+                <div class="comparison-item good">
+                    <h4>✅ Folosirea DELETED</h4>
+                    <div class="code-block" style="margin: 10px 0;">
+                        <pre><code class="language-c">/* CORECT */
+ht->buckets[index] = DELETED;</code></pre>
+                    </div>
+                    <p>Căutarea continuă corect</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 28: More Mistakes -->
+        <div class="slide" data-slide="28">
+            <h2>❌ Mai Multe Greșeli</h2>
+            
+            <div class="comparison-grid animate-in">
+                <div class="comparison-item bad">
+                    <h4>❌ Load factor prea mare</h4>
+                    <div class="code-block" style="margin: 10px 0;">
+                        <pre><code class="language-c">/* Open addressing cu α > 0.9 */
+if (count > size * 0.95) resize();
+/* Prea târziu! */</code></pre>
+                    </div>
+                    <p>Performanța degradează sever</p>
+                </div>
+                
+                <div class="comparison-item good">
+                    <h4>✅ Load factor controlat</h4>
+                    <div class="code-block" style="margin: 10px 0;">
+                        <pre><code class="language-c">/* Redimensionare la 70% */
+if (count > size * 0.7) resize();
+/* Performanță optimă */</code></pre>
+                    </div>
+                    <p>Menține O(1) în practică</p>
+                </div>
+                
+                <div class="comparison-item bad">
+                    <h4>❌ Dimensiune putere a lui 2</h4>
+                    <div class="code-block" style="margin: 10px 0;">
+                        <pre><code class="language-c">/* table_size = 1024 */
+index = hash % 1024;
+/* Folosește doar ultimii 10 biți! */</code></pre>
+                    </div>
+                    <p>Distribuție non-uniformă</p>
+                </div>
+                
+                <div class="comparison-item good">
+                    <h4>✅ Dimensiune număr prim</h4>
+                    <div class="code-block" style="margin: 10px 0;">
+                        <pre><code class="language-c">/* table_size = 1021 (prim) */
+index = hash % 1021;
+/* Distribuție uniformă */</code></pre>
+                    </div>
+                    <p>Folosește toți biții efectiv</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 29: Memory Model -->
+        <div class="slide" data-slide="29">
+            <h2>🧠 Model de Memorie</h2>
+            
+            <div class="two-columns animate-in">
+                <div class="column">
+                    <h4>Chaining</h4>
+                    <div class="ascii-box" style="font-size: 0.75em;">
+Stack:
+┌──────────────┐
+│ HashTable *ht│───┐
+└──────────────┘   │
+                   ▼
+Heap:          ┌──────────────┐
+               │ buckets: ────│──┐
+               │ size: 7      │  │
+               │ count: 4     │  │
+               └──────────────┘  │
+                                 ▼
+               ┌────────────────────┐
+               │[0][1][2][3][4][5][6]
+               │ ↓  ↓              
+               │ │  └──► Node ──► Node
+               │ └────► Node
+               └────────────────────┘
+                    </div>
+                </div>
+                <div class="column">
+                    <h4>Open Addressing</h4>
+                    <div class="ascii-box" style="font-size: 0.75em;">
+Stack:
+┌──────────────┐
+│ HashTable *ht│───┐
+└──────────────┘   │
+                   ▼
+Heap:          ┌──────────────┐
+               │ buckets: ────│──┐
+               │ size: 7      │  │
+               │ count: 4     │  │
+               └──────────────┘  │
+                                 ▼
+               ┌────────────────────┐
+               │[A][B][-][C][-][D][-]
+               │ Toate datele inline
+               │ Cache-friendly!
+               └────────────────────┘
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-box info animate-in">
+                <div class="info-box-title">ℹ️ Implicații pentru Cache</div>
+                Open addressing este mai cache-friendly deoarece datele sunt contigue. Chaining necesită urmărirea pointerilor (cache misses).
+            </div>
+        </div>
+
+        <!-- Slide 30: Debugging -->
+        <div class="slide" data-slide="30">
+            <h2>🔍 Debugging cu GDB și Valgrind</h2>
+            
+            <div class="code-block animate-in">
+                <div class="code-header">
+                    <span>Comenzi GDB utile</span>
+                    <span class="lang-badge">GDB</span>
+                </div>
+                <pre><code class="language-bash"># Compilare cu simboluri debug
+gcc -g -Wall -o hash_table hash_table.c
+
+# Pornire GDB
+gdb ./hash_table
+
+# În GDB:
+(gdb) break ht_insert          # Breakpoint la inserare
+(gdb) run                       # Pornește execuția
+(gdb) print *ht                 # Afișează structura
+(gdb) print ht->buckets[3]      # Inspectează bucket-ul 3
+(gdb) x/10xw ht->buckets        # Afișează 10 words din buckets
+(gdb) watch ht->count           # Watchpoint pe count</code></pre>
+            </div>
+            
+            <div class="code-block animate-in">
+                <div class="code-header">
+                    <span>Valgrind pentru memory leaks</span>
+                    <span class="lang-badge">Bash</span>
+                </div>
+                <pre><code class="language-bash"># Verificare memory leaks
+valgrind --leak-check=full --show-leak-kinds=all ./hash_table
+
+# Output dorit:
+# All heap blocks were freed -- no leaks are possible
+
+# Erori comune detectate:
+# - "definitely lost" - ai uitat să eliberezi memorie
+# - "Invalid read" - accesezi memorie eliberată  
+# - "Invalid write" - buffer overflow</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 31: Best Practices -->
+        <div class="slide" data-slide="31">
+            <h2>✅ Bune Practici</h2>
+            
+            <div class="two-columns animate-in">
+                <div class="column">
+                    <h4 style="color: var(--accent-green);">DO ✓</h4>
+                    <ul>
+                        <li>Folosește dimensiuni prime pentru tabelă</li>
+                        <li>Monitorizează load factor</li>
+                        <li>Redimensionează proactiv (0.7 pentru open addr)</li>
+                        <li>Testează funcția hash cu date reale</li>
+                        <li>Folosește <code>strdup()</code> pentru chei</li>
+                        <li>Verifică cu Valgrind pentru memory leaks</li>
+                        <li>Implementează <code>ht_destroy()</code> complet</li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <h4 style="color: var(--accent-red);">DON'T ✗</h4>
+                    <ul>
+                        <li>Nu folosi dimensiuni putere a lui 2</li>
+                        <li>Nu ignora load factor-ul</li>
+                        <li>Nu șterge direct (NULL) în open addressing</li>
+                        <li>Nu presupune distribuție perfectă</li>
+                        <li>Nu stoca pointeri la chei temporare</li>
+                        <li>Nu uita să eliberezi memoria nodurilor</li>
+                        <li>Nu te baza pe ordinea elementelor</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 32: When to Use -->
+        <div class="slide" data-slide="32">
+            <h2>🤔 Când să Folosești Hash Tables?</h2>
+            
+            <div class="two-columns animate-in">
+                <div class="column" style="border-color: var(--accent-green);">
+                    <h4 style="color: var(--accent-green);">✅ Folosește Hash Table când:</h4>
+                    <ul>
+                        <li>Ai nevoie de acces rapid O(1)</li>
+                        <li>Datele nu trebuie ordonate</li>
+                        <li>Cheile sunt unice sau suportă duplicare</li>
+                        <li>Știi aproximativ numărul de elemente</li>
+                        <li>Memoria nu este o constrângere critică</li>
+                    </ul>
+                    <p style="margin-top: 15px;"><strong>Exemple:</strong> cache, dicționare, seturi, counting, memoization</p>
+                </div>
+                <div class="column" style="border-color: var(--accent-red);">
+                    <h4 style="color: var(--accent-red);">❌ Evită Hash Table când:</h4>
+                    <ul>
+                        <li>Ai nevoie de date ordonate</li>
+                        <li>Faci multe operații de range</li>
+                        <li>Memoria este foarte limitată</li>
+                        <li>Worst-case O(1) este obligatoriu</li>
+                        <li>Funcția hash e foarte costisitoare</li>
+                    </ul>
+                    <p style="margin-top: 15px;"><strong>Alternative:</strong> BST, AVL, B-tree, skip list</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 33: Real World Examples -->
+        <div class="slide" data-slide="33">
+            <h2>🌍 Exemple din Lumea Reală</h2>
+            
+            <div class="key-points animate-in">
+                <div class="key-point">
+                    <div class="key-point-icon">🐍</div>
+                    <div class="key-point-title">Python dict</div>
+                    <p>Open addressing cu perturbări</p>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">☕</div>
+                    <div class="key-point-title">Java HashMap</div>
+                    <p>Chaining + TreeMap la 8 elem</p>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔴</div>
+                    <div class="key-point-title">Redis</div>
+                    <p>Dict propriu cu rehashing incremental</p>
+                </div>
+            </div>
+            
+            <div class="key-points animate-in">
+                <div class="key-point">
+                    <div class="key-point-icon">🌐</div>
+                    <div class="key-point-title">DNS Cache</div>
+                    <p>Mapare hostname → IP</p>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔐</div>
+                    <div class="key-point-title">Password Storage</div>
+                    <p>bcrypt, Argon2 hashes</p>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📦</div>
+                    <div class="key-point-title">Symbol Tables</div>
+                    <p>Compilatoare, interpretoare</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 34: Laboratory Preview -->
+        <div class="slide" data-slide="34">
+            <h2>💻 Previzualizare Laborator</h2>
+            
+            <div class="two-columns animate-in">
+                <div class="column">
+                    <h3>Exercițiul 1: Chaining</h3>
+                    <ul>
+                        <li>Implementare completă HashNode și HashTable</li>
+                        <li>Funcția hash djb2</li>
+                        <li>Insert, Search, Delete</li>
+                        <li>Redimensionare automată la α &gt; 2.0</li>
+                        <li>Statistici: load factor, lungimi liste</li>
+                        <li>~10 TODO markers</li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <h3>Exercițiul 2: Open Addressing</h3>
+                    <ul>
+                        <li>Linear probing cu DELETED markers</li>
+                        <li>Double hashing pentru comparație</li>
+                        <li>Detectarea clustering-ului</li>
+                        <li>Redimensionare la α &gt; 0.7</li>
+                        <li>Benchmark cu 10.000+ inserări</li>
+                        <li>~12 TODO markers</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="info-box tip animate-in">
+                <div class="info-box-title">💡 Sfat</div>
+                Începe cu funcția hash și testează-o separat înainte de a implementa tabela completă!
+            </div>
+        </div>
+
+        <!-- Slide 35: Key Takeaways -->
+        <div class="slide" data-slide="35">
+            <h2>🎯 Concluzii Cheie</h2>
+            
+            <div class="key-points animate-in">
+                <div class="key-point">
+                    <div class="key-point-icon">⚡</div>
+                    <div class="key-point-title">O(1) Amortizat</div>
+                    <p>Insert, Search, Delete în timp constant mediu</p>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔑</div>
+                    <div class="key-point-title">Funcție Hash</div>
+                    <p>Distribuție uniformă, dimensiune primă</p>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">💥</div>
+                    <div class="key-point-title">Coliziuni</div>
+                    <p>Chaining vs Open Addressing</p>
+                </div>
+            </div>
+            
+            <div class="key-points animate-in">
+                <div class="key-point">
+                    <div class="key-point-icon">📊</div>
+                    <div class="key-point-title">Load Factor</div>
+                    <p>Chaining: α &lt; 2, Open: α &lt; 0.7</p>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🗑️</div>
+                    <div class="key-point-title">DELETED Marker</div>
+                    <p>Esențial în open addressing</p>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔄</div>
+                    <div class="key-point-title">Redimensionare</div>
+                    <p>Rehashing complet, O(n) rar</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 36: Resources -->
+        <div class="slide" data-slide="36">
+            <h2>📚 Resurse</h2>
+            
+            <div class="two-columns animate-in">
+                <div class="column">
+                    <h4>📖 Cărți</h4>
+                    <ul>
+                        <li><strong>CLRS</strong> - "Introduction to Algorithms", Cap. 11</li>
+                        <li><strong>Knuth</strong> - "TAOCP" Vol. 3, Cap. 6.4</li>
+                        <li><strong>Sedgewick</strong> - "Algorithms in C", Cap. 14</li>
+                    </ul>
+                    
+                    <h4 style="margin-top: 25px;">🎥 Video</h4>
+                    <ul>
+                        <li>MIT OCW 6.006 - Lecture 8: Hashing</li>
+                        <li>CS50 - Hash Tables</li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <h4>🌐 Online</h4>
+                    <ul>
+                        <li><a href="https://visualgo.net/en/hashtable" style="color: var(--accent-blue);">VisualGo - Hash Table Visualization</a></li>
+                        <li><a href="https://www.cs.usfca.edu/~galles/visualization/OpenHash.html" style="color: var(--accent-blue);">USF - Open Addressing Visualization</a></li>
+                        <li>GeeksforGeeks - Hashing Tutorial</li>
+                    </ul>
+                    
+                    <h4 style="margin-top: 25px;">🔬 Papers</h4>
+                    <ul>
+                        <li>Pagh & Rodler - "Cuckoo Hashing"</li>
+                        <li>Knuth - "Analysis of Linear Probing"</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 37: Questions -->
+        <div class="slide" data-slide="37">
+            <div class="title-slide">
+                <div class="key-point-icon" style="font-size: 5em;">❓</div>
+                <h1>Întrebări?</h1>
+                <div class="subtitle">Săptămâna 11: Hash Tables</div>
+                <br><br>
+                <div class="info-box info" style="text-align: left; max-width: 600px;">
+                    <div class="info-box-title">📅 Săptămâna Următoare</div>
+                    <p><strong>Grafuri - Concepte de Bază</strong></p>
+                    <ul>
+                        <li>Reprezentări: matrice vs. liste de adiacență</li>
+                        <li>Parcurgeri: BFS și DFS</li>
+                        <li>Aplicații practice</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="slide-counter" id="slideCounter">1 / 37</div>
+    
+    <div class="nav-container">
+        <button class="nav-btn" id="prevBtn" onclick="prevSlide()">← Înapoi</button>
+        <button class="nav-btn" id="nextBtn" onclick="nextSlide()">Înainte →</button>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 37;
+
+        function showSlide(n) {
+            const slides = document.querySelectorAll('.slide');
+            
+            if (n < 1) currentSlide = 1;
+            else if (n > totalSlides) currentSlide = totalSlides;
+            else currentSlide = n;
+
+            slides.forEach(slide => {
+                slide.classList.remove('active');
+            });
+
+            const activeSlide = document.querySelector(`[data-slide="${currentSlide}"]`);
+            if (activeSlide) {
+                activeSlide.classList.add('active');
+            }
+
+            // Update progress bar
+            const progress = (currentSlide / totalSlides) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+
+            // Update counter
+            document.getElementById('slideCounter').textContent = `${currentSlide} / ${totalSlides}`;
+
+            // Update buttons
+            document.getElementById('prevBtn').disabled = currentSlide === 1;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides;
+
+            // Highlight code
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'ArrowRight':
+                case ' ':
+                    e.preventDefault();
+                    nextSlide();
+                    break;
+                case 'ArrowLeft':
+                    prevSlide();
+                    break;
+                case 'Home':
+                    showSlide(1);
+                    break;
+                case 'End':
+                    showSlide(totalSlides);
+                    break;
+            }
+        });
+
+        // Touch support for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            if (touchStartX - touchEndX > 50) nextSlide();
+            if (touchEndX - touchStartX > 50) prevSlide();
+        });
+
+        // Initialize
+        showSlide(1);
+    </script>
+</body>
+</html>

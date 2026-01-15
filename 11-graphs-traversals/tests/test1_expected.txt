@@ -1,0 +1,27 @@
+╔═══════════════════════════════════════════════════════════════╗
+║     EXERCIȚIUL 1: HASH TABLE CU SEPARATE CHAINING             ║
+╚═══════════════════════════════════════════════════════════════╝
+
+Comenzi disponibile:
+  INSERT <key> <value> - inserează o pereche
+  SEARCH <key>         - caută o cheie
+  DELETE <key>         - șterge o cheie
+  STATS                - afișează statisticile
+  PRINT                - afișează conținutul
+  QUIT                 - termină programul
+
+[INSERT] student1: 10 -> bucket[3]
+[INSERT] student2: 9 -> bucket[4]
+[INSERT] student3: 8 -> bucket[5]
+[INSERT] student4: 7 -> bucket[6]
+[INSERT] student5: 10 -> bucket[7]
+[SEARCH] student1: 10
+[SEARCH] student3: 8
+[SEARCH] inexistent: NOT FOUND
+[DELETE] student2: OK
+[SEARCH] student2: NOT FOUND
+[INSERT] student1: 9 -> bucket[3]
+[SEARCH] student1: 9
+[STATS] Size: 17, Count: 4, Load: 0.24, Empty: 13, MaxChain: 1
+
+[INFO] Memorie eliberată. Program terminat.

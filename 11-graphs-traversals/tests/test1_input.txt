@@ -1,0 +1,14 @@
+INSERT student1 10
+INSERT student2 9
+INSERT student3 8
+INSERT student4 7
+INSERT student5 10
+SEARCH student1
+SEARCH student3
+SEARCH inexistent
+DELETE student2
+SEARCH student2
+INSERT student1 9
+SEARCH student1
+STATS
+QUIT

@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparație: Pseudocod | C | Python - Hash Tables | ATP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-yellow: #d29922;
+            --accent-red: #f85149;
+            --accent-purple: #a371f7;
+            --accent-orange: #f0883e;
+            --border-color: #30363d;
+            --pseudo-color: #f0883e;
+            --c-color: #58a6ff;
+            --python-color: #3fb950;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--pseudo-color), var(--c-color), var(--python-color));
+            transition: width 0.3s ease;
+            z-index: 1000;
+        }
+
+        .slides-container {
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 50px 60px;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            display: block;
+            opacity: 1;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 25px;
+            background: linear-gradient(135deg, var(--pseudo-color), var(--c-color), var(--python-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: var(--accent-blue);
+        }
+
+        h3 {
+            font-size: 1.3em;
+            margin: 15px 0 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        /* Three Column Layout */
+        .three-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+            height: calc(100% - 120px);
+        }
+
+        .column {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .column.pseudocod {
+            border-color: var(--pseudo-color);
+        }
+
+        .column.c-lang {
+            border-color: var(--c-color);
+        }
+
+        .column.python {
+            border-color: var(--python-color);
+        }
+
+        .column-header {
+            padding: 12px 15px;
+            font-weight: bold;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .column.pseudocod .column-header {
+            background: rgba(240, 136, 62, 0.2);
+            color: var(--pseudo-color);
+        }
+
+        .column.c-lang .column-header {
+            background: rgba(88, 166, 255, 0.2);
+            color: var(--c-color);
+        }
+
+        .column.python .column-header {
+            background: rgba(63, 185, 80, 0.2);
+            color: var(--python-color);
+        }
+
+        .column-content {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .column-content pre {
+            margin: 0;
+            background: transparent;
+        }
+
+        .column-content code {
+            font-family: 'Fira Code', 'JetBrains Mono', monospace;
+            font-size: 0.85em;
+            line-height: 1.5;
+        }
+
+        /* Title Slide */
+        .title-slide {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            height: 100%;
+        }
+
+        .title-slide h1 {
+            font-size: 3em;
+            margin-bottom: 30px;
+        }
+
+        .lang-badges {
+            display: flex;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .lang-badge {
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .lang-badge.pseudo {
+            background: rgba(240, 136, 62, 0.2);
+            color: var(--pseudo-color);
+            border: 2px solid var(--pseudo-color);
+        }
+
+        .lang-badge.c {
+            background: rgba(88, 166, 255, 0.2);
+            color: var(--c-color);
+            border: 2px solid var(--c-color);
+        }
+
+        .lang-badge.py {
+            background: rgba(63, 185, 80, 0.2);
+            color: var(--python-color);
+            border: 2px solid var(--python-color);
+        }
+
+        /* Info Boxes */
+        .info-box {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid var(--accent-blue);
+            background: rgba(88, 166, 255, 0.1);
+        }
+
+        .info-box-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: var(--accent-blue);
+        }
+
+        /* Comparison Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--bg-tertiary);
+        }
+
+        th.pseudo { color: var(--pseudo-color); }
+        th.c { color: var(--c-color); }
+        th.python { color: var(--python-color); }
+
+        /* Navigation */
+        .nav-container {
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: var(--accent-blue);
+            color: var(--bg-primary);
+        }
+
+        .slide-counter {
+            position: fixed;
+            bottom: 25px;
+            left: 30px;
+            font-size: 0.95em;
+            color: var(--text-secondary);
+            z-index: 100;
+        }
+
+        .shortcuts-info {
+            position: fixed;
+            top: 15px;
+            right: 25px;
+            font-size: 0.8em;
+            color: var(--text-secondary);
+            z-index: 100;
+        }
+
+        .kbd {
+            background: var(--bg-tertiary);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .key-point {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .key-point-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        /* Two Column for conclusion */
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .column-simple {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        @media (max-width: 1400px) {
+            .three-columns {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            .column-content code {
+                font-size: 0.8em;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    
+    <div class="shortcuts-info">
+        <span class="kbd">←</span> <span class="kbd">→</span> Navigare
+    </div>
+
+    <div class="slides-container" id="slidesContainer">
+        
+        <!-- Slide 1: Title -->
+        <div class="slide active" data-slide="1">
+            <div class="title-slide">
+                <h1>Comparație Multi-Limbaj</h1>
+                <p style="font-size: 1.4em; color: var(--text-secondary);">Hash Tables: Pseudocod → C → Python</p>
+                
+                <div class="lang-badges">
+                    <div class="lang-badge pseudo">📝 Pseudocod</div>
+                    <div class="lang-badge c">⚙️ C</div>
+                    <div class="lang-badge py">🐍 Python</div>
+                </div>
+                
+                <p style="color: var(--text-secondary); margin-top: 30px;">
+                    Săptămâna 11 | Algoritmi și Tehnici de Programare<br>
+                    Academia de Studii Economice București
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 2: Why Compare -->
+        <div class="slide" data-slide="2">
+            <h2>🤔 De Ce Comparăm Limbaje?</h2>
+            
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🎯</div>
+                    <h4>Înțelegere Profundă</h4>
+                    <p>Pseudocodul clarifică algoritmul fără detalii de sintaxă</p>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚙️</div>
+                    <h4>Implementare Low-Level</h4>
+                    <p>C arată exact ce se întâmplă în memorie</p>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🚀</div>
+                    <h4>Productivitate</h4>
+                    <p>Python oferă abstracții built-in eficiente</p>
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <div class="info-box-title">💡 Obiectiv</div>
+                <p>Înțelegerea conceptelor fundamentale este independentă de limbaj. Un programator bun poate transpune algoritmi între limbaje.</p>
+            </div>
+            
+            <div class="two-columns">
+                <div class="column-simple">
+                    <h4 style="color: var(--accent-green);">✅ În această prezentare</h4>
+                    <ul>
+                        <li>Structura hash table</li>
+                        <li>Funcția hash</li>
+                        <li>Inserare, Căutare, Ștergere</li>
+                        <li>Tratarea coliziunilor</li>
+                    </ul>
+                </div>
+                <div class="column-simple">
+                    <h4 style="color: var(--accent-yellow);">📊 Complexitate identică</h4>
+                    <ul>
+                        <li>Insert: O(1) amortizat</li>
+                        <li>Search: O(1) mediu</li>
+                        <li>Delete: O(1) mediu</li>
+                        <li>Worst case: O(n)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Data Structure Definition -->
+        <div class="slide" data-slide="3">
+            <h2>📦 Definirea Structurii de Date</h2>
+            
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <div class="column-header">📝 Pseudocod</div>
+                    <div class="column-content">
+                        <pre><code class="language-plaintext">STRUCTURĂ HashNode:
+    cheie: String
+    valoare: Any
+    următor: HashNode sau NULL
+
+STRUCTURĂ HashTable:
+    buckets: Array de HashNode
+    dimensiune: Integer
+    număr_elemente: Integer
+
+FUNCȚIE creează_tabel(dim):
+    tabel = new HashTable
+    tabel.buckets = Array[dim] de NULL
+    tabel.dimensiune = dim
+    tabel.număr_elemente = 0
+    RETURNEAZĂ tabel</code></pre>
+                    </div>
+                </div>
+                
+                <div class="column c-lang">
+                    <div class="column-header">⚙️ C</div>
+                    <div class="column-content">
+                        <pre><code class="language-c">typedef struct HashNode {
+    char *key;
+    void *value;
+    struct HashNode *next;
+} HashNode;
+
+typedef struct {
+    HashNode **buckets;
+    size_t size;
+    size_t count;
+} HashTable;
+
+HashTable* ht_create(size_t size) {
+    HashTable *ht = malloc(sizeof(HashTable));
+    ht->buckets = calloc(size, sizeof(HashNode*));
+    ht->size = size;
+    ht->count = 0;
+    return ht;
+}</code></pre>
+                    </div>
+                </div>
+                
+                <div class="column python">
+                    <div class="column-header">🐍 Python</div>
+                    <div class="column-content">
+                        <pre><code class="language-python">class HashNode:
+    def __init__(self, key, value):
+        self.key = key
+        self.value = value
+        self.next = None
+
+class HashTable:
+    def __init__(self, size=101):
+        self.buckets = [None] * size
+        self.size = size
+        self.count = 0
+
+# SAU simplu cu dict built-in:
+# hash_table = {}
+# Python dict este deja optimizat!</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Hash Function -->
+        <div class="slide" data-slide="4">
+            <h2>🔑 Funcția Hash (djb2)</h2>
+            
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <div class="column-header">📝 Pseudocod</div>
+                    <div class="column-content">
+                        <pre><code class="language-plaintext">FUNCȚIE hash_djb2(cheie, dim_tabel):
+    hash = 5381
+    
+    PENTRU FIECARE caracter c DIN cheie:
+        hash = hash * 33 + cod_ASCII(c)
+        // Echivalent: (hash << 5) + hash + c
+    
+    RETURNEAZĂ hash MOD dim_tabel
+
+// Exemplu:
+// hash_djb2("Ana", 101) 
+// = ((5381*33+'A')*33+'n')*33+'a' MOD 101
+// = 177674*33+97 MOD 101
+// = 42</code></pre>
+                    </div>
+                </div>
+                
+                <div class="column c-lang">
+                    <div class="column-header">⚙️ C</div>
+                    <div class="column-content">
+                        <pre><code class="language-c">size_t hash_djb2(const char *str, 
+                  size_t table_size) {
+    unsigned long hash = 5381;
+    int c;
+    
+    while ((c = *str++)) {
+        // hash * 33 + c
+        hash = ((hash << 5) + hash) + c;
+    }
+    
+    return hash % table_size;
+}
+
+// Alternativ cu indexare:
+size_t hash_simple(const char *str, 
+                   size_t size) {
+    size_t hash = 0;
+    while (*str)
+        hash = hash * 31 + *str++;
+    return hash % size;
+}</code></pre>
+                    </div>
+                </div>
+                
+                <div class="column python">
+                    <div class="column-header">🐍 Python</div>
+                    <div class="column-content">
+                        <pre><code class="language-python">def hash_djb2(key: str, table_size: int) -> int:
+    hash_value = 5381
+    
+    for char in key:
+        hash_value = ((hash_value << 5) + 
+                      hash_value + ord(char))
+    
+    return hash_value % table_size
+
+# Python are hash() built-in:
+# index = hash("Ana") % table_size
+# DAR hash() returnează valori diferite
+# între sesiuni (security feature)
+
+# Pentru reproducibilitate:
+import hashlib
+def stable_hash(key, size):
+    h = hashlib.md5(key.encode())
+    return int(h.hexdigest(), 16) % size</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Insert Operation -->
+        <div class="slide" data-slide="5">
+            <h2>➕ Operația de Inserare</h2>
+            
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <div class="column-header">📝 Pseudocod</div>
+                    <div class="column-content">
+                        <pre><code class="language-plaintext">FUNCȚIE inserează(tabel, cheie, valoare):
+    index = hash(cheie, tabel.dimensiune)
+    
+    // Verifică dacă cheia există
+    nod = tabel.buckets[index]
+    CÂT TIMP nod != NULL:
+        DACĂ nod.cheie == cheie:
+            nod.valoare = valoare  // Update
+            RETURN
+        nod = nod.următor
+    
+    // Cheie nouă - inserare la început
+    nod_nou = new HashNode
+    nod_nou.cheie = cheie
+    nod_nou.valoare = valoare
+    nod_nou.următor = tabel.buckets[index]
+    tabel.buckets[index] = nod_nou
+    tabel.număr_elemente++
+    
+    // Verifică load factor
+    DACĂ load_factor(tabel) > 2.0:
+        redimensionează(tabel)</code></pre>
+                    </div>
+                </div>
+                
+                <div class="column c-lang">
+                    <div class="column-header">⚙️ C</div>
+                    <div class="column-content">
+                        <pre><code class="language-c">void ht_insert(HashTable *ht, 
+               const char *key, 
+               void *value) {
+    size_t index = hash_djb2(key, ht->size);
+    
+    // Caută cheie existentă
+    HashNode *cur = ht->buckets[index];
+    while (cur) {
+        if (strcmp(cur->key, key) == 0) {
+            cur->value = value;
+            return;
+        }
+        cur = cur->next;
+    }
+    
+    // Crează nod nou
+    HashNode *node = malloc(sizeof(HashNode));
+    node->key = strdup(key);  // Copie!
+    node->value = value;
+    node->next = ht->buckets[index];
+    ht->buckets[index] = node;
+    ht->count++;
+    
+    // Check load factor
+    if ((double)ht->count / ht->size > 2.0)
+        ht_resize(ht, ht->size * 2);
+}</code></pre>
+                    </div>
+                </div>
+                
+                <div class="column python">
+                    <div class="column-header">🐍 Python</div>
+                    <div class="column-content">
+                        <pre><code class="language-python">def insert(self, key, value):
+    index = hash_djb2(key, self.size)
+    
+    # Caută cheie existentă
+    node = self.buckets[index]
+    while node:
+        if node.key == key:
+            node.value = value
+            return
+        node = node.next
+    
+    # Cheie nouă
+    new_node = HashNode(key, value)
+    new_node.next = self.buckets[index]
+    self.buckets[index] = new_node
+    self.count += 1
+    
+    # Check load factor
+    if self.count / self.size > 2.0:
+        self._resize()
+
+# Cu dict built-in:
+# hash_table[key] = value
+# Atât! Python face totul automat</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Search Operation -->
+        <div class="slide" data-slide="6">
+            <h2>🔍 Operația de Căutare</h2>
+            
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <div class="column-header">📝 Pseudocod</div>
+                    <div class="column-content">
+                        <pre><code class="language-plaintext">FUNCȚIE caută(tabel, cheie):
+    index = hash(cheie, tabel.dimensiune)
+    
+    nod = tabel.buckets[index]
+    CÂT TIMP nod != NULL:
+        DACĂ nod.cheie == cheie:
+            RETURNEAZĂ nod.valoare
+        nod = nod.următor
+    
+    RETURNEAZĂ NULL  // Nu a fost găsit
+
+
+FUNCȚIE conține(tabel, cheie):
+    RETURNEAZĂ caută(tabel, cheie) != NULL
+
+
+// Complexitate:
+// - Medie: O(1 + α) unde α = load factor
+// - Worst case: O(n) când toate cheile
+//   hash-uiesc la același bucket</code></pre>
+                    </div>
+                </div>
+                
+                <div class="column c-lang">
+                    <div class="column-header">⚙️ C</div>
+                    <div class="column-content">
+                        <pre><code class="language-c">void* ht_search(HashTable *ht, 
+                const char *key) {
+    size_t index = hash_djb2(key, ht->size);
+    
+    HashNode *cur = ht->buckets[index];
+    while (cur) {
+        if (strcmp(cur->key, key) == 0)
+            return cur->value;
+        cur = cur->next;
+    }
+    
+    return NULL;
+}
+
+bool ht_contains(HashTable *ht, 
+                 const char *key) {
+    return ht_search(ht, key) != NULL;
+}
+
+// Exemplu de utilizare:
+char *val = ht_search(ht, "student");
+if (val)
+    printf("Găsit: %s\n", val);
+else
+    printf("Nu există\n");</code></pre>
+                    </div>
+                </div>
+                
+                <div class="column python">
+                    <div class="column-header">🐍 Python</div>
+                    <div class="column-content">
+                        <pre><code class="language-python">def search(self, key):
+    index = hash_djb2(key, self.size)
+    
+    node = self.buckets[index]
+    while node:
+        if node.key == key:
+            return node.value
+        node = node.next
+    
+    return None
+
+def contains(self, key):
+    return self.search(key) is not None
+
+
+# Cu dict built-in:
+# value = hash_table.get(key)
+# value = hash_table.get(key, default)
+# if key in hash_table: ...
+
+# Exemplu:
+# student = grades.get("Ion", "N/A")
+# if "Ion" in grades:
+#     print(f"Nota: {grades['Ion']}")</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Delete Operation -->
+        <div class="slide" data-slide="7">
+            <h2>🗑️ Operația de Ștergere</h2>
+            
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <div class="column-header">📝 Pseudocod</div>
+                    <div class="column-content">
+                        <pre><code class="language-plaintext">FUNCȚIE șterge(tabel, cheie):
+    index = hash(cheie, tabel.dimensiune)
+    
+    nod = tabel.buckets[index]
+    anterior = NULL
+    
+    CÂT TIMP nod != NULL:
+        DACĂ nod.cheie == cheie:
+            // Găsit - șterge
+            DACĂ anterior == NULL:
+                // Primul din listă
+                tabel.buckets[index] = nod.următor
+            ALTFEL:
+                anterior.următor = nod.următor
+            
+            eliberează(nod)
+            tabel.număr_elemente--
+            RETURNEAZĂ TRUE
+        
+        anterior = nod
+        nod = nod.următor
+    
+    RETURNEAZĂ FALSE  // Nu a fost găsit</code></pre>
+                    </div>
+                </div>
+                
+                <div class="column c-lang">
+                    <div class="column-header">⚙️ C</div>
+                    <div class="column-content">
+                        <pre><code class="language-c">bool ht_delete(HashTable *ht, 
+               const char *key) {
+    size_t index = hash_djb2(key, ht->size);
+    
+    HashNode *cur = ht->buckets[index];
+    HashNode *prev = NULL;
+    
+    while (cur) {
+        if (strcmp(cur->key, key) == 0) {
+            if (prev)
+                prev->next = cur->next;
+            else
+                ht->buckets[index] = cur->next;
+            
+            free(cur->key);  // Eliberează cheia
+            free(cur);       // Eliberează nodul
+            ht->count--;
+            return true;
+        }
+        prev = cur;
+        cur = cur->next;
+    }
+    
+    return false;
+}
+
+// ATENȚIE: Nu uita să eliberezi memoria!</code></pre>
+                    </div>
+                </div>
+                
+                <div class="column python">
+                    <div class="column-header">🐍 Python</div>
+                    <div class="column-content">
+                        <pre><code class="language-python">def delete(self, key):
+    index = hash_djb2(key, self.size)
+    
+    node = self.buckets[index]
+    prev = None
+    
+    while node:
+        if node.key == key:
+            if prev:
+                prev.next = node.next
+            else:
+                self.buckets[index] = node.next
+            
+            self.count -= 1
+            return True
+            # Garbage collector eliberează memoria
+        
+        prev = node
+        node = node.next
+    
+    return False
+
+# Cu dict built-in:
+# del hash_table[key]  # Excepție dacă lipsește
+# hash_table.pop(key)  # Excepție dacă lipsește
+# hash_table.pop(key, None)  # Safe delete</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Resize Operation -->
+        <div class="slide" data-slide="8">
+            <h2>🔄 Redimensionare (Rehashing)</h2>
+            
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <div class="column-header">📝 Pseudocod</div>
+                    <div class="column-content">
+                        <pre><code class="language-plaintext">FUNCȚIE redimensionează(tabel):
+    dim_nouă = următorul_prim(tabel.dim * 2)
+    buckets_vechi = tabel.buckets
+    dim_veche = tabel.dimensiune
+    
+    // Alocă noua tabelă
+    tabel.buckets = Array[dim_nouă] de NULL
+    tabel.dimensiune = dim_nouă
+    tabel.număr_elemente = 0
+    
+    // Reinserează toate elementele
+    PENTRU i = 0 LA dim_veche - 1:
+        nod = buckets_vechi[i]
+        CÂT TIMP nod != NULL:
+            inserează(tabel, nod.cheie, nod.valoare)
+            nod = nod.următor
+    
+    eliberează(buckets_vechi)
+
+// Complexitate: O(n) - se face rar
+// Amortizat: O(1) per inserare</code></pre>
+                    </div>
+                </div>
+                
+                <div class="column c-lang">
+                    <div class="column-header">⚙️ C</div>
+                    <div class="column-content">
+                        <pre><code class="language-c">void ht_resize(HashTable *ht, size_t new_size) {
+    HashNode **old = ht->buckets;
+    size_t old_size = ht->size;
+    
+    ht->buckets = calloc(new_size, 
+                         sizeof(HashNode*));
+    ht->size = new_size;
+    ht->count = 0;
+    
+    for (size_t i = 0; i < old_size; i++) {
+        HashNode *node = old[i];
+        while (node) {
+            HashNode *next = node->next;
+            
+            // Recalculează indexul
+            size_t idx = hash_djb2(node->key, 
+                                   new_size);
+            
+            // Inserează în noua poziție
+            node->next = ht->buckets[idx];
+            ht->buckets[idx] = node;
+            ht->count++;
+            
+            node = next;
+        }
+    }
+    
+    free(old);
+}</code></pre>
+                    </div>
+                </div>
+                
+                <div class="column python">
+                    <div class="column-header">🐍 Python</div>
+                    <div class="column-content">
+                        <pre><code class="language-python">def _resize(self):
+    old_buckets = self.buckets
+    
+    # Dublează dimensiunea
+    self.size = self.size * 2
+    self.buckets = [None] * self.size
+    self.count = 0
+    
+    # Reinserează toate elementele
+    for bucket in old_buckets:
+        node = bucket
+        while node:
+            self.insert(node.key, node.value)
+            node = node.next
+
+# Python dict face asta automat!
+# Detalii de implementare:
+# - Redimensionare la 2/3 load factor
+# - Factor de creștere: ~4x
+# - Open addressing cu perturbări
+# 
+# Sursa: Objects/dictobject.c în CPython</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Collision Handling Comparison -->
+        <div class="slide" data-slide="9">
+            <h2>💥 Tratarea Coliziunilor: Open Addressing</h2>
+            
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <div class="column-header">📝 Pseudocod</div>
+                    <div class="column-content">
+                        <pre><code class="language-plaintext">CONSTANTE:
+    EMPTY = None
+    DELETED = marcaj_special
+
+FUNCȚIE inserează_open(tabel, cheie, val):
+    index_inițial = hash(cheie, dim)
+    index = index_inițial
+    
+    REPETĂ:
+        DACĂ tabel[index] == EMPTY SAU
+           tabel[index] == DELETED:
+            // Slot disponibil
+            tabel[index] = (cheie, val)
+            RETURN
+        
+        DACĂ tabel[index].cheie == cheie:
+            // Update
+            tabel[index].valoare = val
+            RETURN
+        
+        // Linear probing
+        index = (index + 1) MOD dim
+    PÂNĂ CÂND index == index_inițial
+    
+    // Tabela plină - eroare</code></pre>
+                    </div>
+                </div>
+                
+                <div class="column c-lang">
+                    <div class="column-header">⚙️ C</div>
+                    <div class="column-content">
+                        <pre><code class="language-c">#define EMPTY   ((void*)0)
+#define DELETED ((void*)-1)
+
+void ht_insert_open(HashTable *ht,
+                    const char *key,
+                    void *value) {
+    size_t idx = hash_djb2(key, ht->size);
+    size_t start = idx;
+    
+    do {
+        if (ht->buckets[idx] == EMPTY ||
+            ht->buckets[idx] == DELETED) {
+            // Slot liber
+            HashNode *n = malloc(sizeof(*n));
+            n->key = strdup(key);
+            n->value = value;
+            ht->buckets[idx] = n;
+            ht->count++;
+            return;
+        }
+        
+        HashNode *cur = ht->buckets[idx];
+        if (strcmp(cur->key, key) == 0) {
+            cur->value = value;
+            return;
+        }
+        
+        idx = (idx + 1) % ht->size;
+    } while (idx != start);
+}</code></pre>
+                    </div>
+                </div>
+                
+                <div class="column python">
+                    <div class="column-header">🐍 Python</div>
+                    <div class="column-content">
+                        <pre><code class="language-python"># Python dict folosește open addressing
+# cu perturbări (nu linear probing simplu)
+
+EMPTY = object()    # Sentinel unic
+DELETED = object()  # Sentinel pentru șters
+
+def insert_open(self, key, value):
+    idx = hash_djb2(key, self.size)
+    start = idx
+    
+    while True:
+        if (self.buckets[idx] is EMPTY or
+            self.buckets[idx] is DELETED):
+            self.buckets[idx] = (key, value)
+            self.count += 1
+            return
+        
+        if self.buckets[idx][0] == key:
+            self.buckets[idx] = (key, value)
+            return
+        
+        idx = (idx + 1) % self.size
+        if idx == start:
+            raise OverflowError("Full")
+
+# CPython folosește: perturb >> 5</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Complete Example Usage -->
+        <div class="slide" data-slide="10">
+            <h2>📋 Exemplu Complet de Utilizare</h2>
+            
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <div class="column-header">📝 Pseudocod</div>
+                    <div class="column-content">
+                        <pre><code class="language-plaintext">// Dicționar de note studenți
+
+PROGRAM GestionareNote:
+    note = creează_tabel(101)
+    
+    // Adăugare studenți
+    inserează(note, "Ion", 9)
+    inserează(note, "Maria", 10)
+    inserează(note, "Andrei", 8)
+    
+    // Căutare
+    nota_ion = caută(note, "Ion")
+    AFIȘEAZĂ "Ion: " + nota_ion
+    
+    // Actualizare
+    inserează(note, "Ion", 10)
+    
+    // Verificare existență
+    DACĂ conține(note, "Maria"):
+        AFIȘEAZĂ "Maria există"
+    
+    // Ștergere
+    șterge(note, "Andrei")
+    
+    // Iterare (necesită implementare)
+    PENTRU FIECARE (cheie, val) DIN note:
+        AFIȘEAZĂ cheie + ": " + val</code></pre>
+                    </div>
+                </div>
+                
+                <div class="column c-lang">
+                    <div class="column-header">⚙️ C</div>
+                    <div class="column-content">
+                        <pre><code class="language-c">int main(void) {
+    HashTable *note = ht_create(101);
+    
+    // Adăugare (valorile sunt pointeri)
+    int n1 = 9, n2 = 10, n3 = 8;
+    ht_insert(note, "Ion", &n1);
+    ht_insert(note, "Maria", &n2);
+    ht_insert(note, "Andrei", &n3);
+    
+    // Căutare
+    int *nota = ht_search(note, "Ion");
+    if (nota)
+        printf("Ion: %d\n", *nota);
+    
+    // Actualizare
+    n1 = 10;
+    ht_insert(note, "Ion", &n1);
+    
+    // Verificare
+    if (ht_contains(note, "Maria"))
+        printf("Maria există\n");
+    
+    // Ștergere
+    ht_delete(note, "Andrei");
+    
+    // Cleanup obligatoriu!
+    ht_destroy(note);
+    return 0;
+}</code></pre>
+                    </div>
+                </div>
+                
+                <div class="column python">
+                    <div class="column-header">🐍 Python</div>
+                    <div class="column-content">
+                        <pre><code class="language-python"># Folosind dict built-in
+
+note = {}  # Sau dict()
+
+# Adăugare
+note["Ion"] = 9
+note["Maria"] = 10
+note["Andrei"] = 8
+
+# Căutare
+nota_ion = note.get("Ion")
+print(f"Ion: {nota_ion}")
+
+# Actualizare
+note["Ion"] = 10
+
+# Verificare existență
+if "Maria" in note:
+    print("Maria există")
+
+# Ștergere
+del note["Andrei"]
+# sau: note.pop("Andrei")
+
+# Iterare - foarte ușor!
+for student, nota in note.items():
+    print(f"{student}: {nota}")
+
+# Dict comprehension
+note_mari = {k: v for k, v in note.items() 
+             if v >= 9}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Comparison Table -->
+        <div class="slide" data-slide="11">
+            <h2>📊 Tabel Comparativ</h2>
+            
+            <table>
+                <tr>
+                    <th>Aspect</th>
+                    <th class="pseudo">Pseudocod</th>
+                    <th class="c">C</th>
+                    <th class="python">Python</th>
+                </tr>
+                <tr>
+                    <td><strong>Tipizare</strong></td>
+                    <td>Abstractă</td>
+                    <td>Statică, void*</td>
+                    <td>Dinamică, duck typing</td>
+                </tr>
+                <tr>
+                    <td><strong>Memorie</strong></td>
+                    <td>Nu se specifică</td>
+                    <td>Manuală (malloc/free)</td>
+                    <td>Automată (GC)</td>
+                </tr>
+                <tr>
+                    <td><strong>Funcție hash</strong></td>
+                    <td>Conceptuală</td>
+                    <td>Implementare manuală</td>
+                    <td>hash() built-in</td>
+                </tr>
+                <tr>
+                    <td><strong>Implementare</strong></td>
+                    <td>~30 linii</td>
+                    <td>~150 linii</td>
+                    <td>~60 linii (sau 1: dict)</td>
+                </tr>
+                <tr>
+                    <td><strong>Error handling</strong></td>
+                    <td>Nu se specifică</td>
+                    <td>NULL checks, errno</td>
+                    <td>Excepții (KeyError)</td>
+                </tr>
+                <tr>
+                    <td><strong>Iterare</strong></td>
+                    <td>FOR EACH abstractizat</td>
+                    <td>Manual cu pointeri</td>
+                    <td>for in / items()</td>
+                </tr>
+                <tr>
+                    <td><strong>Performanță</strong></td>
+                    <td>O(1) teoretic</td>
+                    <td>O(1), foarte rapid</td>
+                    <td>O(1), optimizat</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Slide 12: When to Use Which -->
+        <div class="slide" data-slide="12">
+            <h2>🎯 Când să Folosești Ce?</h2>
+            
+            <div class="key-points">
+                <div class="key-point" style="border-color: var(--pseudo-color);">
+                    <div class="key-point-icon">📝</div>
+                    <h4 style="color: var(--pseudo-color);">Pseudocod</h4>
+                    <ul style="text-align: left; font-size: 0.9em;">
+                        <li>Design algoritmi noi</li>
+                        <li>Comunicare în echipă</li>
+                        <li>Documentație</li>
+                        <li>Examen algoritmic</li>
+                    </ul>
+                </div>
+                <div class="key-point" style="border-color: var(--c-color);">
+                    <div class="key-point-icon">⚙️</div>
+                    <h4 style="color: var(--c-color);">C</h4>
+                    <ul style="text-align: left; font-size: 0.9em;">
+                        <li>Sisteme embedded</li>
+                        <li>Performanță critică</li>
+                        <li>Kernel/drivers</li>
+                        <li>Înțelegere profundă</li>
+                    </ul>
+                </div>
+                <div class="key-point" style="border-color: var(--python-color);">
+                    <div class="key-point-icon">🐍</div>
+                    <h4 style="color: var(--python-color);">Python</h4>
+                    <ul style="text-align: left; font-size: 0.9em;">
+                        <li>Prototipare rapidă</li>
+                        <li>Data science</li>
+                        <li>Scripting</li>
+                        <li>Aplicații web</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <div class="info-box-title">💡 Recomandare</div>
+                <p>Învață conceptele în pseudocod, implementează în C pentru înțelegere, folosește Python pentru productivitate. Un programator complet stăpânește toate nivelurile de abstractizare.</p>
+            </div>
+        </div>
+
+        <!-- Slide 13: Key Insights -->
+        <div class="slide" data-slide="13">
+            <h2>🔑 Concluzii Cheie</h2>
+            
+            <div class="two-columns">
+                <div class="column-simple">
+                    <h4 style="color: var(--accent-green);">✅ Ce am învățat</h4>
+                    <ul>
+                        <li><strong>Algoritmul este același</strong> indiferent de limbaj</li>
+                        <li><strong>Complexitatea O(1)</strong> este universală</li>
+                        <li><strong>Funcția hash</strong> determină distribuția</li>
+                        <li><strong>Coliziunile</strong> sunt inevitabile și trebuie tratate</li>
+                        <li><strong>Load factor</strong> controlează performanța</li>
+                    </ul>
+                </div>
+                <div class="column-simple">
+                    <h4 style="color: var(--accent-blue);">📌 De reținut</h4>
+                    <ul>
+                        <li>C oferă <strong>control total</strong> dar cere atenție la memorie</li>
+                        <li>Python oferă <strong>productivitate</strong> cu dict built-in</li>
+                        <li>Pseudocodul ajută la <strong>gândirea algoritmică</strong></li>
+                        <li>Testarea cu date reale este <strong>esențială</strong></li>
+                        <li>Optimizarea prematură este <strong>de evitat</strong></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="info-box" style="margin-top: 30px;">
+                <div class="info-box-title">🎯 Mesaj Final</div>
+                <p>Hash tables sunt una dintre cele mai importante structuri de date. Indiferent de limbaj, principiile rămân aceleași: funcție hash bună + tratare coliziuni + load factor controlat = O(1).</p>
+            </div>
+        </div>
+
+        <!-- Slide 14: Questions -->
+        <div class="slide" data-slide="14">
+            <div class="title-slide">
+                <div class="key-point-icon" style="font-size: 4em;">❓</div>
+                <h1>Întrebări?</h1>
+                <p style="font-size: 1.3em; color: var(--text-secondary);">Comparație: Pseudocod | C | Python</p>
+                
+                <div class="lang-badges" style="margin-top: 40px;">
+                    <div class="lang-badge pseudo">📝 Concepte</div>
+                    <div class="lang-badge c">⚙️ Control</div>
+                    <div class="lang-badge py">🐍 Productivitate</div>
+                </div>
+                
+                <p style="color: var(--text-secondary); margin-top: 40px;">
+                    Săptămâna 11: Hash Tables<br>
+                    Algoritmi și Tehnici de Programare
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="slide-counter" id="slideCounter">1 / 14</div>
+    
+    <div class="nav-container">
+        <button class="nav-btn" onclick="prevSlide()">← Înapoi</button>
+        <button class="nav-btn" onclick="nextSlide()">Înainte →</button>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 14;
+
+        function showSlide(n) {
+            const slides = document.querySelectorAll('.slide');
+            
+            if (n < 1) currentSlide = 1;
+            else if (n > totalSlides) currentSlide = totalSlides;
+            else currentSlide = n;
+
+            slides.forEach(slide => slide.classList.remove('active'));
+            
+            const activeSlide = document.querySelector(`[data-slide="${currentSlide}"]`);
+            if (activeSlide) activeSlide.classList.add('active');
+
+            document.getElementById('progressBar').style.width = (currentSlide / totalSlides) * 100 + '%';
+            document.getElementById('slideCounter').textContent = `${currentSlide} / ${totalSlides}`;
+
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+        }
+
+        function nextSlide() { showSlide(currentSlide + 1); }
+        function prevSlide() { showSlide(currentSlide - 1); }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+            else if (e.key === 'ArrowLeft') prevSlide();
+            else if (e.key === 'Home') showSlide(1);
+            else if (e.key === 'End') showSlide(totalSlides);
+        });
+
+        let touchStartX = 0;
+        document.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; });
+        document.addEventListener('touchend', (e) => {
+            const diff = touchStartX - e.changedTouches[0].screenX;
+            if (diff > 50) nextSlide();
+            if (diff < -50) prevSlide();
+        });
+
+        showSlide(1);
+    </script>
+</body>
+</html>

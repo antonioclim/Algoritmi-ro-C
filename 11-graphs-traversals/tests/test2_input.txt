@@ -1,0 +1,13 @@
+INSERT alfa 1
+INSERT beta 2
+INSERT gamma 3
+INSERT delta 4
+INSERT epsilon 5
+SEARCH alfa
+SEARCH gamma
+DELETE beta
+SEARCH beta
+VIS
+STATS
+CLUSTER
+QUIT
