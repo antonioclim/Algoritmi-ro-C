@@ -1,0 +1,10 @@
+[+] Comanda #1 adăugată pentru Client1
+[+] Comanda #2 adăugată pentru Client2
+[+] Comanda #3 adăugată pentru Client3
+[i] Comenzi în așteptare: 3
+[✓] Procesăm comanda #1: Client1 - Pizza
+[i] Comenzi în așteptare: 2
+[i] Următoarea comandă: #2 - Client2
+[✓] Procesăm comanda #2: Client2 - Paste
+[✓] Procesăm comanda #3: Client3 - Burger
+[i] Comenzi în așteptare: 0

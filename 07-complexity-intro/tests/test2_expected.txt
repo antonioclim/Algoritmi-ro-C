@@ -1,0 +1,4 @@
+Postfix: 3 5 + 2 * 
+Prefix: * + 3 5 2 
+Infix: ((3 + 5) * 2)
+Result: 16

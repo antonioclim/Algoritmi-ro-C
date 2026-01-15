@@ -1,0 +1,31 @@
+# Date de test pentru Exercise 1 - Sistem Comenzi Restaurant
+# Format: COMMAND args...
+
+# Adăugăm câteva comenzi
+ADD Ion_Popescu Pizza_Margherita,Cola
+ADD Maria_Ionescu Paste_Carbonara,Vin_rosu
+ADD Andrei_Georgescu Burger_clasic,Cartofi_prajiti,Bere
+ADD Elena_Dumitrescu Salata_Caesar,Apa_plata
+ADD Mihai_Stanescu Supa_de_pui,Paine
+
+# Verificăm starea
+STATUS
+LIST
+
+# Procesăm primele 2 comenzi
+PROCESS
+PROCESS
+
+# Verificăm din nou
+STATUS
+LIST
+
+# Adăugăm mai multe comenzi
+ADD Cristina_Popa Pizza_Quattro_Formaggi,Limonada
+ADD Dan_Marin Ciorba_de_burta,Paine_de_casa
+
+# Peek la următoarea comandă
+PEEK
+
+# Statistici
+STATS

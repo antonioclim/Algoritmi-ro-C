@@ -1,0 +1,74 @@
+# =============================================================================
+# Fișier de Date: expressions.txt
+# Săptămâna 7: Arbori de Expresii
+# =============================================================================
+#
+# Expresii matematice în notație POSTFIX (Reverse Polish Notation)
+#
+# REGULĂ: Operanzii apar înaintea operatorilor
+# Operatori suportați: + - * /
+#
+# =============================================================================
+
+# Exemplul 1: (3 + 5) * 2 = 16
+# Postfix: 3 5 + 2 *
+#
+#       [*]
+#      /   \
+#    [+]   [2]
+#   /   \
+# [3]   [5]
+
+3 5 + 2 *
+
+# Exemplul 2: 10 / 5 + 3 = 5
+# Postfix: 10 5 / 3 +
+#
+#       [+]
+#      /   \
+#    [/]   [3]
+#   /   \
+# [10]  [5]
+
+10 5 / 3 +
+
+# Exemplul 3: (8 - 3) * (4 + 2) = 30
+# Postfix: 8 3 - 4 2 + *
+#
+#           [*]
+#          /   \
+#        [-]   [+]
+#       /  \   /  \
+#     [8] [3][4]  [2]
+
+8 3 - 4 2 + *
+
+# Exemplul 4: 100 / 10 / 2 = 5
+# Postfix: 100 10 / 2 /
+
+100 10 / 2 /
+
+# Exemplul 5: Expresie mai complexă
+# ((2 + 3) * 4) - (6 / 2) = 17
+# Postfix: 2 3 + 4 * 6 2 / -
+
+2 3 + 4 * 6 2 / -
+
+# =============================================================================
+# EXPRESII PENTRU TESTARE
+# =============================================================================
+
+# Test simplu: 5 + 3 = 8
+5 3 +
+
+# Test multiplicare: 6 * 7 = 42
+6 7 *
+
+# Test cu numere negative: -5 + 10 = 5
+-5 10 +
+
+# Test împărțire la zero (trebuie să returneze eroare)
+10 0 /
+
+# Test cu un singur număr
+42

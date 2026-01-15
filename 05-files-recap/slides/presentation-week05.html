@@ -1,0 +1,1985 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Săptămâna 5: Stive (Stack) - ATP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-yellow: #d29922;
+            --accent-red: #f85149;
+            --accent-purple: #a371f7;
+            --border-color: #30363d;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow: hidden;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--bg-tertiary);
+            z-index: 1000;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            transition: width 0.3s ease;
+        }
+
+        /* Slide Container */
+        .slides-container {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 60px 80px;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Slide Counter */
+        .slide-counter {
+            position: fixed;
+            bottom: 20px;
+            left: 30px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            z-index: 100;
+        }
+
+        /* Navigation Buttons */
+        .nav-buttons {
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 2.8em;
+            margin-bottom: 30px;
+            color: var(--text-primary);
+            border-bottom: 3px solid var(--accent-blue);
+            padding-bottom: 15px;
+        }
+
+        h2 {
+            font-size: 2.2em;
+            margin-bottom: 25px;
+            color: var(--accent-blue);
+        }
+
+        h3 {
+            font-size: 1.6em;
+            margin: 20px 0 15px 0;
+            color: var(--accent-green);
+        }
+
+        p {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: var(--text-secondary);
+        }
+
+        /* Title Slide */
+        .title-slide {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .title-slide h1 {
+            font-size: 3.5em;
+            border: none;
+            margin-bottom: 20px;
+        }
+
+        .title-slide .subtitle {
+            font-size: 1.8em;
+            color: var(--accent-blue);
+            margin-bottom: 40px;
+        }
+
+        .title-slide .meta {
+            font-size: 1.2em;
+            color: var(--text-secondary);
+        }
+
+        .title-slide .course-badge {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 1.3em;
+            margin-bottom: 30px;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 15px 0 15px 30px;
+            font-size: 1.15em;
+        }
+
+        li {
+            margin: 12px 0;
+            color: var(--text-secondary);
+        }
+
+        li strong {
+            color: var(--text-primary);
+        }
+
+        /* Code Blocks */
+        .code-block {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .code-header {
+            background: var(--bg-tertiary);
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .code-header span {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+        }
+
+        .lang-badge {
+            background: var(--accent-blue);
+            color: var(--bg-primary);
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .code-block code {
+            font-family: 'Fira Code', 'Cascadia Code', Consolas, monospace;
+            font-size: 0.95em;
+        }
+
+        /* Info Boxes */
+        .info-box {
+            padding: 20px 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid;
+        }
+
+        .info-box.note {
+            background: rgba(88, 166, 255, 0.1);
+            border-color: var(--accent-blue);
+        }
+
+        .info-box.warning {
+            background: rgba(210, 153, 34, 0.1);
+            border-color: var(--accent-yellow);
+        }
+
+        .info-box.danger {
+            background: rgba(248, 81, 73, 0.1);
+            border-color: var(--accent-red);
+        }
+
+        .info-box.success {
+            background: rgba(63, 185, 80, 0.1);
+            border-color: var(--accent-green);
+        }
+
+        .info-box-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* ASCII Diagrams */
+        .ascii-diagram {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.95em;
+            white-space: pre;
+            overflow-x: auto;
+            line-height: 1.4;
+            color: var(--accent-green);
+        }
+
+        /* Two Column Layout */
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .column {
+            background: var(--bg-secondary);
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .column h3 {
+            margin-top: 0;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 1em;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--bg-tertiary);
+            color: var(--accent-blue);
+            font-weight: 600;
+        }
+
+        td {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+        }
+
+        tr:hover td {
+            background: var(--bg-tertiary);
+        }
+
+        /* Highlight */
+        .highlight {
+            color: var(--accent-yellow);
+            font-weight: bold;
+        }
+
+        .keyword {
+            color: var(--accent-purple);
+        }
+
+        /* Quote */
+        blockquote {
+            border-left: 4px solid var(--accent-purple);
+            padding: 20px 25px;
+            margin: 25px 0;
+            background: var(--bg-secondary);
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+            color: var(--text-secondary);
+        }
+
+        blockquote cite {
+            display: block;
+            margin-top: 15px;
+            color: var(--accent-blue);
+            font-style: normal;
+            font-weight: bold;
+        }
+
+        /* Figure Box */
+        .figure-box {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 25px;
+            display: flex;
+            gap: 25px;
+            align-items: flex-start;
+        }
+
+        .figure-avatar {
+            width: 120px;
+            height: 120px;
+            background: var(--bg-tertiary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            flex-shrink: 0;
+        }
+
+        .figure-info h3 {
+            margin-top: 0;
+        }
+
+        /* Key Takeaways Grid */
+        .takeaways-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .takeaway-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            transition: transform 0.2s ease;
+        }
+
+        .takeaway-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-blue);
+        }
+
+        .takeaway-card .icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .takeaway-card h4 {
+            color: var(--accent-blue);
+            margin-bottom: 10px;
+        }
+
+        /* Complexity Table */
+        .complexity-highlight {
+            color: var(--accent-green);
+            font-weight: bold;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide.active > * {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        /* Keyboard shortcuts hint */
+        .keyboard-hint {
+            position: fixed;
+            bottom: 60px;
+            left: 30px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            opacity: 0.6;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .slide {
+                padding: 40px 50px;
+            }
+            .two-columns {
+                grid-template-columns: 1fr;
+            }
+            .takeaways-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .slide {
+                padding: 30px;
+            }
+            h1 { font-size: 2em; }
+            h2 { font-size: 1.6em; }
+            .takeaways-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <!-- Slide Counter -->
+    <div class="slide-counter">
+        <span id="currentSlide">1</span> / <span id="totalSlides">37</span>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-buttons">
+        <button class="nav-btn" onclick="goToSlide(0)">⏮ Început</button>
+        <button class="nav-btn" onclick="prevSlide()">← Anterior</button>
+        <button class="nav-btn" onclick="nextSlide()">Următor →</button>
+        <button class="nav-btn" onclick="goToSlide(totalSlides-1)">Sfârșit ⏭</button>
+    </div>
+
+    <div class="keyboard-hint">Navigare: ← → Space Home End</div>
+
+    <!-- Slides Container -->
+    <div class="slides-container">
+
+        <!-- Slide 1: Title -->
+        <div class="slide title-slide active">
+            <div class="course-badge">Algoritmi și Tehnici de Programare</div>
+            <h1>Săptămâna 5: Stive (Stack)</h1>
+            <p class="subtitle">Structura de Date LIFO și Aplicațiile Sale</p>
+            <p class="meta">Facultatea de Cibernetică, Statistică și Informatică Economică<br>
+            Universitatea de Științe Economice din București</p>
+        </div>
+
+        <!-- Slide 2: Learning Objectives -->
+        <div class="slide">
+            <h1>🎯 Obiective de Învățare</h1>
+            <p>La finalul acestei săptămâni vei fi capabil să:</p>
+            <ul>
+                <li><strong>Recunoști</strong> principiul LIFO și scenariile unde stiva este structura optimă</li>
+                <li><strong>Înțelegi</strong> mecanismele operațiilor <code>push</code>, <code>pop</code>, <code>peek</code></li>
+                <li><strong>Aplici</strong> implementări pe vectori și liste înlănțuite</li>
+                <li><strong>Analizezi</strong> complexitatea temporală și spațială a fiecărei implementări</li>
+                <li><strong>Evaluezi</strong> corectitudinea algoritmilor bazați pe stive</li>
+                <li><strong>Creezi</strong> aplicații complete: evaluare expresii, verificare paranteze, DFS</li>
+            </ul>
+            <div class="info-box note">
+                <div class="info-box-title">📝 Notă</div>
+                Stiva este fundamentul multor algoritmi și mecanisme din informatică, inclusiv call stack-ul folosit de fiecare program.
+            </div>
+        </div>
+
+        <!-- Slide 3: Historical Context -->
+        <div class="slide">
+            <h1>📜 Context Istoric</h1>
+            <h3>Originea Conceptului de Stack</h3>
+            <p>Conceptul de stivă își are rădăcinile în anii 1950-1960, în dezvoltarea limbajelor de programare și a compilatoarelor.</p>
+            
+            <div class="two-columns">
+                <div class="column">
+                    <h3>📅 Cronologie</h3>
+                    <ul>
+                        <li><strong>1946:</strong> Alan Turing descrie "stiva de adrese de întoarcere" în ACE</li>
+                        <li><strong>1957:</strong> Bauer și Samelson folosesc stive pentru compilatoare</li>
+                        <li><strong>1961:</strong> Dijkstra publică algoritmul Shunting Yard</li>
+                        <li><strong>1963:</strong> Stiva devine componentă standard a procesoarelor</li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <h3>🎯 Impactul</h3>
+                    <p>Stiva a revoluționat:</p>
+                    <ul>
+                        <li>Implementarea apelurilor de funcții</li>
+                        <li>Evaluarea expresiilor matematice</li>
+                        <li>Algoritmii de parcurgere (DFS)</li>
+                        <li>Mecanismele Undo/Redo</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Key Figure - Dijkstra -->
+        <div class="slide">
+            <h1>👤 Figura Cheie: Edsger W. Dijkstra</h1>
+            
+            <div class="figure-box">
+                <div class="figure-avatar">🧑‍💻</div>
+                <div class="figure-info">
+                    <h3>Edsger Wybe Dijkstra (1930-2002)</h3>
+                    <p>Informatician olandez, laureat al Premiului Turing (1972) pentru contribuții fundamentale la dezvoltarea limbajelor de programare.</p>
+                    <ul>
+                        <li><strong>Algoritmul Shunting Yard</strong> - conversie infix → postfix folosind stive</li>
+                        <li><strong>Algoritmul Dijkstra</strong> - cel mai scurt drum în grafuri</li>
+                        <li><strong>Semafoare</strong> - sincronizare în sisteme concurente</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <blockquote>
+                "Simplitatea este o mare virtute, dar necesită multă muncă pentru a o atinge și educație pentru a o aprecia."
+                <cite>— Edsger W. Dijkstra</cite>
+            </blockquote>
+        </div>
+
+        <!-- Slide 5: LIFO Principle -->
+        <div class="slide">
+            <h1>📚 Principiul LIFO</h1>
+            <h2>Last In, First Out</h2>
+            
+            <div class="two-columns">
+                <div class="column">
+                    <h3>🎯 Definiție</h3>
+                    <p>Stiva este o structură de date <strong>abstractă</strong> (ADT) în care:</p>
+                    <ul>
+                        <li>Ultimul element adăugat este primul eliminat</li>
+                        <li>Accesul se face doar prin <strong>vârf</strong> (top)</li>
+                        <li>Nu există acces aleatoriu la elemente</li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <h3>📦 Analogie</h3>
+                    <p>Imaginează-ți un teanc de farfurii:</p>
+                    <ul>
+                        <li>Poți pune o farfurie doar deasupra</li>
+                        <li>Poți lua doar farfuria din vârf</li>
+                        <li>Nu poți accesa farfuriile de dedesubt</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="ascii-diagram">
+           ┌───────────┐
+           │     5     │ ← TOP (ultimul adăugat, primul eliminat)
+           ├───────────┤
+           │     3     │
+           ├───────────┤
+           │     8     │
+           ├───────────┤
+           │     1     │ ← BAZĂ (primul adăugat, ultimul eliminat)
+           └───────────┘
+            </div>
+        </div>
+
+        <!-- Slide 6: Stack Operations -->
+        <div class="slide">
+            <h1>⚙️ Operații Fundamentale</h1>
+            
+            <table>
+                <tr>
+                    <th>Operație</th>
+                    <th>Descriere</th>
+                    <th>Complexitate</th>
+                </tr>
+                <tr>
+                    <td><code>push(x)</code></td>
+                    <td>Adaugă elementul x în vârful stivei</td>
+                    <td class="complexity-highlight">O(1)</td>
+                </tr>
+                <tr>
+                    <td><code>pop()</code></td>
+                    <td>Elimină și returnează elementul din vârf</td>
+                    <td class="complexity-highlight">O(1)</td>
+                </tr>
+                <tr>
+                    <td><code>peek() / top()</code></td>
+                    <td>Returnează elementul din vârf fără a-l elimina</td>
+                    <td class="complexity-highlight">O(1)</td>
+                </tr>
+                <tr>
+                    <td><code>isEmpty()</code></td>
+                    <td>Verifică dacă stiva este goală</td>
+                    <td class="complexity-highlight">O(1)</td>
+                </tr>
+                <tr>
+                    <td><code>size()</code></td>
+                    <td>Returnează numărul de elemente</td>
+                    <td class="complexity-highlight">O(1)</td>
+                </tr>
+            </table>
+            
+            <div class="info-box success">
+                <div class="info-box-title">✅ Observație Cheie</div>
+                Toate operațiile de bază ale stivei sunt în timp constant O(1), făcând-o una dintre cele mai eficiente structuri de date.
+            </div>
+        </div>
+
+        <!-- Slide 7: Push Operation Visualization -->
+        <div class="slide">
+            <h1>📥 Operația Push</h1>
+            <h3>Adăugarea unui element în vârful stivei</h3>
+            
+            <div class="ascii-diagram">
+ÎNAINTE de push(7):          DUPĂ push(7):
+                             
+    ┌───┐                        ┌───┐
+    │ 5 │ ← top                  │ 7 │ ← top (NOU!)
+    ├───┤                        ├───┤
+    │ 3 │                        │ 5 │
+    ├───┤                        ├───┤
+    │ 1 │                        │ 3 │
+    └───┘                        ├───┤
+                                 │ 1 │
+                                 └───┘
+
+Pași:
+1. Verifică dacă stiva nu este plină (stack overflow)
+2. Incrementează indexul top
+3. Plasează elementul la poziția top
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Implementare push pe vector</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">bool push(Stack *s, int value) {
+    if (s->top >= MAX_SIZE - 1) {
+        return false;  // Stack overflow
+    }
+    s->top++;
+    s->data[s->top] = value;
+    return true;
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 8: Pop Operation Visualization -->
+        <div class="slide">
+            <h1>📤 Operația Pop</h1>
+            <h3>Eliminarea și returnarea elementului din vârf</h3>
+            
+            <div class="ascii-diagram">
+ÎNAINTE de pop():            DUPĂ pop():
+                             Returnează: 7
+    ┌───┐                        
+    │ 7 │ ← top                  ┌───┐
+    ├───┤                        │ 5 │ ← top (NOU!)
+    │ 5 │                        ├───┤
+    ├───┤                        │ 3 │
+    │ 3 │                        ├───┤
+    ├───┤                        │ 1 │
+    │ 1 │                        └───┘
+    └───┘                        
+
+Pași:
+1. Verifică dacă stiva nu este goală (stack underflow)
+2. Salvează valoarea de la poziția top
+3. Decrementează indexul top
+4. Returnează valoarea salvată
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Implementare pop pe vector</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">bool pop(Stack *s, int *value) {
+    if (s->top < 0) {
+        return false;  // Stack underflow
+    }
+    *value = s->data[s->top];
+    s->top--;
+    return true;
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 9: Array-Based Implementation Structure -->
+        <div class="slide">
+            <h1>🔢 Implementare pe Vector</h1>
+            <h2>Definiția Structurii</h2>
+            
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Structura stivei pe vector</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">#define MAX_SIZE 100
+
+typedef struct {
+    int data[MAX_SIZE];    // Vectorul de stocare
+    int top;               // Indexul vârfului (-1 = goală)
+} ArrayStack;
+
+// Inițializare
+void stack_init(ArrayStack *s) {
+    s->top = -1;  // Stiva goală
+}
+
+// Verificare stivă goală
+bool stack_is_empty(const ArrayStack *s) {
+    return s->top == -1;
+}
+
+// Verificare stivă plină
+bool stack_is_full(const ArrayStack *s) {
+    return s->top == MAX_SIZE - 1;
+}</code></pre>
+            </div>
+
+            <div class="info-box note">
+                <div class="info-box-title">📝 Convenție</div>
+                Folosim <code>top = -1</code> pentru a indica stiva goală. La primul push, top devine 0, indicând primul element.
+            </div>
+        </div>
+
+        <!-- Slide 10: Array-Based Memory Layout -->
+        <div class="slide">
+            <h1>🧠 Layout în Memorie - Vector</h1>
+            
+            <div class="ascii-diagram">
+ArrayStack s;
+stack_init(&s);
+push(&s, 10); push(&s, 20); push(&s, 30);
+
+Adresă      Index    Valoare    
+────────────────────────────────
+0x1000      [0]      10         
+0x1004      [1]      20         
+0x1008      [2]      30  ← top = 2
+0x100C      [3]      ?  (nedefinit)
+0x1010      [4]      ?  
+   ...       ...     ...
+0x118C      [99]     ?          
+────────────────────────────────
+
+Structura ArrayStack:
+┌──────────────────────────────────────────┐
+│ data[0..99]                              │  400 bytes (100 × 4)
+├──────────────────────────────────────────┤
+│ top = 2                                  │  4 bytes
+└──────────────────────────────────────────┘
+Total: 404 bytes (dimensiune fixă)
+            </div>
+
+            <div class="info-box warning">
+                <div class="info-box-title">⚠️ Atenție</div>
+                Vectorul static alocă memorie pentru toate cele 100 de elemente, chiar dacă stiva conține doar 3.
+            </div>
+        </div>
+
+        <!-- Slide 11: Complete Array Stack Implementation -->
+        <div class="slide">
+            <h1>💻 Implementare Completă - Vector</h1>
+            
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Toate operațiile pe stivă cu vector</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdbool.h&gt;
+
+#define MAX_SIZE 100
+
+typedef struct {
+    int data[MAX_SIZE];
+    int top;
+} ArrayStack;
+
+void stack_init(ArrayStack *s)           { s->top = -1; }
+bool stack_is_empty(const ArrayStack *s) { return s->top == -1; }
+bool stack_is_full(const ArrayStack *s)  { return s->top == MAX_SIZE - 1; }
+int  stack_size(const ArrayStack *s)     { return s->top + 1; }
+
+bool push(ArrayStack *s, int value) {
+    if (stack_is_full(s)) return false;
+    s->data[++s->top] = value;
+    return true;
+}
+
+bool pop(ArrayStack *s, int *value) {
+    if (stack_is_empty(s)) return false;
+    *value = s->data[s->top--];
+    return true;
+}
+
+bool peek(const ArrayStack *s, int *value) {
+    if (stack_is_empty(s)) return false;
+    *value = s->data[s->top];
+    return true;
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 12: Linked List Implementation Structure -->
+        <div class="slide">
+            <h1>🔗 Implementare pe Listă Înlănțuită</h1>
+            <h2>Definiția Structurilor</h2>
+            
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Structuri pentru stivă cu listă înlănțuită</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">#include &lt;stdlib.h&gt;
+#include &lt;stdbool.h&gt;
+
+typedef struct Node {
+    int data;
+    struct Node *next;
+} Node;
+
+typedef struct {
+    Node *top;      // Pointer la vârful stivei
+    size_t size;    // Număr de elemente (opțional)
+} LinkedStack;
+
+// Inițializare
+void stack_init(LinkedStack *s) {
+    s->top = NULL;
+    s->size = 0;
+}
+
+// Verificare stivă goală
+bool stack_is_empty(const LinkedStack *s) {
+    return s->top == NULL;
+}</code></pre>
+            </div>
+
+            <div class="info-box success">
+                <div class="info-box-title">✅ Avantaj</div>
+                Nu există limită fixă pentru numărul de elemente - stiva crește dinamic.
+            </div>
+        </div>
+
+        <!-- Slide 13: Linked List Memory Layout -->
+        <div class="slide">
+            <h1>🧠 Layout în Memorie - Listă</h1>
+            
+            <div class="ascii-diagram">
+LinkedStack s;
+stack_init(&s);
+push(&s, 10); push(&s, 20); push(&s, 30);
+
+LinkedStack (pe stack)     Noduri (pe heap)
+┌──────────────────┐      
+│ top ─────────────┼───►  ┌──────┬──────┐
+│ size = 3         │      │  30  │ next─┼───►  ┌──────┬──────┐
+└──────────────────┘      └──────┴──────┘      │  20  │ next─┼───►  ┌──────┬──────┐
+                           (vârf/TOP)          └──────┴──────┘      │  10  │ NULL │
+                                                                    └──────┴──────┘
+                                                                     (bază)
+
+Memorie utilizată:
+- LinkedStack: 16 bytes (pointer + size_t)
+- Fiecare Node: 16 bytes (int + pointer + padding)
+- Total pentru 3 elemente: 16 + 3×16 = 64 bytes
+            </div>
+
+            <div class="info-box warning">
+                <div class="info-box-title">⚠️ Overhead</div>
+                Fiecare element necesită memorie suplimentară pentru pointer (8 bytes pe 64-bit).
+            </div>
+        </div>
+
+        <!-- Slide 14: Linked Stack Push Operation -->
+        <div class="slide">
+            <h1>📥 Push pe Listă Înlănțuită</h1>
+            
+            <div class="ascii-diagram">
+ÎNAINTE de push(40):                  DUPĂ push(40):
+
+LinkedStack                           LinkedStack
+┌─────────┐                           ┌─────────┐
+│ top ────┼──► [30|─]─►[20|─]─►[10|∅] │ top ────┼──► [40|─]─►[30|─]─►[20|─]─►[10|∅]
+└─────────┘                           └─────────┘
+                                               ↑
+                                         NOU nod creat
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Implementare push pe listă</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">bool push(LinkedStack *s, int value) {
+    // 1. Alocă memorie pentru noul nod
+    Node *new_node = malloc(sizeof(Node));
+    if (new_node == NULL) {
+        return false;  // Alocare eșuată
+    }
+    
+    // 2. Inițializează noul nod
+    new_node->data = value;
+    
+    // 3. Conectează la vechiul vârf
+    new_node->next = s->top;
+    
+    // 4. Actualizează vârful
+    s->top = new_node;
+    s->size++;
+    
+    return true;
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 15: Linked Stack Pop Operation -->
+        <div class="slide">
+            <h1>📤 Pop pe Listă Înlănțuită</h1>
+            
+            <div class="ascii-diagram">
+ÎNAINTE de pop():                     DUPĂ pop():
+
+LinkedStack                           LinkedStack      Returnează: 40
+┌─────────┐                           ┌─────────┐
+│ top ────┼──► [40|─]─►[30|─]─►[20|∅] │ top ────┼──► [30|─]─►[20|∅]
+└─────────┘         │                 └─────────┘
+                    │
+                    └─► ELIBERAT cu free()
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Implementare pop pe listă</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">bool pop(LinkedStack *s, int *value) {
+    // 1. Verifică dacă stiva nu este goală
+    if (s->top == NULL) {
+        return false;  // Stack underflow
+    }
+    
+    // 2. Salvează referința la nodul de șters
+    Node *temp = s->top;
+    
+    // 3. Salvează valoarea
+    *value = temp->data;
+    
+    // 4. Mută vârful la următorul nod
+    s->top = temp->next;
+    s->size--;
+    
+    // 5. Eliberează memoria
+    free(temp);
+    
+    return true;
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 16: Complete Linked Stack Implementation -->
+        <div class="slide">
+            <h1>💻 Implementare Completă - Listă</h1>
+            
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Toate operațiile + eliberare memorie</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">bool peek(const LinkedStack *s, int *value) {
+    if (s->top == NULL) return false;
+    *value = s->top->data;
+    return true;
+}
+
+size_t stack_size(const LinkedStack *s) {
+    return s->size;
+}
+
+// CRITIC: Eliberarea completă a memoriei
+void stack_destroy(LinkedStack *s) {
+    Node *current = s->top;
+    while (current != NULL) {
+        Node *temp = current;
+        current = current->next;
+        free(temp);
+    }
+    s->top = NULL;
+    s->size = 0;
+}
+
+// Afișare (pentru debugging)
+void stack_print(const LinkedStack *s) {
+    printf("Stack [size=%zu]: TOP -> ", s->size);
+    for (Node *n = s->top; n != NULL; n = n->next) {
+        printf("%d -> ", n->data);
+    }
+    printf("NULL\n");
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 17: Implementation Comparison -->
+        <div class="slide">
+            <h1>⚖️ Comparație Implementări</h1>
+            
+            <table>
+                <tr>
+                    <th>Criteriu</th>
+                    <th>Vector Static</th>
+                    <th>Vector Dinamic</th>
+                    <th>Listă Înlănțuită</th>
+                </tr>
+                <tr>
+                    <td>Complexitate push/pop</td>
+                    <td class="complexity-highlight">O(1)</td>
+                    <td>O(1) amortizat</td>
+                    <td class="complexity-highlight">O(1)</td>
+                </tr>
+                <tr>
+                    <td>Memorie utilizată</td>
+                    <td>Fixă (risipă)</td>
+                    <td>Variabilă</td>
+                    <td>Exactă + overhead</td>
+                </tr>
+                <tr>
+                    <td>Dimensiune maximă</td>
+                    <td>Fixă</td>
+                    <td>Limitată de RAM</td>
+                    <td>Limitată de RAM</td>
+                </tr>
+                <tr>
+                    <td>Cache locality</td>
+                    <td>Excelentă</td>
+                    <td>Excelentă</td>
+                    <td>Slabă</td>
+                </tr>
+                <tr>
+                    <td>Implementare</td>
+                    <td>Simplă</td>
+                    <td>Moderată</td>
+                    <td>Moderată</td>
+                </tr>
+            </table>
+
+            <div class="info-box note">
+                <div class="info-box-title">💡 Recomandare Practică</div>
+                Pentru majoritatea aplicațiilor, vectorul dinamic oferă cel mai bun compromis. Lista înlănțuită este preferată când dimensiunea variază drastic sau când integrezi cu alte structuri de tip listă.
+            </div>
+        </div>
+
+        <!-- Slide 18: Application 1 - Bracket Matching -->
+        <div class="slide">
+            <h1>🔧 Aplicație: Verificarea Parantezelor</h1>
+            
+            <p>Una dintre cele mai clasice aplicații ale stivei este verificarea parantezelor echilibrate.</p>
+            
+            <div class="two-columns">
+                <div class="column">
+                    <h3>✅ Expresii Valide</h3>
+                    <ul>
+                        <li><code>{[()]}</code></li>
+                        <li><code>((()))</code></li>
+                        <li><code>[{()}]</code></li>
+                        <li><code>a + (b * [c - d])</code></li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <h3>❌ Expresii Invalide</h3>
+                    <ul>
+                        <li><code>{[(])}</code> - ordine greșită</li>
+                        <li><code>((()</code> - neînchise</li>
+                        <li><code>]}</code> - fără deschidere</li>
+                        <li><code>([)]</code> - intercalare</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="ascii-diagram">
+Algoritm pentru "{[()]}":
+
+Caracter    Acțiune              Stiva
+────────────────────────────────────────────
+   {        push('{')            [{]
+   [        push('[')            [{, []
+   (        push('(')            [{, [, (]
+   )        pop, verifică '('    [{, []
+   ]        pop, verifică '['    [{]
+   }        pop, verifică '{'    []
+   EOF      stiva goală?         DA → VALID
+            </div>
+        </div>
+
+        <!-- Slide 19: Bracket Matching Code -->
+        <div class="slide">
+            <h1>💻 Cod: Verificarea Parantezelor</h1>
+            
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Implementare verificator de paranteze</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">bool is_matching(char open, char close) {
+    return (open == '(' && close == ')') ||
+           (open == '[' && close == ']') ||
+           (open == '{' && close == '}');
+}
+
+int check_brackets(const char *expr) {
+    ArrayStack s;
+    stack_init(&s);
+    
+    for (int i = 0; expr[i] != '\0'; i++) {
+        char c = expr[i];
+        
+        if (c == '(' || c == '[' || c == '{') {
+            push(&s, c);  // Deschidere → push
+        }
+        else if (c == ')' || c == ']' || c == '}') {
+            int top_char;
+            if (!pop(&s, &top_char) || !is_matching(top_char, c)) {
+                return i;  // Eroare la poziția i
+            }
+        }
+    }
+    
+    return stack_is_empty(&s) ? -1 : strlen(expr);
+    // -1 = valid, altfel poziția ultimei paranteze neînchise
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 20: Application 2 - Expression Evaluation -->
+        <div class="slide">
+            <h1>🔧 Aplicație: Evaluarea Expresiilor</h1>
+            <h2>Notația Postfixă (RPN)</h2>
+            
+            <p><strong>Reverse Polish Notation</strong> elimină necesitatea parantezelor și a precedenței operatorilor.</p>
+            
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Infix → Postfix</h3>
+                    <table>
+                        <tr><th>Infix</th><th>Postfix</th></tr>
+                        <tr><td>3 + 4</td><td>3 4 +</td></tr>
+                        <tr><td>3 + 4 × 5</td><td>3 4 5 × +</td></tr>
+                        <tr><td>(3 + 4) × 5</td><td>3 4 + 5 ×</td></tr>
+                        <tr><td>a + b × c - d</td><td>a b c × + d -</td></tr>
+                    </table>
+                </div>
+                <div class="column">
+                    <h3>Evaluare cu Stivă</h3>
+                    <p>Pentru <code>3 4 + 5 ×</code>:</p>
+                    <ol>
+                        <li>push(3) → [3]</li>
+                        <li>push(4) → [3, 4]</li>
+                        <li>+: pop, pop, push(7) → [7]</li>
+                        <li>push(5) → [7, 5]</li>
+                        <li>×: pop, pop, push(35) → [35]</li>
+                    </ol>
+                    <p><strong>Rezultat: 35</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 21: Postfix Evaluation Code -->
+        <div class="slide">
+            <h1>💻 Cod: Evaluarea Expresiilor Postfixe</h1>
+            
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Evaluator de expresii RPN</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">int evaluate_postfix(const char *expr) {
+    ArrayStack s;
+    stack_init(&s);
+    
+    for (int i = 0; expr[i] != '\0'; i++) {
+        char c = expr[i];
+        
+        if (isdigit(c)) {
+            push(&s, c - '0');  // Convertește char la int
+        }
+        else if (c == '+' || c == '-' || c == '*' || c == '/') {
+            int b, a;  // b = al doilea operand, a = primul
+            pop(&s, &b);
+            pop(&s, &a);
+            
+            int result;
+            switch (c) {
+                case '+': result = a + b; break;
+                case '-': result = a - b; break;
+                case '*': result = a * b; break;
+                case '/': result = a / b; break;
+            }
+            push(&s, result);
+        }
+    }
+    
+    int final_result;
+    pop(&s, &final_result);
+    return final_result;
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 22: Shunting Yard Algorithm -->
+        <div class="slide">
+            <h1>🔧 Algoritmul Shunting Yard</h1>
+            <h2>Conversie Infix → Postfix</h2>
+            
+            <p>Algoritmul lui Dijkstra folosește <strong>două structuri</strong>: o coadă de ieșire și o stivă de operatori.</p>
+            
+            <div class="ascii-diagram">
+Exemplu: "3 + 4 * 5"
+
+Token   Acțiune                      Stiva Op    Ieșire
+─────────────────────────────────────────────────────────────
+  3     număr → ieșire               []          [3]
+  +     push(+)                      [+]         [3]
+  4     număr → ieșire               [+]         [3, 4]
+  *     precedență(*)>precedență(+)  [+, *]      [3, 4]
+        → push(*)
+  5     număr → ieșire               [+, *]      [3, 4, 5]
+ EOF    golește stiva                []          [3, 4, 5, *, +]
+
+Rezultat: "3 4 5 * +"
+            </div>
+
+            <div class="info-box note">
+                <div class="info-box-title">📝 Regula de Bază</div>
+                Operatorii cu precedență mai mare sau egală sunt scoși din stivă înainte de a adăuga noul operator.
+            </div>
+        </div>
+
+        <!-- Slide 23: Operator Precedence -->
+        <div class="slide">
+            <h1>📊 Precedența și Asociativitatea</h1>
+            
+            <table>
+                <tr>
+                    <th>Operator</th>
+                    <th>Precedență</th>
+                    <th>Asociativitate</th>
+                    <th>Exemplu</th>
+                </tr>
+                <tr>
+                    <td><code>^</code> (putere)</td>
+                    <td>3 (cea mai mare)</td>
+                    <td>Dreapta</td>
+                    <td>2^3^2 = 2^(3^2) = 512</td>
+                </tr>
+                <tr>
+                    <td><code>*</code>, <code>/</code>, <code>%</code></td>
+                    <td>2</td>
+                    <td>Stânga</td>
+                    <td>6/3*2 = (6/3)*2 = 4</td>
+                </tr>
+                <tr>
+                    <td><code>+</code>, <code>-</code></td>
+                    <td>1 (cea mai mică)</td>
+                    <td>Stânga</td>
+                    <td>5-3+2 = (5-3)+2 = 4</td>
+                </tr>
+            </table>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Funcții helper pentru precedență</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">int precedence(char op) {
+    switch (op) {
+        case '+': case '-': return 1;
+        case '*': case '/': return 2;
+        case '^':           return 3;
+        default:            return 0;
+    }
+}
+
+bool is_left_associative(char op) {
+    return op != '^';  // Doar ^ este asociativ la dreapta
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 24: Call Stack -->
+        <div class="slide">
+            <h1>📞 Call Stack - Stiva de Apeluri</h1>
+            
+            <p>Fiecare program în execuție folosește un <strong>call stack</strong> gestionat de procesor.</p>
+            
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Ce se salvează pe stack?</h3>
+                    <ul>
+                        <li><strong>Return address</strong> - unde să revină</li>
+                        <li><strong>Parametri</strong> - argumentele funcției</li>
+                        <li><strong>Variabile locale</strong></li>
+                        <li><strong>Registre salvate</strong></li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <div class="ascii-diagram" style="font-size: 0.85em;">
+main() apelează func_a()
+func_a() apelează func_b()
+
+┌────────────────────┐
+│ func_b() frame     │ ← SP
+│  - variabile locale│
+│  - return addr     │
+├────────────────────┤
+│ func_a() frame     │
+│  - variabile locale│
+│  - return addr     │
+├────────────────────┤
+│ main() frame       │
+│  - variabile locale│
+└────────────────────┘ ← Stack Base
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box danger">
+                <div class="info-box-title">🚨 Stack Overflow</div>
+                Recursivitatea infinită sau alocarea excesivă pe stack duce la <strong>stack overflow</strong> - programul se termină abrupt.
+            </div>
+        </div>
+
+        <!-- Slide 25: Recursion and Stack -->
+        <div class="slide">
+            <h1>🔄 Recursivitate și Stiva</h1>
+            
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Factorial recursiv și evoluția stack-ului</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">int factorial(int n) {
+    if (n <= 1) return 1;           // Caz de bază
+    return n * factorial(n - 1);    // Apel recursiv
+}
+
+// Apel: factorial(4)</code></pre>
+            </div>
+
+            <div class="ascii-diagram">
+Evoluția call stack pentru factorial(4):
+
+Adâncime    Stack Frame           Acțiune
+─────────────────────────────────────────────────────
+   1        factorial(4)          apel: return 4 * factorial(3)
+   2        factorial(3)          apel: return 3 * factorial(2)
+   3        factorial(2)          apel: return 2 * factorial(1)
+   4        factorial(1)          caz de bază: return 1
+   3        factorial(2)          return 2 * 1 = 2
+   2        factorial(3)          return 3 * 2 = 6
+   1        factorial(4)          return 4 * 6 = 24
+
+Rezultat final: 24
+            </div>
+        </div>
+
+        <!-- Slide 26: Iterative vs Recursive -->
+        <div class="slide">
+            <h1>⚖️ Recursiv vs. Iterativ cu Stivă Explicită</h1>
+            
+            <div class="two-columns">
+                <div class="column">
+                    <h3>🔄 Versiune Recursivă</h3>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>DFS recursiv</span>
+                            <span class="lang-badge">C</span>
+                        </div>
+                        <pre><code class="language-c">void dfs_recursiv(int v, 
+                  bool visited[]) {
+    visited[v] = true;
+    process(v);
+    
+    for (int i = 0; i < adj_count[v]; i++) {
+        int u = adj[v][i];
+        if (!visited[u]) {
+            dfs_recursiv(u, visited);
+        }
+    }
+}</code></pre>
+                    </div>
+                    <p>✅ Cod mai clar<br>❌ Risc stack overflow</p>
+                </div>
+                <div class="column">
+                    <h3>📚 Versiune Iterativă</h3>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>DFS iterativ</span>
+                            <span class="lang-badge">C</span>
+                        </div>
+                        <pre><code class="language-c">void dfs_iterativ(int start, 
+                  bool visited[]) {
+    ArrayStack s;
+    stack_init(&s);
+    push(&s, start);
+    
+    while (!stack_is_empty(&s)) {
+        int v;
+        pop(&s, &v);
+        if (!visited[v]) {
+            visited[v] = true;
+            process(v);
+            for (int i = adj_count[v]-1; 
+                 i >= 0; i--) {
+                push(&s, adj[v][i]);
+            }
+        }
+    }
+}</code></pre>
+                    </div>
+                    <p>✅ Control asupra memoriei<br>❌ Cod mai complex</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 27: Common Mistakes -->
+        <div class="slide">
+            <h1>⚠️ Greșeli Frecvente</h1>
+            
+            <div class="info-box danger">
+                <div class="info-box-title">🚨 1. Stack Underflow</div>
+                <p>Încercarea de a face <code>pop()</code> pe o stivă goală.</p>
+                <pre><code class="language-c">// GREȘIT - nu verifică dacă stiva e goală
+int value = s.data[s.top--];  // Comportament nedefinit!
+
+// CORECT
+if (!stack_is_empty(&s)) {
+    pop(&s, &value);
+}</code></pre>
+            </div>
+
+            <div class="info-box danger">
+                <div class="info-box-title">🚨 2. Memory Leak la Lista Înlănțuită</div>
+                <p>Uitarea eliberării memoriei când se șterge stiva.</p>
+                <pre><code class="language-c">// GREȘIT
+s.top = NULL;  // Memoria nodurilor rămâne alocată!
+
+// CORECT
+stack_destroy(&s);  // Eliberează toate nodurile</code></pre>
+            </div>
+
+            <div class="info-box danger">
+                <div class="info-box-title">🚨 3. Stack Overflow pe Vector</div>
+                <p>Push fără verificarea limitei.</p>
+                <pre><code class="language-c">// GREȘIT
+s.data[++s.top] = value;  // Poate depăși MAX_SIZE
+
+// CORECT
+if (!stack_is_full(&s)) { push(&s, value); }</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 28: More Common Mistakes -->
+        <div class="slide">
+            <h1>⚠️ Greșeli Frecvente (continuare)</h1>
+            
+            <div class="info-box warning">
+                <div class="info-box-title">⚠️ 4. Confuzia între peek și pop</div>
+                <pre><code class="language-c">// Citire fără eliminare (peek)
+int top_value = s.data[s.top];  // NU modifică top
+
+// Citire cu eliminare (pop)
+int popped = s.data[s.top--];   // Modifică top</code></pre>
+            </div>
+
+            <div class="info-box warning">
+                <div class="info-box-title">⚠️ 5. Inițializare incorectă a top</div>
+                <pre><code class="language-c">// Dacă inițializăm cu top = 0
+push: s.data[s.top++] = val;  // Prima valoare la index 0
+pop:  return s.data[--s.top]; // Decrementează ÎNAINTE
+
+// Dacă inițializăm cu top = -1 (RECOMANDAT)
+push: s.data[++s.top] = val;  // Incrementează ÎNAINTE
+pop:  return s.data[s.top--]; // Decrementează DUPĂ</code></pre>
+            </div>
+
+            <div class="info-box warning">
+                <div class="info-box-title">⚠️ 6. Pointer NULL în lista înlănțuită</div>
+                <pre><code class="language-c">// GREȘIT - accesează potențial NULL
+int val = s->top->data;
+
+// CORECT
+if (s->top != NULL) {
+    int val = s->top->data;
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 29: Debugging with GDB -->
+        <div class="slide">
+            <h1>🔍 Depanare cu GDB</h1>
+            
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Comenzi GDB utile pentru stive</span>
+                    <span class="lang-badge">Bash</span>
+                </div>
+                <pre><code class="language-bash"># Compilare cu simboluri de debug
+gcc -g -Wall -o program program.c
+
+# Pornire GDB
+gdb ./program
+
+# Comenzi în GDB:
+(gdb) break push           # Breakpoint la funcția push
+(gdb) break stack.c:42     # Breakpoint la linia 42
+(gdb) run                  # Rulează programul
+(gdb) next                 # Următoarea instrucțiune
+(gdb) step                 # Intră în funcție
+(gdb) print s.top          # Afișează valoarea top
+(gdb) print s.data[0]@5    # Afișează primele 5 elemente
+(gdb) backtrace            # Afișează call stack-ul
+(gdb) watch s.top          # Oprește când se modifică top
+(gdb) continue             # Continuă execuția</code></pre>
+            </div>
+
+            <div class="info-box note">
+                <div class="info-box-title">💡 Sfat</div>
+                Folosește <code>backtrace</code> (sau <code>bt</code>) pentru a vedea întregul call stack când ai un crash.
+            </div>
+        </div>
+
+        <!-- Slide 30: Memory Checking with Valgrind -->
+        <div class="slide">
+            <h1>🧪 Verificare Memorie cu Valgrind</h1>
+            
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Detectarea memory leaks</span>
+                    <span class="lang-badge">Bash</span>
+                </div>
+                <pre><code class="language-bash"># Rulare cu Valgrind
+valgrind --leak-check=full ./program
+
+# Output pentru memory leak:
+==12345== HEAP SUMMARY:
+==12345==     in use at exit: 48 bytes in 3 blocks
+==12345==   total heap usage: 10 allocs, 7 frees
+==12345== 
+==12345== LEAK SUMMARY:
+==12345==    definitely lost: 48 bytes in 3 blocks
+==12345==    ...
+
+# Program corect (fără leaks):
+==12345== All heap blocks were freed -- no leaks are possible</code></pre>
+            </div>
+
+            <div class="info-box success">
+                <div class="info-box-title">✅ Regula de Aur</div>
+                Pentru fiecare <code>malloc()</code> trebuie să existe un <code>free()</code> corespunzător. La stive pe liste: apelează <code>stack_destroy()</code> la final!
+            </div>
+        </div>
+
+        <!-- Slide 31: Best Practices -->
+        <div class="slide">
+            <h1>✨ Bune Practici</h1>
+            
+            <div class="two-columns">
+                <div class="column">
+                    <h3>✅ DO (Fă așa)</h3>
+                    <ul>
+                        <li>Verifică mereu <code>isEmpty()</code> înainte de <code>pop()</code></li>
+                        <li>Verifică <code>isFull()</code> înainte de <code>push()</code> (pt. vectori)</li>
+                        <li>Inițializează explicit stiva</li>
+                        <li>Eliberează memoria la final (liste)</li>
+                        <li>Folosește <code>const</code> pentru funcții care nu modifică stiva</li>
+                        <li>Returnează status (bool) pentru operații</li>
+                        <li>Documentează comportamentul la erori</li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <h3>❌ DON'T (Nu fă așa)</h3>
+                    <ul>
+                        <li>Nu accesa direct <code>s.data[s.top]</code> fără verificare</li>
+                        <li>Nu uita să incrementezi/decrementezi <code>top</code></li>
+                        <li>Nu amesteca stiluri de inițializare (0 vs -1)</li>
+                        <li>Nu ignora valorile returnate</li>
+                        <li>Nu folosii variabile globale pentru stive</li>
+                        <li>Nu presupune dimensiunea stivei fără verificare</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Exemplu de API bine proiectat</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">// Returnează bool pentru status + valoare prin pointer
+bool pop(Stack *s, int *out_value);
+
+// Folosire corectă:
+int value;
+if (pop(&s, &value)) {
+    printf("Valoare: %d\n", value);
+} else {
+    printf("Eroare: stiva goală!\n");
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 32: Generic Stack with void* -->
+        <div class="slide">
+            <h1>🎭 Stivă Generică cu void*</h1>
+            
+            <p>Pentru a stoca orice tip de date, folosim pointeri generici.</p>
+            
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Implementare stivă generică</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">typedef struct {
+    void **data;        // Vector de pointeri generici
+    int top;
+    int capacity;
+    size_t elem_size;   // Dimensiunea unui element
+} GenericStack;
+
+bool push_generic(GenericStack *s, const void *element) {
+    if (s->top >= s->capacity - 1) return false;
+    
+    // Alocă și copiază elementul
+    s->data[++s->top] = malloc(s->elem_size);
+    memcpy(s->data[s->top], element, s->elem_size);
+    return true;
+}
+
+// Utilizare:
+GenericStack s = {.capacity = 100, .elem_size = sizeof(double)};
+double val = 3.14;
+push_generic(&s, &val);</code></pre>
+            </div>
+
+            <div class="info-box note">
+                <div class="info-box-title">📝 Alternativă Modernă</div>
+                În C11 se pot folosi macro-uri cu <code>_Generic</code> pentru type-safety, sau în C++ template-uri.
+            </div>
+        </div>
+
+        <!-- Slide 33: Stack with Min in O(1) -->
+        <div class="slide">
+            <h1>🎯 Problemă de Interviu: getMin() în O(1)</h1>
+            
+            <p><strong>Cerință:</strong> Implementează o stivă care suportă <code>getMin()</code> în timp constant.</p>
+            
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Soluție cu stivă auxiliară de minime</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">typedef struct {
+    ArrayStack main_stack;   // Stiva principală
+    ArrayStack min_stack;    // Stiva minimelor
+} MinStack;
+
+void minstack_push(MinStack *ms, int value) {
+    push(&ms->main_stack, value);
+    
+    // Dacă e primul element sau valoare <= minimul curent
+    int current_min;
+    if (stack_is_empty(&ms->min_stack) || 
+        (peek(&ms->min_stack, &current_min) && value <= current_min)) {
+        push(&ms->min_stack, value);
+    }
+}
+
+int minstack_pop(MinStack *ms) {
+    int value, current_min;
+    pop(&ms->main_stack, &value);
+    
+    // Dacă am scos minimul curent, îl eliminăm și din stiva min
+    if (peek(&ms->min_stack, &current_min) && value == current_min) {
+        pop(&ms->min_stack, &current_min);
+    }
+    return value;
+}
+
+int minstack_get_min(MinStack *ms) {
+    int min;
+    peek(&ms->min_stack, &min);  // O(1)!
+    return min;
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 34: Laboratory Preview -->
+        <div class="slide">
+            <h1>🔬 Previzualizare Laborator</h1>
+            
+            <div class="two-columns">
+                <div class="column">
+                    <h3>📝 Exercițiul 1: Verificator Paranteze</h3>
+                    <p>Implementează un verificator complet pentru expresii cu paranteze.</p>
+                    <ul>
+                        <li>Suportă <code>()</code>, <code>[]</code>, <code>{}</code></li>
+                        <li>Returnează poziția primei erori</li>
+                        <li>Gestionează cazuri limită</li>
+                        <li>8-10 TODO markers</li>
+                    </ul>
+                    <p><strong>Complexitate așteptată:</strong> O(n)</p>
+                </div>
+                <div class="column">
+                    <h3>📝 Exercițiul 2: Convertor Infix→Postfix</h3>
+                    <p>Implementează algoritmul Shunting Yard.</p>
+                    <ul>
+                        <li>Operatori: <code>+ - * / ^</code></li>
+                        <li>Respectă precedența și asociativitatea</li>
+                        <li>Suportă paranteze</li>
+                        <li>10-15 TODO markers</li>
+                    </ul>
+                    <p><strong>Complexitate așteptată:</strong> O(n)</p>
+                </div>
+            </div>
+
+            <div class="info-box success">
+                <div class="info-box-title">✅ După Laborator</div>
+                Vei putea implementa orice algoritm bazat pe stive și vei înțelege în profunzime cum funcționează call stack-ul programelor tale.
+            </div>
+        </div>
+
+        <!-- Slide 35: Key Takeaways -->
+        <div class="slide">
+            <h1>📌 Puncte Cheie</h1>
+            
+            <div class="takeaways-grid">
+                <div class="takeaway-card">
+                    <div class="icon">📚</div>
+                    <h4>LIFO</h4>
+                    <p>Last In, First Out - ultimul intrat este primul ieșit</p>
+                </div>
+                <div class="takeaway-card">
+                    <div class="icon">⚡</div>
+                    <h4>O(1)</h4>
+                    <p>Toate operațiile de bază în timp constant</p>
+                </div>
+                <div class="takeaway-card">
+                    <div class="icon">🔢</div>
+                    <h4>Vector</h4>
+                    <p>Cache-friendly, dar dimensiune limitată</p>
+                </div>
+                <div class="takeaway-card">
+                    <div class="icon">🔗</div>
+                    <h4>Listă</h4>
+                    <p>Dimensiune dinamică, dar overhead memorie</p>
+                </div>
+                <div class="takeaway-card">
+                    <div class="icon">📞</div>
+                    <h4>Call Stack</h4>
+                    <p>Fundament pentru apeluri de funcții și recursivitate</p>
+                </div>
+                <div class="takeaway-card">
+                    <div class="icon">🔧</div>
+                    <h4>Aplicații</h4>
+                    <p>Paranteze, expresii, undo/redo, DFS, parsare</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 36: Resources -->
+        <div class="slide">
+            <h1>📖 Resurse și Lectură Suplimentară</h1>
+            
+            <div class="two-columns">
+                <div class="column">
+                    <h3>📚 Cărți</h3>
+                    <ul>
+                        <li><strong>CLRS</strong> - Introduction to Algorithms, Cap. 10.1</li>
+                        <li><strong>Sedgewick</strong> - Algorithms in C, Cap. 4</li>
+                        <li><strong>Knuth</strong> - TAOCP Vol. 1, Sec. 2.2.1</li>
+                    </ul>
+                    
+                    <h3>🌐 Online</h3>
+                    <ul>
+                        <li><a href="https://visualgo.net/en/list" style="color: var(--accent-blue);">Visualgo - Animații</a></li>
+                        <li><a href="https://www.geeksforgeeks.org/stack-data-structure/" style="color: var(--accent-blue);">GeeksforGeeks</a></li>
+                        <li><a href="https://cp-algorithms.com/" style="color: var(--accent-blue);">CP-Algorithms</a></li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <h3>🎥 Video</h3>
+                    <ul>
+                        <li>MIT OCW 6.006 - Lecture on Stacks</li>
+                        <li>Computerphile - Stack Data Structure</li>
+                    </ul>
+                    
+                    <h3>💻 Practică</h3>
+                    <ul>
+                        <li>LeetCode: Valid Parentheses (#20)</li>
+                        <li>LeetCode: Min Stack (#155)</li>
+                        <li>LeetCode: Evaluate RPN (#150)</li>
+                        <li>LeetCode: Daily Temperatures (#739)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 37: Questions & Next Week -->
+        <div class="slide title-slide">
+            <h1>❓ Întrebări?</h1>
+            <p class="subtitle">Mulțumesc pentru atenție!</p>
+            
+            <div style="margin-top: 60px; padding: 30px; background: var(--bg-secondary); border-radius: 12px; border: 1px solid var(--border-color);">
+                <h3 style="color: var(--accent-green); margin-bottom: 15px;">🔮 Săptămâna Viitoare</h3>
+                <p style="font-size: 1.3em; color: var(--text-primary);">
+                    <strong>Săptămâna 6: Cozi (Queue)</strong>
+                </p>
+                <p>FIFO, circular buffer, deque, priority queue și aplicații (BFS, scheduling)</p>
+            </div>
+            
+            <p class="meta" style="margin-top: 40px;">
+                Algoritmi și Tehnici de Programare<br>
+                Universitatea de Științe Economice din București
+            </p>
+        </div>
+
+    </div>
+
+    <script>
+        // Initialize highlight.js
+        hljs.highlightAll();
+
+        // Slide navigation
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(index) {
+            if (index < 0) index = 0;
+            if (index >= totalSlides) index = totalSlides - 1;
+            
+            slides.forEach((slide, i) => {
+                slide.classList.remove('active');
+                if (i === index) {
+                    slide.classList.add('active');
+                }
+            });
+            
+            currentSlide = index;
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+            
+            // Update progress bar
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        function goToSlide(index) {
+            showSlide(index);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'ArrowRight':
+                case ' ':
+                    e.preventDefault();
+                    nextSlide();
+                    break;
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    prevSlide();
+                    break;
+                case 'Home':
+                    e.preventDefault();
+                    goToSlide(0);
+                    break;
+                case 'End':
+                    e.preventDefault();
+                    goToSlide(totalSlides - 1);
+                    break;
+            }
+        });
+
+        // Touch support for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    nextSlide();
+                } else {
+                    prevSlide();
+                }
+            }
+        }
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>

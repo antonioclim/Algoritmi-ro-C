@@ -1,0 +1,64 @@
+Inițializare dicționar cu câteva cuvinte...
+Adăugat: casa -> house
+Adăugat: masă -> table
+Adăugat: scaun -> chair
+Adăugat: carte -> book
+Adăugat: apă -> water
+
+╔═══════════════════════════════════════╗
+║     DICȚIONAR ROMÂN-ENGLEZ            ║
+╠═══════════════════════════════════════╣
+║  1. Adaugă cuvânt                     ║
+║  2. Caută cuvânt                      ║
+║  3. Șterge cuvânt                     ║
+║  4. Afișează tot dicționarul          ║
+║  5. Salvează în fișier                ║
+║  6. Încarcă din fișier                ║
+║  7. Statistici                        ║
+║  0. Ieșire                            ║
+╚═══════════════════════════════════════╝
+Opțiune: Cuvânt de căutat: Găsit: casa -> house
+
+╔═══════════════════════════════════════╗
+║     DICȚIONAR ROMÂN-ENGLEZ            ║
+╠═══════════════════════════════════════╣
+║  1. Adaugă cuvânt                     ║
+║  2. Caută cuvânt                      ║
+║  3. Șterge cuvânt                     ║
+║  4. Afișează tot dicționarul          ║
+║  5. Salvează în fișier                ║
+║  6. Încarcă din fișier                ║
+║  7. Statistici                        ║
+║  0. Ieșire                            ║
+╚═══════════════════════════════════════╝
+Opțiune: Cuvânt de căutat: Negăsit: 'programare' nu există în dicționar.
+
+╔═══════════════════════════════════════╗
+║     DICȚIONAR ROMÂN-ENGLEZ            ║
+╠═══════════════════════════════════════╣
+║  1. Adaugă cuvânt                     ║
+║  2. Caută cuvânt                      ║
+║  3. Șterge cuvânt                     ║
+║  4. Afișează tot dicționarul          ║
+║  5. Salvează în fișier                ║
+║  6. Încarcă din fișier                ║
+║  7. Statistici                        ║
+║  0. Ieșire                            ║
+╚═══════════════════════════════════════╝
+Opțiune: 
+=== Dicționar (5 intrări) ===
+==============================
+
+╔═══════════════════════════════════════╗
+║     DICȚIONAR ROMÂN-ENGLEZ            ║
+╠═══════════════════════════════════════╣
+║  1. Adaugă cuvânt                     ║
+║  2. Caută cuvânt                      ║
+║  3. Șterge cuvânt                     ║
+║  4. Afișează tot dicționarul          ║
+║  5. Salvează în fișier                ║
+║  6. Încarcă din fișier                ║
+║  7. Statistici                        ║
+║  0. Ieșire                            ║
+╚═══════════════════════════════════════╝
+Opțiune: La revedere!

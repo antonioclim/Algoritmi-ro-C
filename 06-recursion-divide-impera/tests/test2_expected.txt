@@ -1,0 +1,12 @@
+[+] Task #1 programat: Backup_urgent (CRITICAL)
+[+] Task #2 programat: Email_send (NORMAL)
+[+] Task #3 programat: Cleanup (LOW)
+[+] Task #4 programat: Cache_update (HIGH)
+[i] Task-uri în așteptare: 4
+[✓] Executăm Task #1: Backup_urgent (CRITICAL)
+[✓] Executăm Task #4: Cache_update (HIGH)
+[i] Task-uri în așteptare: 2
+→ Executăm toate task-urile:
+  [✓] Task #2: Email_send (NORMAL)
+  [✓] Task #3: Cleanup (LOW)
+[✓] 2 task-uri executate.

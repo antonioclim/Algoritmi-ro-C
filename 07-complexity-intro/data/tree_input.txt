@@ -1,0 +1,68 @@
+# =============================================================================
+# Fișier de Date: tree_input.txt
+# Săptămâna 7: Arbori Binari
+# =============================================================================
+#
+# Format: Prima linie conține numărul de noduri, a doua linie conține valorile.
+# Arborele este construit ca arbore binar complet din array.
+# Valoarea -1 reprezintă un nod NULL.
+#
+# Pentru nodul la index i:
+#   - Copilul stâng este la index 2*i + 1
+#   - Copilul drept este la index 2*i + 2
+#
+# =============================================================================
+
+# Exemplul 1: Arbore binar complet cu 7 noduri
+#
+#            50
+#           /  \
+#         30    70
+#        /  \  /  \
+#       20  40 60  80
+#
+# Array: [50, 30, 70, 20, 40, 60, 80]
+
+# Exemplul 2: Arbore incomplet cu noduri lipsă
+#
+#            10
+#           /  \
+#          5    15
+#         /      \
+#        3        20
+#
+# Array: [10, 5, 15, 3, -1, -1, 20]
+# (-1 indică poziții goale)
+
+# Exemplul 3: Arbore degenerat (linked list)
+#
+#     1
+#      \
+#       2
+#        \
+#         3
+#          \
+#           4
+#
+# Array: [1, -1, 2, -1, -1, -1, 3, ...]
+# (Dificil de reprezentat în format array, mai bine construcție manuală)
+
+# =============================================================================
+# DATE PENTRU TESTARE
+# =============================================================================
+
+# Test 1: Arbore simplu echilibrat
+7
+50 30 70 20 40 60 80
+
+# Test 2: Arbore cu un singur nod
+1
+100
+
+# Test 3: Arbore cu 3 noduri
+3
+10 5 15
+
+# Test 4: Arbore mai mare
+15
+50 25 75 12 37 62 87 6 18 31 43 56 68 81 93

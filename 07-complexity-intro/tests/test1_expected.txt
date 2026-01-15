@@ -1,0 +1,9 @@
+Inorder: 20 30 40 50 60 70 80 
+Preorder: 50 30 20 40 70 60 80 
+Postorder: 20 40 30 60 80 70 50 
+Height: 2
+Nodes: 7
+Leaves: 4
+Search 40: FOUND
+Search 100: NOT FOUND
+Search 50: FOUND

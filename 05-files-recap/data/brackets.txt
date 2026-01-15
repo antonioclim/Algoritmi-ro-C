@@ -1,0 +1,56 @@
+# =============================================================================
+# Fișier de date: Șiruri de paranteze pentru validare
+# =============================================================================
+# Format: expresie | rezultat_asteptat (-1 = valid, altfel = poziția erorii)
+# Liniile care încep cu # sunt comentarii
+# =============================================================================
+
+# Expresii VALIDE (așteptat: -1)
+() | -1
+[] | -1
+{} | -1
+()[] | -1
+{[]} | -1
+{[()]} | -1
+(((())))| -1
+[{()}] | -1
+a + (b * c) | -1
+func(arr[i]) | -1
+if (x > 0) { return y; } | -1
+{{{}}} | -1
+([]) | -1
+[({})] | -1
+
+# Expresii cu text (VALIDE - caracterele non-paranteză sunt ignorate)
+hello world | -1
+a + b * c | -1
+x = 5 | -1
+| -1
+
+# Expresii INVALIDE - paranteze neînchise
+( | 1
+[[ | 2
+{{{ | 3
+(() | 3
+[{] | 3
+
+# Expresii INVALIDE - paranteze în plus la închidere  
+) | 0
+]] | 0
+}}} | 0
+()) | 2
+[]] | 2
+
+# Expresii INVALIDE - ordine greșită / intercalare
+{[(])} | 3
+([)] | 2
+{[}] | 2
+[(]) | 2
+([{)]} | 3
+
+# Expresii INVALIDE - mix
+][ | 0
+)( | 0
+}{ | 0
+({)} | 2
+{(}) | 2

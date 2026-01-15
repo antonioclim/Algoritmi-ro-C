@@ -1,0 +1,1886 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Săptămâna 6: Cozi (Queues) - ATP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-yellow: #d29922;
+            --accent-red: #f85149;
+            --accent-purple: #a371f7;
+            --border-color: #30363d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow: hidden;
+        }
+        
+        /* Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            transition: width 0.3s ease;
+            z-index: 1000;
+        }
+        
+        /* Slide Container */
+        .slides-container {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 60px 80px;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            overflow-y: auto;
+        }
+        
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            opacity: 1;
+        }
+        
+        /* Typography */
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        h2 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: var(--accent-blue);
+        }
+        
+        h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--accent-green);
+        }
+        
+        p, li {
+            font-size: 1.25rem;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+        
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+        
+        li {
+            margin-bottom: 10px;
+        }
+        
+        /* Code Blocks */
+        .code-block {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .lang-badge {
+            background: var(--accent-blue);
+            color: var(--bg-primary);
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        
+        pre {
+            margin: 0;
+            padding: 20px;
+            overflow-x: auto;
+        }
+        
+        code {
+            font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+            font-size: 0.95rem;
+        }
+        
+        /* Boxes */
+        .info-box {
+            background: var(--bg-secondary);
+            border-left: 4px solid var(--accent-blue);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .warning-box {
+            background: rgba(210, 153, 34, 0.1);
+            border-left: 4px solid var(--accent-yellow);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .success-box {
+            background: rgba(63, 185, 80, 0.1);
+            border-left: 4px solid var(--accent-green);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .error-box {
+            background: rgba(248, 81, 73, 0.1);
+            border-left: 4px solid var(--accent-red);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+        
+        th {
+            background: var(--bg-tertiary);
+            color: var(--accent-blue);
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background: var(--bg-secondary);
+        }
+        
+        /* ASCII Art / Diagrams */
+        .diagram {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 8px;
+            white-space: pre;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            overflow-x: auto;
+            margin: 20px 0;
+            color: var(--accent-green);
+        }
+        
+        /* Grid Layouts */
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 20px 0;
+        }
+        
+        .three-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .column {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+        
+        /* Title Slide */
+        .title-slide {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .title-slide h1 {
+            font-size: 4rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 2rem;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+        
+        .institution {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-top: 50px;
+        }
+        
+        /* Navigation */
+        .nav-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+        
+        .nav-btn {
+            width: 50px;
+            height: 50px;
+            border: none;
+            border-radius: 8px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .nav-btn:hover {
+            background: var(--accent-blue);
+            color: var(--bg-primary);
+        }
+        
+        .slide-counter {
+            position: fixed;
+            bottom: 25px;
+            left: 30px;
+            font-size: 1rem;
+            color: var(--text-secondary);
+            z-index: 100;
+        }
+        
+        /* Feature Cards */
+        .feature-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 10px 0;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent-blue);
+        }
+        
+        .feature-card h4 {
+            color: var(--accent-purple);
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        
+        /* Emphasis */
+        .highlight {
+            color: var(--accent-yellow);
+            font-weight: 600;
+        }
+        
+        .keyword {
+            color: var(--accent-purple);
+            font-family: monospace;
+            background: var(--bg-tertiary);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide.active > * {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        .slide.active > *:nth-child(2) { animation-delay: 0.1s; }
+        .slide.active > *:nth-child(3) { animation-delay: 0.2s; }
+        .slide.active > *:nth-child(4) { animation-delay: 0.3s; }
+        .slide.active > *:nth-child(5) { animation-delay: 0.4s; }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .slide { padding: 40px; }
+            h1 { font-size: 2.2rem; }
+            h2 { font-size: 1.8rem; }
+            .two-columns, .three-columns { grid-template-columns: 1fr; }
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-blue);
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    
+    <div class="slides-container">
+        <!-- Slide 1: Title -->
+        <div class="slide title-slide active" data-slide="1">
+            <p style="font-size: 1.5rem; color: var(--text-secondary);">Algoritmi și Tehnici de Programare</p>
+            <h1>Săptămâna 6</h1>
+            <div class="subtitle">Cozi (Queues)</div>
+            <p style="font-size: 1.3rem; color: var(--accent-green);">FIFO • Circular Buffer • Priority Queue</p>
+            <div class="institution">
+                Academia de Studii Economice din București<br>
+                Facultatea de Cibernetică, Statistică și Informatică Economică
+            </div>
+        </div>
+
+        <!-- Slide 2: Learning Objectives -->
+        <div class="slide" data-slide="2">
+            <h2>🎯 Obiective de Învățare</h2>
+            <div class="two-columns">
+                <div>
+                    <div class="feature-card">
+                        <h4>📖 Cunoaștere</h4>
+                        <p>Definirea structurii queue și enumerarea operațiilor fundamentale</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🧠 Înțelegere</h4>
+                        <p>Explicarea principiului FIFO și diferențele față de stack (LIFO)</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>⚙️ Aplicare</h4>
+                        <p>Implementarea queue folosind array și linked list</p>
+                    </div>
+                </div>
+                <div>
+                    <div class="feature-card">
+                        <h4>🔍 Analiză</h4>
+                        <p>Compararea complexităților diferitelor implementări</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>⚖️ Evaluare</h4>
+                        <p>Selectarea implementării optime pentru context specific</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🚀 Creare</h4>
+                        <p>Proiectarea unui sistem de task scheduling cu priority queue</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Historical Context -->
+        <div class="slide" data-slide="3">
+            <h2>📜 Context Istoric</h2>
+            <div class="two-columns">
+                <div>
+                    <h3>Originea Teoriei Cozilor</h3>
+                    <p>Conceptul de <span class="keyword">queue</span> își are originea în <span class="highlight">teoria cozilor de așteptare</span> (queueing theory), dezvoltată la începutul secolului XX.</p>
+                    <div class="info-box">
+                        <strong>1909:</strong> Agner Krarup Erlang publică primul studiu matematic despre congestia în rețelele telefonice.
+                    </div>
+                    <div class="info-box">
+                        <strong>1961:</strong> MIT dezvoltă CTSS, primul sistem de time-sharing care folosește queue-uri pentru job scheduling.
+                    </div>
+                </div>
+                <div>
+                    <h3>Evoluția Implementărilor</h3>
+                    <div class="diagram">
+1909: Teoria matematică (Erlang)
+  │
+  ▼
+1950s: Implementări hardware
+  │
+  ▼
+1960s: Queue-uri în sisteme OS
+  │
+  ▼
+1970s: Circular buffers în DSP
+  │
+  ▼
+1990s: Message queues distribuite
+  │
+  ▼
+2000s+: Event loops, async I/O</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Key Figure -->
+        <div class="slide" data-slide="4">
+            <h2>👤 Personalitate Cheie</h2>
+            <div class="two-columns">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <div style="width: 200px; height: 200px; border-radius: 50%; background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center; font-size: 4rem; margin-bottom: 20px;">
+                        📊
+                    </div>
+                    <h3 style="text-align: center;">Agner Krarup Erlang</h3>
+                    <p style="text-align: center; color: var(--text-secondary);">1878 - 1929</p>
+                </div>
+                <div>
+                    <div class="feature-card">
+                        <h4>Contribuții Majore</h4>
+                        <ul>
+                            <li><strong>Formula Erlang B</strong> - probabilitatea de blocare în sisteme cu pierderi</li>
+                            <li><strong>Formula Erlang C</strong> - timpul de așteptare în cozi</li>
+                            <li>Unitatea <span class="keyword">erlang</span> pentru intensitatea traficului</li>
+                        </ul>
+                    </div>
+                    <div class="success-box">
+                        <strong>💬 Citat celebru:</strong><br>
+                        <em>"Calculele care stau la baza rețelelor telefonice pot fi aplicate oricărui sistem în care entitățile așteaptă să fie servite."</em>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: What is a Queue -->
+        <div class="slide" data-slide="5">
+            <h2>📦 Ce este o Queue?</h2>
+            <div class="info-box">
+                <strong>Definiție:</strong> O <span class="keyword">queue</span> (coadă) este o structură de date liniară care urmează principiul <span class="highlight">FIFO</span> (First In, First Out) - primul element adăugat este primul eliminat.
+            </div>
+            <div class="diagram">
+        ENQUEUE (inserare)                                    DEQUEUE (extragere)
+              │                                                      │
+              ▼                                                      ▼
+           ╔══════╦══════╦══════╦══════╦══════╗
+           ║  E   ║  D   ║  C   ║  B   ║  A   ║
+           ╚══════╩══════╩══════╩══════╩══════╝
+             REAR                         FRONT
+           (spate)                       (față)
+           
+        Ordine sosire:  A → B → C → D → E
+        Ordine ieșire:  A → B → C → D → E  (aceeași!)</div>
+            <div class="two-columns" style="margin-top: 20px;">
+                <div class="success-box">
+                    <strong>✅ Analogie din viața reală:</strong><br>
+                    Coada la casă, coada la ATM, lista de așteptare
+                </div>
+                <div class="info-box">
+                    <strong>📌 Caracteristică esențială:</strong><br>
+                    Echitabil - cine vine primul, este servit primul
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: FIFO vs LIFO -->
+        <div class="slide" data-slide="6">
+            <h2>⚖️ FIFO vs LIFO</h2>
+            <div class="two-columns">
+                <div class="column">
+                    <h3 style="color: var(--accent-blue);">Queue (FIFO)</h3>
+                    <div class="diagram" style="font-size: 0.85rem;">
+    Enqueue: → [A][B][C][D] → Dequeue
+    
+    Push A: [A]
+    Push B: [A][B]
+    Push C: [A][B][C]
+    Pop:    [B][C] → returnează A
+    Pop:    [C] → returnează B</div>
+                    <div class="info-box">
+                        <strong>Utilizări:</strong>
+                        <ul>
+                            <li>Job scheduling</li>
+                            <li>Print spooler</li>
+                            <li>BFS traversal</li>
+                            <li>Buffer I/O</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="column">
+                    <h3 style="color: var(--accent-purple);">Stack (LIFO)</h3>
+                    <div class="diagram" style="font-size: 0.85rem;">
+    Push/Pop: ↓↑ [D]
+                  [C]
+                  [B]
+                  [A]
+    
+    Push A: [A]
+    Push B: [A][B]
+    Push C: [A][B][C]
+    Pop:    [A][B] → returnează C
+    Pop:    [A] → returnează B</div>
+                    <div class="info-box">
+                        <strong>Utilizări:</strong>
+                        <ul>
+                            <li>Call stack</li>
+                            <li>Undo operations</li>
+                            <li>DFS traversal</li>
+                            <li>Expression evaluation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Operations -->
+        <div class="slide" data-slide="7">
+            <h2>🔧 Operații Fundamentale</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Operație</th>
+                        <th>Descriere</th>
+                        <th>Timp</th>
+                        <th>Spațiu</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="keyword">enqueue(x)</span></td>
+                        <td>Adaugă elementul x la rear (spate)</td>
+                        <td style="color: var(--accent-green);">O(1)</td>
+                        <td style="color: var(--accent-green);">O(1)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="keyword">dequeue()</span></td>
+                        <td>Elimină și returnează elementul din front</td>
+                        <td style="color: var(--accent-green);">O(1)</td>
+                        <td style="color: var(--accent-green);">O(1)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="keyword">peek() / front()</span></td>
+                        <td>Returnează front fără eliminare</td>
+                        <td style="color: var(--accent-green);">O(1)</td>
+                        <td style="color: var(--accent-green);">O(1)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="keyword">isEmpty()</span></td>
+                        <td>Verifică dacă queue este goală</td>
+                        <td style="color: var(--accent-green);">O(1)</td>
+                        <td style="color: var(--accent-green);">O(1)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="keyword">isFull()</span></td>
+                        <td>Verifică dacă queue este plină (array)</td>
+                        <td style="color: var(--accent-green);">O(1)</td>
+                        <td style="color: var(--accent-green);">O(1)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="keyword">size()</span></td>
+                        <td>Returnează numărul de elemente</td>
+                        <td style="color: var(--accent-green);">O(1)</td>
+                        <td style="color: var(--accent-green);">O(1)</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="success-box">
+                <strong>🎯 Observație cheie:</strong> Toate operațiile au complexitate <strong>O(1)</strong> - aceasta este puterea structurii queue când este implementată corect!
+            </div>
+        </div>
+
+        <!-- Slide 8: ADT Definition -->
+        <div class="slide" data-slide="8">
+            <h2>📋 Abstract Data Type (ADT)</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Specificație ADT Queue</span>
+                    <span class="lang-badge">Pseudocode</span>
+                </div>
+                <pre><code class="language-plaintext">ADT Queue
+    Data:
+        - Colecție ordonată de elemente de tip T
+        - Pointer/index la front (primul element)
+        - Pointer/index la rear (ultimul element)
+        - Contor de elemente (opțional)
+    
+    Operations:
+        create()        → Queue         // Creează queue goală
+        destroy(q)      → void          // Eliberează memoria
+        enqueue(q, x)   → void          // Adaugă x la rear
+        dequeue(q)      → T             // Elimină și returnează front
+        front(q)        → T             // Returnează front (fără eliminare)
+        isEmpty(q)      → boolean       // True dacă queue goală
+        isFull(q)       → boolean       // True dacă queue plină
+        size(q)         → integer       // Numărul de elemente
+    
+    Axioms:
+        - isEmpty(create()) = true
+        - isEmpty(enqueue(q, x)) = false
+        - front(enqueue(create(), x)) = x
+        - dequeue(enqueue(create(), x)) = create()</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 9: Array Implementation Intro -->
+        <div class="slide" data-slide="9">
+            <h2>📊 Implementare cu Array</h2>
+            <h3>Problema Naivă</h3>
+            <div class="diagram">
+    Stare inițială (capacitate 6):
+    Index:    0     1     2     3     4     5
+           ╔═════╦═════╦═════╦═════╦═════╦═════╗
+           ║  A  ║  B  ║  C  ║     ║     ║     ║
+           ╚═════╩═════╩═════╩═════╩═════╩═════╝
+             front=0            rear=3
+
+    După dequeue() - PROBLEMĂ!
+           ╔═════╦═════╦═════╦═════╦═════╦═════╗
+           ║     ║  B  ║  C  ║     ║     ║     ║
+           ╚═════╩═════╩═════╩═════╩═════╩═════╝
+                   front=1       rear=3
+    
+    ❌ Spațiul de la index 0 este pierdut!</div>
+            <div class="error-box">
+                <strong>⚠️ Problema:</strong> După multiple operații dequeue, spațiul de la începutul array-ului rămâne nefolosit. Soluții posibile:
+                <ul>
+                    <li><strong>Mutare elemente</strong> - O(n) pentru dequeue ❌</li>
+                    <li><strong>Circular Buffer</strong> - O(1) pentru toate operațiile ✅</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 10: Circular Buffer Concept -->
+        <div class="slide" data-slide="10">
+            <h2>🔄 Circular Buffer - Concept</h2>
+            <div class="info-box">
+                <strong>Ideea:</strong> Tratăm array-ul ca pe un cerc - după ultimul index urmează primul index!
+            </div>
+            <div class="two-columns">
+                <div class="diagram">
+    Vizualizare liniară:
+    
+    Index:  0   1   2   3   4   5
+         ╔═══╦═══╦═══╦═══╦═══╦═══╗
+         ║ D ║ E ║   ║   ║ B ║ C ║
+         ╚═══╩═══╩═══╩═══╩═══╩═══╝
+               ↑       ↑
+             rear    front
+    
+    Formula magică:
+    next = (current + 1) % capacity</div>
+                <div class="diagram">
+    Vizualizare circulară:
+    
+              [0] D
+            ↗       ↘
+         [5] C        [1] E
+           |           |
+         [4] B        [2] (gol)
+            ↖       ↙
+              [3] (gol)
+              
+    front = 4, rear = 2
+    Elemente: B → C → D → E</div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Circular Buffer Structure -->
+        <div class="slide" data-slide="11">
+            <h2>🏗️ Structura Circular Buffer în C</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Definirea structurii</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">#define QUEUE_CAPACITY 100
+
+typedef struct {
+    int data[QUEUE_CAPACITY];   // Array-ul de stocare
+    int front;                   // Index primul element
+    int rear;                    // Index poziție liberă următoare
+    int count;                   // Număr elemente curente
+} Queue;
+
+// Varianta alternativă (fără count):
+typedef struct {
+    int data[QUEUE_CAPACITY + 1];  // +1 pentru a distinge plin/gol
+    int front;
+    int rear;
+    // Plin: (rear + 1) % cap == front
+    // Gol:  rear == front
+} QueueAlt;</code></pre>
+            </div>
+            <div class="warning-box">
+                <strong>💡 Design Decision:</strong> Cu <span class="keyword">count</span> - ușor de verificat plin/gol dar necesită sincronizare extra în cod multi-threaded. Fără count - sacrificăm 1 poziție dar atomic-safe.
+            </div>
+        </div>
+
+        <!-- Slide 12: Enqueue Operation -->
+        <div class="slide" data-slide="12">
+            <h2>➕ Operația enqueue</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Implementare enqueue</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">/**
+ * Adaugă un element la sfârșitul queue-ului
+ * @param q    Pointer la queue
+ * @param item Elementul de adăugat
+ * @return     1 dacă succes, 0 dacă queue plină
+ */
+int queue_enqueue(Queue *q, int item) {
+    // Verificăm dacă queue-ul este plin
+    if (q->count >= QUEUE_CAPACITY) {
+        fprintf(stderr, "Eroare: Queue overflow!\n");
+        return 0;  // Eșec - queue plină
+    }
+    
+    // Adăugăm elementul la poziția rear
+    q->data[q->rear] = item;
+    
+    // Avansăm rear circular
+    q->rear = (q->rear + 1) % QUEUE_CAPACITY;
+    
+    // Incrementăm contorul
+    q->count++;
+    
+    return 1;  // Succes
+}</code></pre>
+            </div>
+            <div class="diagram">
+    Înainte:  [A][B][C][ ][ ][ ]    front=0, rear=3, count=3
+    enqueue(D)
+    După:     [A][B][C][D][ ][ ]    front=0, rear=4, count=4</div>
+        </div>
+
+        <!-- Slide 13: Dequeue Operation -->
+        <div class="slide" data-slide="13">
+            <h2>➖ Operația dequeue</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Implementare dequeue</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">/**
+ * Elimină și returnează elementul din fața queue-ului
+ * @param q      Pointer la queue
+ * @param result Pointer pentru stocarea rezultatului
+ * @return       1 dacă succes, 0 dacă queue goală
+ */
+int queue_dequeue(Queue *q, int *result) {
+    // Verificăm dacă queue-ul este gol
+    if (q->count == 0) {
+        fprintf(stderr, "Eroare: Queue underflow!\n");
+        return 0;  // Eșec - queue goală
+    }
+    
+    // Salvăm elementul din front
+    *result = q->data[q->front];
+    
+    // Avansăm front circular
+    q->front = (q->front + 1) % QUEUE_CAPACITY;
+    
+    // Decrementăm contorul
+    q->count--;
+    
+    return 1;  // Succes
+}</code></pre>
+            </div>
+            <div class="diagram">
+    Înainte:  [A][B][C][D][ ][ ]    front=0, rear=4, count=4
+    dequeue() → returnează A
+    După:     [ ][B][C][D][ ][ ]    front=1, rear=4, count=3</div>
+        </div>
+
+        <!-- Slide 14: Circular Wrap-Around -->
+        <div class="slide" data-slide="14">
+            <h2>🔄 Wrap-Around în Acțiune</h2>
+            <div class="diagram" style="font-size: 0.85rem;">
+    Capacitate: 6
+
+    Stare 1 (după mai multe operații):
+    Index:    0     1     2     3     4     5
+           ╔═════╦═════╦═════╦═════╦═════╦═════╗
+           ║     ║     ║     ║  X  ║  Y  ║  Z  ║
+           ╚═════╩═════╩═════╩═════╩═════╩═════╝
+                               ↑front      rear↑ (ar fi 6, dar devine 0!)
+
+    enqueue('W') - rear = (5 + 1) % 6 = 0
+    Index:    0     1     2     3     4     5
+           ╔═════╦═════╦═════╦═════╦═════╦═════╗
+           ║  W  ║     ║     ║  X  ║  Y  ║  Z  ║
+           ╚═════╩═════╩═════╩═════╩═════╩═════╝
+             rear↑             ↑front
+
+    enqueue('V') - rear = (0 + 1) % 6 = 1
+    Index:    0     1     2     3     4     5
+           ╔═════╦═════╦═════╦═════╦═════╦═════╗
+           ║  W  ║  V  ║     ║  X  ║  Y  ║  Z  ║
+           ╚═════╩═════╩═════╩═════╩═════╩═════╝
+                   rear↑       ↑front
+
+    Ordinea logică: X → Y → Z → W → V (FIFO păstrat!)</div>
+        </div>
+
+        <!-- Slide 15: Helper Functions -->
+        <div class="slide" data-slide="15">
+            <h2>🛠️ Funcții Auxiliare</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Funcții helper pentru queue</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">// Creează și inițializează o queue nouă
+Queue* queue_create(void) {
+    Queue *q = (Queue*)malloc(sizeof(Queue));
+    if (q != NULL) {
+        q->front = 0;
+        q->rear = 0;
+        q->count = 0;
+    }
+    return q;
+}
+
+// Eliberează memoria
+void queue_destroy(Queue *q) {
+    free(q);
+}
+
+// Verifică dacă queue-ul este gol
+int queue_is_empty(const Queue *q) {
+    return q->count == 0;
+}
+
+// Verifică dacă queue-ul este plin
+int queue_is_full(const Queue *q) {
+    return q->count >= QUEUE_CAPACITY;
+}
+
+// Returnează numărul de elemente
+int queue_size(const Queue *q) {
+    return q->count;
+}
+
+// Returnează elementul din față fără eliminare (peek)
+int queue_front(const Queue *q, int *result) {
+    if (q->count == 0) return 0;
+    *result = q->data[q->front];
+    return 1;
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 16: Linked List Queue -->
+        <div class="slide" data-slide="16">
+            <h2>🔗 Implementare cu Linked List</h2>
+            <div class="diagram">
+    front                                              rear
+      │                                                  │
+      ▼                                                  ▼
+    ╔═══════════╗    ╔═══════════╗    ╔═══════════╗    ╔═══════════╗
+    ║ data: 'A' ║    ║ data: 'B' ║    ║ data: 'C' ║    ║ data: 'D' ║
+    ║ next: ────╫───►║ next: ────╫───►║ next: ────╫───►║ next: NULL║
+    ╚═══════════╝    ╚═══════════╝    ╚═══════════╝    ╚═══════════╝
+
+    enqueue('E'):   Se adaugă la rear, rear->next = newNode, rear = newNode
+    dequeue():      temp = front, front = front->next, free(temp), return data</div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Structura pentru linked list queue</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">typedef struct Node {
+    int data;
+    struct Node *next;
+} Node;
+
+typedef struct {
+    Node *front;    // Pointer la primul nod
+    Node *rear;     // Pointer la ultimul nod
+    int count;      // Număr de elemente
+} LinkedQueue;</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 17: Linked Queue Operations -->
+        <div class="slide" data-slide="17">
+            <h2>🔗 Operații Linked List Queue</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Enqueue și Dequeue pentru linked list</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">int lqueue_enqueue(LinkedQueue *q, int item) {
+    Node *newNode = (Node*)malloc(sizeof(Node));
+    if (newNode == NULL) return 0;  // Alocare eșuată
+    
+    newNode->data = item;
+    newNode->next = NULL;
+    
+    if (q->rear == NULL) {
+        // Queue goală - noul nod devine și front și rear
+        q->front = q->rear = newNode;
+    } else {
+        // Adăugăm la sfârșitul listei
+        q->rear->next = newNode;
+        q->rear = newNode;
+    }
+    q->count++;
+    return 1;
+}
+
+int lqueue_dequeue(LinkedQueue *q, int *result) {
+    if (q->front == NULL) return 0;  // Queue goală
+    
+    Node *temp = q->front;
+    *result = temp->data;
+    q->front = q->front->next;
+    
+    if (q->front == NULL) {
+        q->rear = NULL;  // Queue devine goală
+    }
+    
+    free(temp);
+    q->count--;
+    return 1;
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 18: Comparison Table -->
+        <div class="slide" data-slide="18">
+            <h2>📊 Comparație: Array vs Linked List</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Criteriu</th>
+                        <th>Circular Buffer</th>
+                        <th>Linked List</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Memorie per element</td>
+                        <td style="color: var(--accent-green);">sizeof(T)</td>
+                        <td style="color: var(--accent-yellow);">sizeof(T) + sizeof(pointer)</td>
+                    </tr>
+                    <tr>
+                        <td>Capacitate</td>
+                        <td style="color: var(--accent-yellow);">Fixă (predefinită)</td>
+                        <td style="color: var(--accent-green);">Dinamică</td>
+                    </tr>
+                    <tr>
+                        <td>Cache locality</td>
+                        <td style="color: var(--accent-green);">Excelentă</td>
+                        <td style="color: var(--accent-red);">Slabă</td>
+                    </tr>
+                    <tr>
+                        <td>Fragmentare memorie</td>
+                        <td style="color: var(--accent-green);">Nu</td>
+                        <td style="color: var(--accent-yellow);">Da</td>
+                    </tr>
+                    <tr>
+                        <td>Overhead alocare</td>
+                        <td style="color: var(--accent-green);">O singură dată</td>
+                        <td style="color: var(--accent-red);">Per operație</td>
+                    </tr>
+                    <tr>
+                        <td>Complexitate cod</td>
+                        <td style="color: var(--accent-green);">Simplă</td>
+                        <td style="color: var(--accent-yellow);">Moderată</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="two-columns" style="margin-top: 20px;">
+                <div class="success-box">
+                    <strong>✅ Folosește Circular Buffer când:</strong><br>
+                    Dimensiunea maximă este cunoscută, embedded systems, buffere I/O
+                </div>
+                <div class="info-box">
+                    <strong>✅ Folosește Linked List când:</strong><br>
+                    Dimensiunea variază mult, memorie limitată, message queues
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 19: Deque Introduction -->
+        <div class="slide" data-slide="19">
+            <h2>↔️ Double-Ended Queue (Deque)</h2>
+            <div class="info-box">
+                <strong>Definiție:</strong> Un <span class="keyword">deque</span> (pronounced "deck") permite inserare și ștergere la <em>ambele</em> capete.
+            </div>
+            <div class="diagram">
+                       enqueueFront              enqueueRear
+                            │                        │
+                            ▼                        ▼
+    ╔══════════════════════════════════════════════════════════╗
+    ║                    [ A ][ B ][ C ][ D ]                  ║
+    ╚══════════════════════════════════════════════════════════╝
+                            ▲                        ▲
+                            │                        │
+                       dequeueFront              dequeueRear</div>
+            <table style="margin-top: 20px;">
+                <thead>
+                    <tr>
+                        <th>Operație</th>
+                        <th>Descriere</th>
+                        <th>Echivalent</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="keyword">enqueueFront(x)</span></td>
+                        <td>Adaugă x la front</td>
+                        <td>Stack push</td>
+                    </tr>
+                    <tr>
+                        <td><span class="keyword">enqueueRear(x)</span></td>
+                        <td>Adaugă x la rear</td>
+                        <td>Queue enqueue</td>
+                    </tr>
+                    <tr>
+                        <td><span class="keyword">dequeueFront()</span></td>
+                        <td>Elimină de la front</td>
+                        <td>Queue dequeue / Stack pop</td>
+                    </tr>
+                    <tr>
+                        <td><span class="keyword">dequeueRear()</span></td>
+                        <td>Elimină de la rear</td>
+                        <td>-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Slide 20: Priority Queue -->
+        <div class="slide" data-slide="20">
+            <h2>⭐ Priority Queue</h2>
+            <div class="info-box">
+                <strong>Definiție:</strong> O <span class="keyword">priority queue</span> este o queue în care fiecare element are asociată o prioritate. Elementul cu prioritatea cea mai mare (sau mică) este extras primul.
+            </div>
+            <div class="two-columns">
+                <div>
+                    <h3>Implementări Posibile</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Implementare</th>
+                                <th>Insert</th>
+                                <th>Extract</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Array nesortat</td>
+                                <td style="color: var(--accent-green);">O(1)</td>
+                                <td style="color: var(--accent-red);">O(n)</td>
+                            </tr>
+                            <tr>
+                                <td>Array sortat</td>
+                                <td style="color: var(--accent-red);">O(n)</td>
+                                <td style="color: var(--accent-green);">O(1)</td>
+                            </tr>
+                            <tr>
+                                <td style="color: var(--accent-green);">Heap</td>
+                                <td style="color: var(--accent-green);">O(log n)</td>
+                                <td style="color: var(--accent-green);">O(log n)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    <h3>Aplicații</h3>
+                    <ul>
+                        <li>Dijkstra's algorithm</li>
+                        <li>Huffman coding</li>
+                        <li>Task scheduling (OS)</li>
+                        <li>Event-driven simulation</li>
+                        <li>A* pathfinding</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 21: Simple Priority Queue Implementation -->
+        <div class="slide" data-slide="21">
+            <h2>⭐ Priority Queue Simplă (Array de Queues)</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Implementare cu nivele de prioritate</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">#define NUM_PRIORITIES 4
+#define PRIORITY_CRITICAL 0
+#define PRIORITY_HIGH     1
+#define PRIORITY_NORMAL   2
+#define PRIORITY_LOW      3
+
+typedef struct {
+    Queue levels[NUM_PRIORITIES];  // 4 queue-uri separate
+} PriorityQueue;
+
+void pq_enqueue(PriorityQueue *pq, int item, int priority) {
+    if (priority < 0 || priority >= NUM_PRIORITIES) {
+        priority = PRIORITY_NORMAL;
+    }
+    queue_enqueue(&pq->levels[priority], item);
+}
+
+int pq_dequeue(PriorityQueue *pq, int *result) {
+    // Căutăm de la prioritatea cea mai mare
+    for (int i = 0; i < NUM_PRIORITIES; i++) {
+        if (!queue_is_empty(&pq->levels[i])) {
+            return queue_dequeue(&pq->levels[i], result);
+        }
+    }
+    return 0;  // Toate queue-urile goale
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 22: BFS with Queue -->
+        <div class="slide" data-slide="22">
+            <h2>🌐 Aplicație: BFS (Breadth-First Search)</h2>
+            <div class="two-columns">
+                <div>
+                    <div class="diagram" style="font-size: 0.8rem;">
+    Graf:
+              1
+            / | \
+           2  3  4
+          /|     |
+         5 6     7
+
+    BFS de la nodul 1:
+    
+    Queue: [1] → Procesăm 1
+    Queue: [2,3,4] → Procesăm 2
+    Queue: [3,4,5,6] → Procesăm 3
+    Queue: [4,5,6] → Procesăm 4
+    Queue: [5,6,7] → Procesăm 5
+    Queue: [6,7] → Procesăm 6
+    Queue: [7] → Procesăm 7
+    
+    Ordine vizitare: 1→2→3→4→5→6→7
+    (nivel cu nivel!)</div>
+                </div>
+                <div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>BFS Algorithm</span>
+                            <span class="lang-badge">C</span>
+                        </div>
+                        <pre><code class="language-c">void bfs(Graph *g, int start) {
+    Queue q;
+    queue_init(&q);
+    bool visited[MAX] = {false};
+    
+    queue_enqueue(&q, start);
+    visited[start] = true;
+    
+    while (!queue_is_empty(&q)) {
+        int curr;
+        queue_dequeue(&q, &curr);
+        printf("%d ", curr);
+        
+        // Adaugă vecinii nevizitați
+        for (int i = 0; i < g->adj_count[curr]; i++) {
+            int neighbor = g->adj[curr][i];
+            if (!visited[neighbor]) {
+                visited[neighbor] = true;
+                queue_enqueue(&q, neighbor);
+            }
+        }
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 23: Producer-Consumer Pattern -->
+        <div class="slide" data-slide="23">
+            <h2>🏭 Pattern: Producer-Consumer</h2>
+            <div class="diagram">
+    ╔═══════════════╗                                    ╔═══════════════╗
+    ║   PRODUCER    ║                                    ║   CONSUMER    ║
+    ║               ║    ╔════════════════════════╗     ║               ║
+    ║  Generează    ║───►║      MESSAGE QUEUE     ║────►║  Procesează   ║
+    ║  date/events  ║    ║  [M1][M2][M3][M4]...   ║     ║  date/events  ║
+    ╚═══════════════╝    ╚════════════════════════╝     ╚═══════════════╝
+
+    Avantaje:
+    • Decuplare între producer și consumer
+    • Buffering pentru diferențe de viteză
+    • Scalabilitate (multiple producers/consumers)</div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Exemplu simplificat</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">// Thread-safe queue ar necesita mutex/semaphore
+// Aceasta este o versiune simplificată pentru demonstrație
+
+void producer(Queue *q) {
+    for (int i = 0; i < 100; i++) {
+        int data = generate_data();
+        while (queue_is_full(q)) {
+            sleep_ms(10);  // Așteptăm să se elibereze spațiu
+        }
+        queue_enqueue(q, data);
+    }
+}
+
+void consumer(Queue *q) {
+    while (1) {
+        int data;
+        while (queue_is_empty(q)) {
+            sleep_ms(10);  // Așteptăm date
+        }
+        queue_dequeue(q, &data);
+        process_data(data);
+    }
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 24: Common Mistakes -->
+        <div class="slide" data-slide="24">
+            <h2>⚠️ Greșeli Frecvente</h2>
+            <div class="two-columns">
+                <div>
+                    <div class="error-box">
+                        <strong>❌ Greșeala 1: Uitarea operatorului modulo</strong>
+                        <pre style="background: #1a0000; padding: 10px; margin-top: 10px;"><code class="language-c">// GREȘIT:
+q->rear = q->rear + 1;
+// rear poate depăși capacitatea!
+
+// CORECT:
+q->rear = (q->rear + 1) % CAPACITY;</code></pre>
+                    </div>
+                    <div class="error-box">
+                        <strong>❌ Greșeala 2: Confuzie plin vs gol</strong>
+                        <pre style="background: #1a0000; padding: 10px; margin-top: 10px;"><code class="language-c">// Fără count, ambele condiții pot avea
+// front == rear!
+
+// Soluție: count sau sacrificare poziție</code></pre>
+                    </div>
+                </div>
+                <div>
+                    <div class="error-box">
+                        <strong>❌ Greșeala 3: Memory leak în linked list</strong>
+                        <pre style="background: #1a0000; padding: 10px; margin-top: 10px;"><code class="language-c">// GREȘIT:
+q->front = q->front->next;
+// Nodul vechi e pierdut!
+
+// CORECT:
+Node *temp = q->front;
+q->front = q->front->next;
+free(temp);</code></pre>
+                    </div>
+                    <div class="error-box">
+                        <strong>❌ Greșeala 4: NULL pointer</strong>
+                        <pre style="background: #1a0000; padding: 10px; margin-top: 10px;"><code class="language-c">// După ultimul dequeue:
+if (q->front == NULL) {
+    q->rear = NULL; // Nu uitați!
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 25: Memory Model -->
+        <div class="slide" data-slide="25">
+            <h2>🧠 Model de Memorie</h2>
+            <div class="diagram">
+    STACK (variabile locale)           HEAP (alocare dinamică)
+    ┌─────────────────────┐           ┌─────────────────────────────────┐
+    │                     │           │                                 │
+    │  Queue q;           │           │  Node pentru Linked Queue:      │
+    │  ├── front: 0       │           │                                 │
+    │  ├── rear: 3        │           │  ╔═══════════════╗              │
+    │  ├── count: 3       │           │  ║ Node 0x1000   ║              │
+    │  └── data[100]:     │           │  ║ data: 10      ║              │
+    │      [0]: 42        │           │  ║ next: 0x1020 ─╫──────┐       │
+    │      [1]: 17        │           │  ╚═══════════════╝      │       │
+    │      [2]: 99        │           │                         ▼       │
+    │      [3]: ?         │           │  ╔═══════════════╗              │
+    │      ...            │           │  ║ Node 0x1020   ║              │
+    │                     │           │  ║ data: 20      ║              │
+    │  LinkedQueue lq;    │           │  ║ next: NULL    ║              │
+    │  ├── front: 0x1000 ─╫──────────►║  ╚═══════════════╝              │
+    │  ├── rear: 0x1020 ──╫──────────────────────────────┘              │
+    │  └── count: 2       │           │                                 │
+    │                     │           │                                 │
+    └─────────────────────┘           └─────────────────────────────────┘</div>
+        </div>
+
+        <!-- Slide 26: Debugging with GDB -->
+        <div class="slide" data-slide="26">
+            <h2>🐛 Debugging cu GDB</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Comenzi GDB utile pentru queue</span>
+                    <span class="lang-badge">Bash</span>
+                </div>
+                <pre><code class="language-bash"># Compilare cu simboluri de debug
+gcc -g -Wall -o program program.c
+
+# Pornire GDB
+gdb ./program
+
+# Setare breakpoint
+(gdb) break queue_enqueue
+(gdb) break queue_dequeue
+
+# Rulare
+(gdb) run
+
+# Inspectare queue (circular buffer)
+(gdb) print q->front
+(gdb) print q->rear
+(gdb) print q->count
+(gdb) print q->data[0]@10    # Primele 10 elemente
+
+# Inspectare linked queue
+(gdb) print *q->front        # Primul nod
+(gdb) print *q->front->next  # Al doilea nod
+
+# Pas cu pas
+(gdb) next    # Următoarea linie
+(gdb) step    # Intră în funcție
+
+# Watch pentru modificări
+(gdb) watch q->count</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 27: Valgrind Memory Check -->
+        <div class="slide" data-slide="27">
+            <h2>🔍 Verificare Memorie cu Valgrind</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Utilizare Valgrind</span>
+                    <span class="lang-badge">Bash</span>
+                </div>
+                <pre><code class="language-bash"># Verificare memory leaks
+valgrind --leak-check=full ./program
+
+# Output tipic pentru memory leak:
+# ==12345== LEAK SUMMARY:
+# ==12345==    definitely lost: 32 bytes in 2 blocks
+
+# Verificare acces invalid
+valgrind --track-origins=yes ./program
+
+# Output pentru acces invalid:
+# ==12345== Invalid read of size 4
+# ==12345==    at 0x401234: queue_dequeue (queue.c:45)
+
+# Generare raport complet
+valgrind --leak-check=full --show-leak-kinds=all \
+         --track-origins=yes --log-file=valgrind.log ./program</code></pre>
+            </div>
+            <div class="success-box">
+                <strong>✅ Obiectiv:</strong> 0 bytes lost, 0 errors - asta înseamnă cod corect!
+            </div>
+        </div>
+
+        <!-- Slide 28: Best Practices -->
+        <div class="slide" data-slide="28">
+            <h2>✅ Best Practices</h2>
+            <div class="two-columns">
+                <div>
+                    <h3 style="color: var(--accent-green);">✓ DO</h3>
+                    <ul>
+                        <li>Verifică <span class="keyword">isEmpty()</span> înainte de dequeue</li>
+                        <li>Verifică <span class="keyword">isFull()</span> înainte de enqueue (array)</li>
+                        <li>Folosește <span class="keyword">const</span> pentru funcții read-only</li>
+                        <li>Eliberează toată memoria în destroy</li>
+                        <li>Documentează complexitățile</li>
+                        <li>Testează edge cases (0, 1, MAX elemente)</li>
+                        <li>Folosește typedef pentru claritate</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 style="color: var(--accent-red);">✗ DON'T</h3>
+                    <ul>
+                        <li>Nu ignora valoarea de return</li>
+                        <li>Nu presupune că alocarea reușește</li>
+                        <li>Nu amesteca logica queue cu alte responsabilități</li>
+                        <li>Nu uita operatorul modulo</li>
+                        <li>Nu accesa memoria după free</li>
+                        <li>Nu hardcoda capacitatea în cod</li>
+                        <li>Nu neglija thread safety dacă e necesar</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 29: Standard Library -->
+        <div class="slide" data-slide="29">
+            <h2>📚 Queue în Biblioteci Standard</h2>
+            <div class="two-columns">
+                <div>
+                    <h3>C++ STL</h3>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>std::queue</span>
+                            <span class="lang-badge">C++</span>
+                        </div>
+                        <pre><code class="language-cpp">#include &lt;queue&gt;
+
+std::queue&lt;int&gt; q;
+q.push(10);      // enqueue
+q.push(20);
+int x = q.front(); // peek
+q.pop();         // dequeue
+bool empty = q.empty();
+size_t size = q.size();</code></pre>
+                    </div>
+                    <h3>Java</h3>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>java.util.Queue</span>
+                            <span class="lang-badge">Java</span>
+                        </div>
+                        <pre><code class="language-java">Queue&lt;Integer&gt; q = new LinkedList&lt;&gt;();
+q.offer(10);     // enqueue
+q.offer(20);
+int x = q.peek(); // peek
+int y = q.poll(); // dequeue
+boolean empty = q.isEmpty();</code></pre>
+                    </div>
+                </div>
+                <div>
+                    <h3>Python</h3>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>collections.deque</span>
+                            <span class="lang-badge">Python</span>
+                        </div>
+                        <pre><code class="language-python">from collections import deque
+
+q = deque()
+q.append(10)     # enqueue
+q.append(20)
+x = q[0]         # peek
+y = q.popleft()  # dequeue
+empty = len(q) == 0</code></pre>
+                    </div>
+                    <h3>JavaScript</h3>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Array as Queue</span>
+                            <span class="lang-badge">JS</span>
+                        </div>
+                        <pre><code class="language-javascript">const q = [];
+q.push(10);      // enqueue
+q.push(20);
+const x = q[0];  // peek
+const y = q.shift(); // dequeue (O(n)!)
+const empty = q.length === 0;</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 30: Real-World Applications -->
+        <div class="slide" data-slide="30">
+            <h2>🌍 Aplicații în Lumea Reală</h2>
+            <div class="three-columns">
+                <div class="feature-card">
+                    <h4>🖨️ Print Spooler</h4>
+                    <p>Documentele sunt tipărite în ordinea trimiterii. Queue FIFO asigură echitate.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🎵 Playlist</h4>
+                    <p>Melodiile sunt redate în ordine. Următoarea melodie = dequeue().</p>
+                </div>
+                <div class="feature-card">
+                    <h4>📧 Email Server</h4>
+                    <p>Mesajele sunt procesate în ordinea primirii pentru delivery.</p>
+                </div>
+            </div>
+            <div class="three-columns">
+                <div class="feature-card">
+                    <h4>🎮 Game Events</h4>
+                    <p>Input-ul utilizatorului este pus în queue și procesat frame by frame.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🚗 Traffic Light</h4>
+                    <p>Mașinile așteaptă și trec în ordinea sosirii la semafor.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>📱 Message Broker</h4>
+                    <p>RabbitMQ, Kafka - sisteme distribuite bazate pe queue-uri.</p>
+                </div>
+            </div>
+            <div class="three-columns">
+                <div class="feature-card">
+                    <h4>💾 Disk I/O</h4>
+                    <p>Cererile de citire/scriere sunt planificate folosind queue-uri.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🌐 Web Server</h4>
+                    <p>Request-urile HTTP sunt puse în queue când serverul e ocupat.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🔄 Task Scheduler</h4>
+                    <p>Procesele OS sunt planificate folosind queue-uri cu priorități.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 31: Time Complexity Summary -->
+        <div class="slide" data-slide="31">
+            <h2>⏱️ Sumar Complexități</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Operație</th>
+                        <th>Circular Buffer</th>
+                        <th>Linked List</th>
+                        <th>Array (naiv)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>enqueue</td>
+                        <td style="color: var(--accent-green);">O(1)</td>
+                        <td style="color: var(--accent-green);">O(1)*</td>
+                        <td style="color: var(--accent-green);">O(1)</td>
+                    </tr>
+                    <tr>
+                        <td>dequeue</td>
+                        <td style="color: var(--accent-green);">O(1)</td>
+                        <td style="color: var(--accent-green);">O(1)</td>
+                        <td style="color: var(--accent-red);">O(n)</td>
+                    </tr>
+                    <tr>
+                        <td>peek/front</td>
+                        <td style="color: var(--accent-green);">O(1)</td>
+                        <td style="color: var(--accent-green);">O(1)</td>
+                        <td style="color: var(--accent-green);">O(1)</td>
+                    </tr>
+                    <tr>
+                        <td>isEmpty</td>
+                        <td style="color: var(--accent-green);">O(1)</td>
+                        <td style="color: var(--accent-green);">O(1)</td>
+                        <td style="color: var(--accent-green);">O(1)</td>
+                    </tr>
+                    <tr>
+                        <td>size</td>
+                        <td style="color: var(--accent-green);">O(1)</td>
+                        <td style="color: var(--accent-green);">O(1)</td>
+                        <td style="color: var(--accent-green);">O(1)</td>
+                    </tr>
+                    <tr>
+                        <td>Spațiu total</td>
+                        <td>O(capacity)</td>
+                        <td>O(n)</td>
+                        <td>O(capacity)</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="info-box">
+                <strong>* Notă:</strong> Linked list enqueue este O(1) doar dacă păstrăm pointer la rear. Altfel ar fi O(n) pentru a parcurge lista.
+            </div>
+        </div>
+
+        <!-- Slide 32: Lab Exercise Preview -->
+        <div class="slide" data-slide="32">
+            <h2>🔬 Previzualizare Laborator</h2>
+            <div class="two-columns">
+                <div class="feature-card">
+                    <h4>Exercițiul 1: Circular Buffer pentru Comenzi</h4>
+                    <ul>
+                        <li>Structura <span class="keyword">Order</span> (id, client, items, timestamp)</li>
+                        <li>Circular buffer cu capacitate configurabilă</li>
+                        <li>Operații: add_order, process_order, peek_next</li>
+                        <li>Statistici: timp mediu așteptare</li>
+                    </ul>
+                    <div class="warning-box">
+                        <strong>TODO markers:</strong> 8-12 locuri de completat
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <h4>Exercițiul 2: Priority Queue pentru Tasks</h4>
+                    <ul>
+                        <li>4 nivele de prioritate (CRITICAL → LOW)</li>
+                        <li>Structura <span class="keyword">Task</span> (id, priority, description)</li>
+                        <li>Array de 4 linked-list queues</li>
+                        <li>Round-robin între task-uri egale</li>
+                    </ul>
+                    <div class="warning-box">
+                        <strong>TODO markers:</strong> 10-15 locuri de completat
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 33: Interview Questions -->
+        <div class="slide" data-slide="33">
+            <h2>💼 Întrebări de Interviu</h2>
+            <div class="feature-card">
+                <h4>Q1: Cum implementezi o queue folosind două stacks?</h4>
+                <p><em>Hint: Un stack pentru enqueue, altul pentru dequeue. Transfer la dequeue dacă stack-ul de dequeue e gol.</em></p>
+            </div>
+            <div class="feature-card">
+                <h4>Q2: Cum detectezi dacă un circular buffer este plin sau gol?</h4>
+                <p><em>Răspuns: (1) Counter separat, sau (2) Sacrifică o poziție - plin când (rear+1)%cap == front</em></p>
+            </div>
+            <div class="feature-card">
+                <h4>Q3: Care este diferența între queue și deque?</h4>
+                <p><em>Răspuns: Queue: inserare la rear, eliminare la front. Deque: ambele operații la ambele capete.</em></p>
+            </div>
+            <div class="feature-card">
+                <h4>Q4: Cum ai implementa un LRU Cache?</h4>
+                <p><em>Hint: Combinație de Hash Table + Double Linked List (sau Deque). Access = move to front.</em></p>
+            </div>
+        </div>
+
+        <!-- Slide 34: Key Takeaways -->
+        <div class="slide" data-slide="34">
+            <h2>🎯 Concluzii Cheie</h2>
+            <div class="three-columns">
+                <div class="success-box">
+                    <strong>1. FIFO</strong><br>
+                    Queue = First In, First Out. Echitabil și predictibil.
+                </div>
+                <div class="success-box">
+                    <strong>2. O(1) Toate Operațiile</strong><br>
+                    Circular buffer și linked list oferă O(1) constant.
+                </div>
+                <div class="success-box">
+                    <strong>3. Formula Magică</strong><br>
+                    next = (current + 1) % capacity
+                </div>
+            </div>
+            <div class="three-columns">
+                <div class="success-box">
+                    <strong>4. Trade-offs</strong><br>
+                    Array: cache-friendly, fix. List: dinamic, fragmentat.
+                </div>
+                <div class="success-box">
+                    <strong>5. Priority Queue</strong><br>
+                    Heap oferă O(log n) pentru ambele operații.
+                </div>
+                <div class="success-box">
+                    <strong>6. BFS</strong><br>
+                    Queue este esențială pentru parcurgerea pe nivele.
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 35: Resources -->
+        <div class="slide" data-slide="35">
+            <h2>📖 Resurse Recomandate</h2>
+            <div class="two-columns">
+                <div>
+                    <h3>Cărți</h3>
+                    <ul>
+                        <li><strong>CLRS</strong> - Introduction to Algorithms, Cap. 10</li>
+                        <li><strong>Sedgewick</strong> - Algorithms, Cap. 1.3</li>
+                        <li><strong>K&R</strong> - The C Programming Language</li>
+                    </ul>
+                    <h3>Documentații</h3>
+                    <ul>
+                        <li>Linux kernel kfifo implementation</li>
+                        <li>POSIX message queues (mq_overview)</li>
+                        <li>C++ STL std::queue documentation</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Resurse Online</h3>
+                    <ul>
+                        <li><a href="https://visualgo.net" style="color: var(--accent-blue);">VisuAlgo</a> - Vizualizări interactive</li>
+                        <li><a href="https://www.geeksforgeeks.org" style="color: var(--accent-blue);">GeeksforGeeks</a> - Tutoriale și probleme</li>
+                        <li><a href="https://leetcode.com" style="color: var(--accent-blue);">LeetCode</a> - Probleme de practică</li>
+                    </ul>
+                    <h3>Video</h3>
+                    <ul>
+                        <li>MIT OpenCourseWare - 6.006</li>
+                        <li>Computerphile - Data Structures</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 36: Next Week Preview -->
+        <div class="slide" data-slide="36">
+            <h2>🔮 Săptămâna Viitoare: Arbori Binari</h2>
+            <div class="diagram">
+              Binary Tree
+              
+                    1
+                   / \
+                  2   3
+                 / \   \
+                4   5   6
+                
+              Terminologie:
+              • Rădăcină (root): nodul 1
+              • Frunze (leaves): nodurile 4, 5, 6
+              • Înălțime (height): 2
+              • Nivel (level): 0, 1, 2</div>
+            <div class="two-columns">
+                <div class="info-box">
+                    <strong>Subiecte principale:</strong>
+                    <ul>
+                        <li>Reprezentare în memorie</li>
+                        <li>Parcurgeri: preorder, inorder, postorder</li>
+                        <li>Level-order traversal (cu queue!)</li>
+                        <li>Binary Search Trees (BST)</li>
+                    </ul>
+                </div>
+                <div class="success-box">
+                    <strong>🔗 Conexiune cu queue:</strong><br>
+                    Parcurgerea <em>level-order</em> (BFS pe arbori) folosește exact structura queue pe care am studiat-o!
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 37: Questions -->
+        <div class="slide title-slide" data-slide="37">
+            <h1>❓ Întrebări?</h1>
+            <div class="subtitle">Mulțumesc pentru atenție!</div>
+            <div style="margin-top: 50px;">
+                <p style="font-size: 1.3rem; color: var(--text-secondary);">Săptămâna 6: Cozi (Queues)</p>
+                <p style="font-size: 1.1rem; color: var(--accent-green);">FIFO • Circular Buffer • Priority Queue • BFS</p>
+            </div>
+            <div class="institution">
+                Academia de Studii Economice din București<br>
+                Algoritmi și Tehnici de Programare
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="slide-counter">
+        <span id="currentSlide">1</span> / <span id="totalSlides">37</span>
+    </div>
+    
+    <div class="nav-controls">
+        <button class="nav-btn" onclick="goToSlide(1)" title="Prima pagină">⏮</button>
+        <button class="nav-btn" onclick="prevSlide()" title="Înapoi">◀</button>
+        <button class="nav-btn" onclick="nextSlide()" title="Înainte">▶</button>
+        <button class="nav-btn" onclick="goToSlide(totalSlides)" title="Ultima pagină">⏭</button>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function updateProgress() {
+            const progress = (currentSlide / totalSlides) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('currentSlide').textContent = currentSlide;
+        }
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            currentSlide = n;
+            if (currentSlide > totalSlides) currentSlide = 1;
+            if (currentSlide < 1) currentSlide = totalSlides;
+            slides[currentSlide - 1].classList.add('active');
+            updateProgress();
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        function goToSlide(n) {
+            showSlide(n);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            switch(e.key) {
+                case 'ArrowRight':
+                case ' ':
+                case 'PageDown':
+                    e.preventDefault();
+                    nextSlide();
+                    break;
+                case 'ArrowLeft':
+                case 'PageUp':
+                    e.preventDefault();
+                    prevSlide();
+                    break;
+                case 'Home':
+                    e.preventDefault();
+                    goToSlide(1);
+                    break;
+                case 'End':
+                    e.preventDefault();
+                    goToSlide(totalSlides);
+                    break;
+            }
+        });
+
+        // Initialize
+        hljs.highlightAll();
+        updateProgress();
+    </script>
+</body>
+</html>

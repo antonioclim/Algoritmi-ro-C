@@ -1,0 +1,2490 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Săptămâna 7: Arbori Binari (Binary Trees) | ATP - ASE București</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/c.min.js"></script>
+    <style>
+        /* =================================================================
+           VARIABILE CSS - TEMA GITHUB DARK
+           ================================================================= */
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --bg-highlight: #1f2428;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --text-muted: #6e7681;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-yellow: #d29922;
+            --accent-red: #f85149;
+            --accent-purple: #a371f7;
+            --accent-cyan: #39c5cf;
+            --accent-orange: #db6d28;
+            --border-color: #30363d;
+            --shadow-color: rgba(0, 0, 0, 0.4);
+            --code-bg: #161b22;
+            --slide-width: 1200px;
+            --transition-speed: 0.4s;
+        }
+
+        /* =================================================================
+           RESET ȘI STILURI DE BAZĂ
+           ================================================================= */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* =================================================================
+           PROGRESS BAR
+           ================================================================= */
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background-color: var(--bg-secondary);
+            z-index: 1000;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple), var(--accent-cyan));
+            transition: width var(--transition-speed) ease;
+        }
+
+        /* =================================================================
+           CONTAINER PRINCIPAL
+           ================================================================= */
+        .presentation-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .slides-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        /* =================================================================
+           STILURI SLIDE-URI
+           ================================================================= */
+        .slide {
+            display: none;
+            width: 100%;
+            max-width: var(--slide-width);
+            min-height: 70vh;
+            max-height: 85vh;
+            background-color: var(--bg-secondary);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            padding: 40px 50px;
+            box-shadow: 0 16px 48px var(--shadow-color);
+            animation: fadeIn 0.5s ease;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-color) transparent;
+        }
+
+        .slide::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .slide::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .slide::-webkit-scrollbar-thumb {
+            background-color: var(--border-color);
+            border-radius: 4px;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* =================================================================
+           TIPOGRAFIE
+           ================================================================= */
+        .slide h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--accent-blue);
+            padding-bottom: 0.75rem;
+        }
+
+        .slide h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--accent-blue);
+            margin: 1.5rem 0 1rem;
+        }
+
+        .slide h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--accent-cyan);
+            margin: 1.25rem 0 0.75rem;
+        }
+
+        .slide p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .slide ul, .slide ol {
+            margin: 1rem 0 1rem 1.5rem;
+        }
+
+        .slide li {
+            margin-bottom: 0.6rem;
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+        }
+
+        .slide li::marker {
+            color: var(--accent-blue);
+        }
+
+        /* =================================================================
+           SLIDE TITLU
+           ================================================================= */
+        .title-slide {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: 70vh;
+        }
+
+        .title-slide .week-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: white;
+            padding: 8px 24px;
+            border-radius: 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .title-slide h1 {
+            font-size: 3.5rem;
+            border: none;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--text-primary), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .title-slide .subtitle {
+            font-size: 1.8rem;
+            color: var(--accent-blue);
+            margin-bottom: 2rem;
+        }
+
+        .title-slide .course-info {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-top: 2rem;
+        }
+
+        .title-slide .university {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        /* =================================================================
+           BLOCURI DE COD
+           ================================================================= */
+        .code-block {
+            margin: 1.5rem 0;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            background-color: var(--code-bg);
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            background-color: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .code-header span:first-child {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .lang-badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
+        .lang-badge.c {
+            background-color: rgba(88, 166, 255, 0.2);
+            color: var(--accent-blue);
+        }
+
+        .lang-badge.python {
+            background-color: rgba(63, 185, 80, 0.2);
+            color: var(--accent-green);
+        }
+
+        .lang-badge.pseudo {
+            background-color: rgba(210, 153, 34, 0.2);
+            color: var(--accent-yellow);
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 16px;
+            overflow-x: auto;
+        }
+
+        .code-block code {
+            font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', Consolas, monospace;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* =================================================================
+           DIAGRAME ASCII
+           ================================================================= */
+        .ascii-diagram {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+        }
+
+        .ascii-diagram pre {
+            font-family: 'Cascadia Code', 'Fira Code', monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: var(--accent-cyan);
+            margin: 0;
+            white-space: pre;
+        }
+
+        /* =================================================================
+           CASETE INFORMATIVE
+           ================================================================= */
+        .info-box {
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+            border-left: 4px solid;
+        }
+
+        .info-box.tip {
+            background-color: rgba(63, 185, 80, 0.1);
+            border-color: var(--accent-green);
+        }
+
+        .info-box.warning {
+            background-color: rgba(210, 153, 34, 0.1);
+            border-color: var(--accent-yellow);
+        }
+
+        .info-box.danger {
+            background-color: rgba(248, 81, 73, 0.1);
+            border-color: var(--accent-red);
+        }
+
+        .info-box.note {
+            background-color: rgba(88, 166, 255, 0.1);
+            border-color: var(--accent-blue);
+        }
+
+        .info-box-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-box.tip .info-box-title { color: var(--accent-green); }
+        .info-box.warning .info-box-title { color: var(--accent-yellow); }
+        .info-box.danger .info-box-title { color: var(--accent-red); }
+        .info-box.note .info-box-title { color: var(--accent-blue); }
+
+        /* =================================================================
+           TABELE
+           ================================================================= */
+        .table-container {
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--bg-tertiary);
+            color: var(--accent-blue);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: var(--bg-tertiary);
+        }
+
+        /* =================================================================
+           GRID ȘI COLOANE
+           ================================================================= */
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 1.5rem 0;
+        }
+
+        .three-columns {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .column {
+            background-color: var(--bg-tertiary);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* =================================================================
+           CARDURI SUMAR
+           ================================================================= */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .summary-card {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1.25rem;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-blue);
+        }
+
+        .summary-card h4 {
+            color: var(--accent-cyan);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .summary-card p {
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        /* =================================================================
+           BIOGRAFII ȘI CITATE
+           ================================================================= */
+        .bio-section {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+            margin: 1.5rem 0;
+        }
+
+        .bio-image {
+            flex-shrink: 0;
+            width: 180px;
+            height: 180px;
+            background-color: var(--bg-tertiary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            border: 2px solid var(--border-color);
+        }
+
+        .bio-content {
+            flex: 1;
+        }
+
+        blockquote {
+            background-color: var(--bg-tertiary);
+            border-left: 4px solid var(--accent-purple);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+
+        blockquote cite {
+            display: block;
+            margin-top: 0.75rem;
+            color: var(--text-muted);
+            font-style: normal;
+            font-size: 0.95rem;
+        }
+
+        /* =================================================================
+           TIMELINE
+           ================================================================= */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+            margin: 1.5rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, var(--accent-blue), var(--accent-purple));
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.5rem;
+            padding-left: 20px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -26px;
+            top: 6px;
+            width: 14px;
+            height: 14px;
+            background-color: var(--accent-blue);
+            border-radius: 50%;
+            border: 3px solid var(--bg-secondary);
+        }
+
+        .timeline-year {
+            font-weight: 600;
+            color: var(--accent-blue);
+            font-size: 1.1rem;
+        }
+
+        /* =================================================================
+           NAVIGARE
+           ================================================================= */
+        .navigation {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            width: 48px;
+            height: 48px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background-color: var(--accent-blue);
+            border-color: var(--accent-blue);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            font-size: 1rem;
+            color: var(--text-muted);
+            background-color: var(--bg-secondary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            z-index: 1000;
+        }
+
+        /* =================================================================
+           HIGHLIGHT SPECIAL
+           ================================================================= */
+        .highlight {
+            color: var(--accent-yellow);
+            font-weight: 600;
+        }
+
+        .highlight-blue { color: var(--accent-blue); }
+        .highlight-green { color: var(--accent-green); }
+        .highlight-red { color: var(--accent-red); }
+        .highlight-purple { color: var(--accent-purple); }
+
+        kbd {
+            display: inline-block;
+            padding: 4px 8px;
+            font-size: 0.85rem;
+            font-family: monospace;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-shadow: 0 2px 0 var(--border-color);
+        }
+
+        /* =================================================================
+           SLIDE FINAL
+           ================================================================= */
+        .end-slide {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 70vh;
+        }
+
+        .end-slide h1 {
+            border: none;
+            font-size: 3rem;
+        }
+
+        .questions-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        /* =================================================================
+           RESPONSIVE
+           ================================================================= */
+        @media (max-width: 900px) {
+            .two-columns, .three-columns {
+                grid-template-columns: 1fr;
+            }
+            
+            .slide {
+                padding: 25px 30px;
+            }
+            
+            .title-slide h1 {
+                font-size: 2.5rem;
+            }
+            
+            .bio-section {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+        }
+
+        /* Highlight.js ajustări */
+        .hljs {
+            background: transparent !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <!-- Prezentare -->
+    <div class="presentation-container">
+        <div class="slides-wrapper">
+            
+            <!-- ============================================================
+                 SLIDE 1: TITLU
+                 ============================================================ -->
+            <div class="slide active title-slide" data-slide="1">
+                <span class="week-badge">Săptămâna 7</span>
+                <h1>Arbori Binari</h1>
+                <p class="subtitle">Binary Trees</p>
+                <div class="course-info">
+                    <strong>Algoritmi și Tehnici de Programare (ATP)</strong>
+                </div>
+                <p class="university">Academia de Studii Economice București<br>Facultatea CSIE</p>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 2: OBIECTIVE DE ÎNVĂȚARE
+                 ============================================================ -->
+            <div class="slide" data-slide="2">
+                <h1>🎯 Obiective de Învățare</h1>
+                <p>La finalul acestei săptămâni, veți fi capabili să:</p>
+                <ul>
+                    <li><span class="highlight-blue">Cunoașteți (Remember):</span> Definiți structura unui binary tree și terminologia asociată (root, leaf, parent, child, sibling, depth, height)</li>
+                    <li><span class="highlight-green">Înțelegeți (Understand):</span> Explicați diferențele dintre tipurile de traversare și cazurile lor de utilizare</li>
+                    <li><span class="highlight-yellow">Aplicați (Apply):</span> Implementați operații fundamentale pe binary trees folosind recursivitate în C</li>
+                    <li><span class="highlight-purple">Analizați (Analyse):</span> Evaluați complexitatea temporală și spațială a algoritmilor pe arbori</li>
+                    <li><span class="highlight-red">Evaluați (Evaluate):</span> Comparați diferite reprezentări și abordări pentru problemele cu arbori</li>
+                    <li><span class="highlight-cyan">Creați (Create):</span> Proiectați soluții complete pentru probleme practice folosind binary trees</li>
+                </ul>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 3: CONTEXT ISTORIC
+                 ============================================================ -->
+            <div class="slide" data-slide="3">
+                <h1>📜 Context Istoric</h1>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <span class="timeline-year">1847</span>
+                        <p>Gustav Kirchhoff utilizează termenul „arbore" în studiul circuitelor electrice</p>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="timeline-year">1857</span>
+                        <p>Arthur Cayley studiază structurile arborescente în teoria grafurilor</p>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="timeline-year">Anii 1920</span>
+                        <p>Jan Łukasiewicz dezvoltă notația poloneză (prefix) și inversă (postfix)</p>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="timeline-year">1960</span>
+                        <p>Formalizarea binary trees ca structuri de date în informatică</p>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="timeline-year">1968</span>
+                        <p>Donald Knuth publică „The Art of Computer Programming" cu tratarea riguroasă a arborilor</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 4: PERSONALITATE CHEIE
+                 ============================================================ -->
+            <div class="slide" data-slide="4">
+                <h1>👤 Personalitate Cheie</h1>
+                <div class="bio-section">
+                    <div class="bio-image">
+                        📷<br>Donald E. Knuth<br>(1938-)
+                    </div>
+                    <div class="bio-content">
+                        <h2>Donald Ervin Knuth</h2>
+                        <p>Profesor emerit la Stanford University, considerat „părintele analizei algoritmilor". Opera sa principală, <strong>„The Art of Computer Programming"</strong>, reprezintă cea mai completă tratare a structurilor de date și algoritmilor.</p>
+                        <p><strong>Contribuții la studiul arborilor:</strong></p>
+                        <ul>
+                            <li>Formalizarea algoritmilor de traversare</li>
+                            <li>Analiza complexității operațiilor pe arbori</li>
+                            <li>Dezvoltarea conceptului de „threaded binary trees"</li>
+                        </ul>
+                    </div>
+                </div>
+                <blockquote>
+                    „An algorithm must be seen to be believed, and the best way to learn what computers can do is to learn how to program."
+                    <cite>— Donald E. Knuth</cite>
+                </blockquote>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 5: DEFINIȚIE BINARY TREE
+                 ============================================================ -->
+            <div class="slide" data-slide="5">
+                <h1>🌳 Ce este un Binary Tree?</h1>
+                <p>Un <strong>binary tree</strong> este o structură de date ierarhică în care fiecare nod are <span class="highlight">cel mult doi copii</span>, denumiți convențional <em>copilul stâng</em> (left child) și <em>copilul drept</em> (right child).</p>
+                
+                <div class="ascii-diagram">
+<pre>
+                    ┌─────────┐
+                    │  ROOT   │ ← Rădăcina (root) - nivelul 0
+                    │   (A)   │
+                    └────┬────┘
+                         │
+           ┌─────────────┴─────────────┐
+           │                           │
+      ┌────┴────┐                ┌─────┴────┐
+      │    B    │                │    C     │ ← Nivelul 1
+      │ (copil  │                │ (copil   │
+      │  stâng) │                │  drept)  │
+      └────┬────┘                └─────┬────┘
+           │                           │
+    ┌──────┴──────┐             ┌──────┴──────┐
+    │             │             │             │
+┌───┴───┐    ┌────┴───┐    ┌────┴───┐   ┌─────┴───┐
+│   D   │    │   E    │    │   F    │   │    G    │ ← Nivelul 2
+│(leaf) │    │        │    │(leaf)  │   │ (leaf)  │
+└───────┘    └────┬───┘    └────────┘   └─────────┘
+                  │
+            ┌─────┴─────┐
+            │     H     │ ← Nivelul 3
+            │  (leaf)   │
+            └───────────┘
+</pre>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 6: TERMINOLOGIE
+                 ============================================================ -->
+            <div class="slide" data-slide="6">
+                <h1>📖 Terminologie Fundamentală</h1>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Termen</th>
+                                <th>Definiție</th>
+                                <th>Exemplu</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="highlight-blue">Root</span> (rădăcină)</td>
+                                <td>Nodul de la care pornesc toate ramurile</td>
+                                <td>A</td>
+                            </tr>
+                            <tr>
+                                <td><span class="highlight-green">Leaf</span> (frunză)</td>
+                                <td>Nod fără copii</td>
+                                <td>D, F, G, H</td>
+                            </tr>
+                            <tr>
+                                <td><span class="highlight-yellow">Parent</span> (părinte)</td>
+                                <td>Nodul care are copii</td>
+                                <td>B este parent pentru D și E</td>
+                            </tr>
+                            <tr>
+                                <td><span class="highlight-purple">Child</span> (copil)</td>
+                                <td>Nod direct conectat sub un parent</td>
+                                <td>D și E sunt copiii lui B</td>
+                            </tr>
+                            <tr>
+                                <td><span class="highlight-cyan">Sibling</span> (frate)</td>
+                                <td>Noduri cu același parent</td>
+                                <td>D și E sunt siblings</td>
+                            </tr>
+                            <tr>
+                                <td><span class="highlight-red">Depth</span> (adâncime)</td>
+                                <td>Numărul de muchii de la root la nod</td>
+                                <td>Depth(H) = 3</td>
+                            </tr>
+                            <tr>
+                                <td><span class="highlight">Height</span> (înălțime)</td>
+                                <td>Maximul adâncimilor tuturor nodurilor</td>
+                                <td>Height(tree) = 3</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 7: STRUCTURA ÎN C
+                 ============================================================ -->
+            <div class="slide" data-slide="7">
+                <h1>⚙️ Structura în C</h1>
+                <p>Reprezentarea standard a unui nod de binary tree:</p>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>Definiția structurii TreeNode</span>
+                        <span class="lang-badge c">C</span>
+                    </div>
+                    <pre><code class="language-c">/**
+ * Structura unui nod în binary tree
+ */
+typedef struct TreeNode {
+    int data;                    /* Valoarea stocată în nod */
+    struct TreeNode *left;       /* Pointer către copilul stâng */
+    struct TreeNode *right;      /* Pointer către copilul drept */
+} TreeNode;</code></pre>
+                </div>
+                
+                <div class="info-box note">
+                    <div class="info-box-title">💡 Observație</div>
+                    <p>Folosim <code>struct TreeNode</code> în definiția pointerilor deoarece typedef-ul nu este încă complet definit în acel punct.</p>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 8: FUNCȚIA createNode
+                 ============================================================ -->
+            <div class="slide" data-slide="8">
+                <h1>🔧 Crearea unui Nod</h1>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>Funcția createNode - alocarea dinamică a unui nod nou</span>
+                        <span class="lang-badge c">C</span>
+                    </div>
+                    <pre><code class="language-c">/**
+ * Funcție de creare a unui nod nou
+ * 
+ * @param value Valoarea de stocat în nod
+ * @return Pointer către nodul nou creat sau NULL la eroare
+ */
+TreeNode* createNode(int value) {
+    /* Alocăm memorie pentru noul nod */
+    TreeNode *newNode = (TreeNode*)malloc(sizeof(TreeNode));
+    
+    /* Verificăm dacă alocarea a reușit */
+    if (newNode == NULL) {
+        fprintf(stderr, "Eroare: Alocare memorie eșuată!\n");
+        return NULL;
+    }
+    
+    /* Inițializăm câmpurile nodului */
+    newNode->data = value;
+    newNode->left = NULL;
+    newNode->right = NULL;
+    
+    return newNode;
+}</code></pre>
+                </div>
+                
+                <div class="info-box warning">
+                    <div class="info-box-title">⚠️ Important</div>
+                    <p>Întotdeauna verificați dacă <code>malloc()</code> returnează <code>NULL</code>. Inițializați pointerii left și right cu <code>NULL</code> pentru a evita comportament nedefinit.</p>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 9: TIPURI DE TRAVERSARE - OVERVIEW
+                 ============================================================ -->
+            <div class="slide" data-slide="9">
+                <h1>🚶 Traversarea Binary Trees</h1>
+                <p><strong>Traversarea</strong> înseamnă vizitarea sistematică a tuturor nodurilor. Există <span class="highlight">4 metode principale</span>:</p>
+                
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <h4>🔄 Inorder (LNR)</h4>
+                        <p>Left → Node → Right<br>Rezultat sortat pentru BST</p>
+                    </div>
+                    <div class="summary-card">
+                        <h4>⬇️ Preorder (NLR)</h4>
+                        <p>Node → Left → Right<br>Copiere/serializare arbore</p>
+                    </div>
+                    <div class="summary-card">
+                        <h4>⬆️ Postorder (LRN)</h4>
+                        <p>Left → Right → Node<br>Ștergere arbore</p>
+                    </div>
+                    <div class="summary-card">
+                        <h4>➡️ Level-order (BFS)</h4>
+                        <p>Nivel cu nivel<br>Necesită queue</p>
+                    </div>
+                </div>
+                
+                <div class="info-box tip">
+                    <div class="info-box-title">💡 Mnemonică</div>
+                    <p><strong>LNR</strong> = Left-Node-Right (Inorder), <strong>NLR</strong> = Node-Left-Right (Preorder), <strong>LRN</strong> = Left-Right-Node (Postorder). Litera <strong>N</strong> (Node) indică când procesăm nodul curent!</p>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 10: INORDER TRAVERSAL
+                 ============================================================ -->
+            <div class="slide" data-slide="10">
+                <h1>🔄 Inorder Traversal (LNR)</h1>
+                <div class="two-columns">
+                    <div>
+                        <h3>Algoritm</h3>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>Pseudocod</span>
+                                <span class="lang-badge pseudo">Pseudo</span>
+                            </div>
+                            <pre><code>INORDER(node):
+    DACĂ node ≠ NULL ATUNCI
+        INORDER(node.left)
+        PROCESEAZĂ(node.data)
+        INORDER(node.right)</code></pre>
+                        </div>
+                        
+                        <h3>Implementare C</h3>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>Funcția inorderTraversal</span>
+                                <span class="lang-badge c">C</span>
+                            </div>
+                            <pre><code class="language-c">void inorderTraversal(TreeNode *node) {
+    if (node != NULL) {
+        inorderTraversal(node->left);
+        printf("%d ", node->data);
+        inorderTraversal(node->right);
+    }
+}</code></pre>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>Exemplu Vizual</h3>
+                        <div class="ascii-diagram">
+<pre>
+       [A]
+      /   \
+    [B]   [C]
+   /   \
+ [D]   [E]
+
+Ordinea vizitării:
+D → B → E → A → C
+
+(Stânga → Nod → Dreapta)
+</pre>
+                        </div>
+                        <div class="info-box note">
+                            <div class="info-box-title">📝 Utilizare</div>
+                            <p>Pentru Binary Search Trees, inorder returnează elementele în ordine <strong>sortată crescător</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 11: PREORDER TRAVERSAL
+                 ============================================================ -->
+            <div class="slide" data-slide="11">
+                <h1>⬇️ Preorder Traversal (NLR)</h1>
+                <div class="two-columns">
+                    <div>
+                        <h3>Algoritm</h3>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>Pseudocod</span>
+                                <span class="lang-badge pseudo">Pseudo</span>
+                            </div>
+                            <pre><code>PREORDER(node):
+    DACĂ node ≠ NULL ATUNCI
+        PROCESEAZĂ(node.data)
+        PREORDER(node.left)
+        PREORDER(node.right)</code></pre>
+                        </div>
+                        
+                        <h3>Implementare C</h3>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>Funcția preorderTraversal</span>
+                                <span class="lang-badge c">C</span>
+                            </div>
+                            <pre><code class="language-c">void preorderTraversal(TreeNode *node) {
+    if (node != NULL) {
+        printf("%d ", node->data);
+        preorderTraversal(node->left);
+        preorderTraversal(node->right);
+    }
+}</code></pre>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>Exemplu Vizual</h3>
+                        <div class="ascii-diagram">
+<pre>
+       [A]
+      /   \
+    [B]   [C]
+   /   \
+ [D]   [E]
+
+Ordinea vizitării:
+A → B → D → E → C
+
+(Nod → Stânga → Dreapta)
+</pre>
+                        </div>
+                        <div class="info-box note">
+                            <div class="info-box-title">📝 Utilizare</div>
+                            <p><strong>Copierea structurii</strong> arborelui, <strong>serializare</strong>, evaluarea expresiilor în notație <strong>prefix</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 12: POSTORDER TRAVERSAL
+                 ============================================================ -->
+            <div class="slide" data-slide="12">
+                <h1>⬆️ Postorder Traversal (LRN)</h1>
+                <div class="two-columns">
+                    <div>
+                        <h3>Algoritm</h3>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>Pseudocod</span>
+                                <span class="lang-badge pseudo">Pseudo</span>
+                            </div>
+                            <pre><code>POSTORDER(node):
+    DACĂ node ≠ NULL ATUNCI
+        POSTORDER(node.left)
+        POSTORDER(node.right)
+        PROCESEAZĂ(node.data)</code></pre>
+                        </div>
+                        
+                        <h3>Implementare C</h3>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>Funcția postorderTraversal</span>
+                                <span class="lang-badge c">C</span>
+                            </div>
+                            <pre><code class="language-c">void postorderTraversal(TreeNode *node) {
+    if (node != NULL) {
+        postorderTraversal(node->left);
+        postorderTraversal(node->right);
+        printf("%d ", node->data);
+    }
+}</code></pre>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>Exemplu Vizual</h3>
+                        <div class="ascii-diagram">
+<pre>
+       [A]
+      /   \
+    [B]   [C]
+   /   \
+ [D]   [E]
+
+Ordinea vizitării:
+D → E → B → C → A
+
+(Stânga → Dreapta → Nod)
+</pre>
+                        </div>
+                        <div class="info-box warning">
+                            <div class="info-box-title">⚠️ Utilizare Critică</div>
+                            <p><strong>Ștergerea arborelui!</strong> Copiii trebuie eliberați înainte de părinte. Evaluarea expresiilor <strong>postfix</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 13: LEVEL-ORDER TRAVERSAL
+                 ============================================================ -->
+            <div class="slide" data-slide="13">
+                <h1>➡️ Level-order Traversal (BFS)</h1>
+                <p>Traversează arborele <strong>nivel cu nivel</strong>, de la stânga la dreapta. Necesită o structură auxiliară de tip <span class="highlight">queue</span>.</p>
+                
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>Implementare Level-order cu queue simplu</span>
+                        <span class="lang-badge c">C</span>
+                    </div>
+                    <pre><code class="language-c">void levelOrderTraversal(TreeNode *root) {
+    if (root == NULL) return;
+    
+    /* Queue implementat ca array simplu */
+    TreeNode *queue[1000];
+    int front = 0, rear = 0;
+    
+    queue[rear++] = root;
+    
+    while (front < rear) {
+        TreeNode *current = queue[front++];
+        printf("%d ", current->data);
+        
+        if (current->left != NULL)
+            queue[rear++] = current->left;
+        if (current->right != NULL)
+            queue[rear++] = current->right;
+    }
+}</code></pre>
+                </div>
+                
+                <div class="ascii-diagram">
+<pre>
+       [A]           Rezultat: A → B → C → D → E → F → G
+      /   \
+    [B]   [C]        Nivel 0: A
+   /   \    \        Nivel 1: B, C
+ [D]   [E]  [G]      Nivel 2: D, E, G
+      /
+    [F]              Nivel 3: F
+</pre>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 14: COMPLEXITATE TRAVERSĂRI
+                 ============================================================ -->
+            <div class="slide" data-slide="14">
+                <h1>📊 Complexitate Traversări</h1>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Traversare</th>
+                                <th>Timp</th>
+                                <th>Spațiu (Recursiv)</th>
+                                <th>Spațiu (Queue)</th>
+                                <th>Tip</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Inorder</td>
+                                <td><span class="highlight-green">O(n)</span></td>
+                                <td>O(h)</td>
+                                <td>-</td>
+                                <td>DFS</td>
+                            </tr>
+                            <tr>
+                                <td>Preorder</td>
+                                <td><span class="highlight-green">O(n)</span></td>
+                                <td>O(h)</td>
+                                <td>-</td>
+                                <td>DFS</td>
+                            </tr>
+                            <tr>
+                                <td>Postorder</td>
+                                <td><span class="highlight-green">O(n)</span></td>
+                                <td>O(h)</td>
+                                <td>-</td>
+                                <td>DFS</td>
+                            </tr>
+                            <tr>
+                                <td>Level-order</td>
+                                <td><span class="highlight-green">O(n)</span></td>
+                                <td>-</td>
+                                <td>O(w)</td>
+                                <td>BFS</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="info-box note">
+                    <div class="info-box-title">📝 Notații</div>
+                    <ul>
+                        <li><strong>n</strong> = numărul total de noduri</li>
+                        <li><strong>h</strong> = înălțimea arborelui (cel mai rău caz: h = n pentru arbore degenerat)</li>
+                        <li><strong>w</strong> = lățimea maximă a arborelui (cel mai rău caz: 2<sup>h</sup> pentru arbore complet)</li>
+                        <li><strong>DFS</strong> = Depth-First Search, <strong>BFS</strong> = Breadth-First Search</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 15: CALCULAREA ÎNĂLȚIMII
+                 ============================================================ -->
+            <div class="slide" data-slide="15">
+                <h1>📏 Calcularea Înălțimii</h1>
+                <p>Înălțimea unui arbore este distanța maximă de la root la cea mai îndepărtată frunză.</p>
+                
+                <div class="two-columns">
+                    <div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>Funcția treeHeight - implementare recursivă</span>
+                                <span class="lang-badge c">C</span>
+                            </div>
+                            <pre><code class="language-c">/**
+ * Calculează înălțimea arborelui
+ * 
+ * @param node Rădăcina (sub)arborelui
+ * @return Înălțimea arborelui
+ */
+int treeHeight(TreeNode *node) {
+    /* Caz de bază: arbore vid */
+    if (node == NULL) {
+        return -1;  /* sau 0, vezi nota */
+    }
+    
+    /* Calculăm înălțimea subarborilor */
+    int leftHeight = treeHeight(node->left);
+    int rightHeight = treeHeight(node->right);
+    
+    /* Returnăm maximul + 1 */
+    if (leftHeight > rightHeight) {
+        return leftHeight + 1;
+    } else {
+        return rightHeight + 1;
+    }
+}</code></pre>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="ascii-diagram">
+<pre>
+       [A]     h=2
+      /   \
+    [B]   [C]  h=1
+   /
+ [D]           h=0
+
+Height = max(h_left, h_right) + 1
+</pre>
+                        </div>
+                        
+                        <div class="info-box tip">
+                            <div class="info-box-title">💡 Convenție</div>
+                            <p><strong>Convenție 1:</strong> height(NULL) = -1, height(leaf) = 0<br>
+                            <strong>Convenție 2:</strong> height(NULL) = 0, height(leaf) = 1<br>
+                            Alegeți una și fiți consecvenți!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 16: NUMĂRAREA NODURILOR
+                 ============================================================ -->
+            <div class="slide" data-slide="16">
+                <h1>🔢 Numărarea Nodurilor</h1>
+                
+                <div class="two-columns">
+                    <div>
+                        <h3>Toate nodurile</h3>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>Funcția countNodes</span>
+                                <span class="lang-badge c">C</span>
+                            </div>
+                            <pre><code class="language-c">int countNodes(TreeNode *node) {
+    if (node == NULL) {
+        return 0;
+    }
+    return 1 + countNodes(node->left) 
+             + countNodes(node->right);
+}</code></pre>
+                        </div>
+                        
+                        <h3>Doar frunzele</h3>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>Funcția countLeaves</span>
+                                <span class="lang-badge c">C</span>
+                            </div>
+                            <pre><code class="language-c">int countLeaves(TreeNode *node) {
+    if (node == NULL) {
+        return 0;
+    }
+    if (node->left == NULL && 
+        node->right == NULL) {
+        return 1;  /* Este frunză */
+    }
+    return countLeaves(node->left) 
+         + countLeaves(node->right);
+}</code></pre>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>Noduri interne</h3>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>Funcția countInternal</span>
+                                <span class="lang-badge c">C</span>
+                            </div>
+                            <pre><code class="language-c">int countInternal(TreeNode *node) {
+    if (node == NULL) {
+        return 0;
+    }
+    if (node->left == NULL && 
+        node->right == NULL) {
+        return 0;  /* Frunza nu e internă */
+    }
+    return 1 + countInternal(node->left) 
+             + countInternal(node->right);
+}</code></pre>
+                        </div>
+                        
+                        <div class="info-box note">
+                            <div class="info-box-title">📐 Relație</div>
+                            <p><code>total = internal + leaves</code><br>
+                            <code>countNodes = countInternal + countLeaves</code></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 17: CĂUTAREA ÎN ARBORE
+                 ============================================================ -->
+            <div class="slide" data-slide="17">
+                <h1>🔍 Căutarea unei Valori</h1>
+                <p>Căutarea într-un binary tree generic (ne-ordonat) necesită verificarea <strong>tuturor nodurilor</strong>.</p>
+                
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>Funcția searchTree - căutare recursivă</span>
+                        <span class="lang-badge c">C</span>
+                    </div>
+                    <pre><code class="language-c">/**
+ * Caută o valoare în arbore
+ * 
+ * @param node Rădăcina arborelui
+ * @param value Valoarea căutată
+ * @return Pointer către nodul găsit sau NULL dacă nu există
+ */
+TreeNode* searchTree(TreeNode *node, int value) {
+    /* Caz de bază: arbore vid */
+    if (node == NULL) {
+        return NULL;
+    }
+    
+    /* Am găsit valoarea */
+    if (node->data == value) {
+        return node;
+    }
+    
+    /* Căutăm în subarborele stâng */
+    TreeNode *found = searchTree(node->left, value);
+    if (found != NULL) {
+        return found;
+    }
+    
+    /* Căutăm în subarborele drept */
+    return searchTree(node->right, value);
+}</code></pre>
+                </div>
+                
+                <div class="info-box warning">
+                    <div class="info-box-title">⚠️ Complexitate</div>
+                    <p><strong>O(n)</strong> în cel mai rău caz - trebuie vizitate toate nodurile. Pentru căutare eficientă O(log n), folosiți <strong>Binary Search Trees</strong> (săptămâna viitoare).</p>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 18: ELIBERAREA MEMORIEI
+                 ============================================================ -->
+            <div class="slide" data-slide="18">
+                <h1>🗑️ Eliberarea Memoriei</h1>
+                <p>Pentru a evita <span class="highlight-red">memory leaks</span>, trebuie să eliberăm toate nodurile. Folosim <strong>postorder</strong> - copiii înainte de părinte!</p>
+                
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>Funcția freeTree - dealocarea corectă a memoriei</span>
+                        <span class="lang-badge c">C</span>
+                    </div>
+                    <pre><code class="language-c">/**
+ * Eliberează memoria ocupată de arbore
+ * IMPORTANT: Folosește traversarea postorder!
+ * 
+ * @param node Rădăcina arborelui de eliberat
+ */
+void freeTree(TreeNode *node) {
+    if (node == NULL) {
+        return;
+    }
+    
+    /* ÎNTÂI eliberăm copiii (postorder) */
+    freeTree(node->left);
+    freeTree(node->right);
+    
+    /* APOI eliberăm nodul curent */
+    free(node);
+}
+
+/* Utilizare în main() */
+int main(void) {
+    TreeNode *root = createNode(10);
+    /* ... construcție arbore ... */
+    
+    /* La final, OBLIGATORIU: */
+    freeTree(root);
+    root = NULL;  /* Evităm dangling pointer */
+    
+    return 0;
+}</code></pre>
+                </div>
+                
+                <div class="info-box danger">
+                    <div class="info-box-title">🚫 Greșeală frecventă</div>
+                    <p>Eliberarea nodului <strong>înainte</strong> de copii duce la memory leaks și accesări invalide de memorie!</p>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 19: ARBORI DE EXPRESII - INTRODUCERE
+                 ============================================================ -->
+            <div class="slide" data-slide="19">
+                <h1>🧮 Expression Trees</h1>
+                <p>Un <strong>expression tree</strong> reprezintă expresii matematice cu operatorii ca noduri interne și operanzii ca frunze.</p>
+                
+                <div class="two-columns">
+                    <div>
+                        <h3>Expresia: (3 + 5) × 2</h3>
+                        <div class="ascii-diagram">
+<pre>
+        [×]
+       /   \
+     [+]   [2]
+    /   \
+  [3]   [5]
+
+Inorder:   3 + 5 × 2 (necesită paranteze!)
+Preorder:  × + 3 5 2 (prefix/poloneză)
+Postorder: 3 5 + 2 × (postfix/RPN)
+</pre>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>Structura nodului</h3>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>ExprNode pentru arbori de expresii</span>
+                                <span class="lang-badge c">C</span>
+                            </div>
+                            <pre><code class="language-c">typedef struct ExprNode {
+    char op;    /* Operator sau '\0' */
+    int value;  /* Valoare (pt operanzi) */
+    struct ExprNode *left;
+    struct ExprNode *right;
+} ExprNode;</code></pre>
+                        </div>
+                        
+                        <div class="info-box note">
+                            <div class="info-box-title">📝 Regulă</div>
+                            <p>Frunzele sunt <strong>operanzi</strong> (numere), nodurile interne sunt <strong>operatori</strong> (+, -, ×, /).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 20: EVALUAREA EXPRESIILOR
+                 ============================================================ -->
+            <div class="slide" data-slide="20">
+                <h1>📐 Evaluarea Expression Trees</h1>
+                
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>Funcția evaluateExpression - evaluare recursivă postorder</span>
+                        <span class="lang-badge c">C</span>
+                    </div>
+                    <pre><code class="language-c">/**
+ * Evaluează recursiv un arbore de expresii
+ * Folosește traversarea postorder implicit
+ * 
+ * @param node Rădăcina arborelui de expresii
+ * @return Rezultatul evaluării
+ */
+int evaluateExpression(ExprNode *node) {
+    /* Caz de bază: operand (frunză) */
+    if (node->op == '\0') {
+        return node->value;
+    }
+    
+    /* Evaluăm recursiv subarborii (postorder) */
+    int leftVal = evaluateExpression(node->left);
+    int rightVal = evaluateExpression(node->right);
+    
+    /* Aplicăm operatorul */
+    switch (node->op) {
+        case '+': return leftVal + rightVal;
+        case '-': return leftVal - rightVal;
+        case '*': return leftVal * rightVal;
+        case '/': 
+            if (rightVal == 0) {
+                fprintf(stderr, "Eroare: Împărțire la zero!\n");
+                return 0;
+            }
+            return leftVal / rightVal;
+        default:
+            fprintf(stderr, "Operator necunoscut: %c\n", node->op);
+            return 0;
+    }
+}</code></pre>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 21: APLICAȚII - COMPILATOARE
+                 ============================================================ -->
+            <div class="slide" data-slide="21">
+                <h1>🏭 Aplicații: Compilatoare (AST)</h1>
+                <p>Compilatoarele folosesc <strong>Abstract Syntax Trees</strong> pentru reprezentarea codului sursă.</p>
+                
+                <div class="two-columns">
+                    <div>
+                        <h3>Cod sursă:</h3>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>Exemplu expresie</span>
+                                <span class="lang-badge c">C</span>
+                            </div>
+                            <pre><code class="language-c">result = a + b * c;</code></pre>
+                        </div>
+                        
+                        <h3>AST generat:</h3>
+                        <div class="ascii-diagram">
+<pre>
+      [=]
+     /   \
+[result] [+]
+        /   \
+      [a]   [*]
+           /   \
+         [b]   [c]
+</pre>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>Utilizări AST:</h3>
+                        <ul>
+                            <li><strong>Analiza semantică</strong> - verificarea tipurilor</li>
+                            <li><strong>Optimizare</strong> - constant folding, eliminare cod mort</li>
+                            <li><strong>Generare cod</strong> - traducere în cod mașină</li>
+                            <li><strong>Refactoring</strong> - transformări automate de cod</li>
+                        </ul>
+                        
+                        <div class="info-box tip">
+                            <div class="info-box-title">💡 Exemplu real</div>
+                            <p><strong>GCC</strong> folosește AST pentru compilare. <strong>Clang/LLVM</strong> expune AST-ul prin libclang pentru tool-uri de analiză.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 22: APLICAȚII - SISTEME DE FIȘIERE
+                 ============================================================ -->
+            <div class="slide" data-slide="22">
+                <h1>🏭 Aplicații: Sisteme de Fișiere</h1>
+                
+                <div class="two-columns">
+                    <div>
+                        <div class="ascii-diagram">
+<pre>
+[/home]
+├── [user1]
+│   ├── documents/
+│   │   ├── thesis.pdf
+│   │   └── notes.txt
+│   └── pictures/
+│       └── photo.jpg
+└── [user2]
+    └── projects/
+        └── code.c
+</pre>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>Structura pentru sistem de fișiere</span>
+                                <span class="lang-badge c">C</span>
+                            </div>
+                            <pre><code class="language-c">typedef struct FSNode {
+    char name[256];
+    int isDirectory;
+    struct FSNode *firstChild;
+    struct FSNode *nextSibling;
+} FSNode;
+
+void listDir(FSNode *dir, int depth) {
+    if (dir == NULL) return;
+    
+    for (int i = 0; i < depth; i++)
+        printf("  ");
+    printf("%s%s\n", dir->name, 
+           dir->isDirectory ? "/" : "");
+    
+    if (dir->isDirectory)
+        listDir(dir->firstChild, depth+1);
+    listDir(dir->nextSibling, depth);
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 23: APLICAȚII - HTML DOM
+                 ============================================================ -->
+            <div class="slide" data-slide="23">
+                <h1>🏭 Aplicații: HTML DOM</h1>
+                <p>Browserele web reprezintă documentele HTML ca <strong>Document Object Model</strong> (DOM) - un arbore.</p>
+                
+                <div class="two-columns">
+                    <div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>Document HTML</span>
+                                <span class="lang-badge pseudo">HTML</span>
+                            </div>
+                            <pre><code>&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;Pagina mea&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;div id="container"&gt;
+      &lt;p&gt;Text&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="ascii-diagram">
+<pre>
+        [html]
+       /      \
+   [head]    [body]
+     |          |
+  [title]    [div#container]
+     |          |
+  "Pagina"    [p]
+               |
+            "Text"
+</pre>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-box note">
+                    <div class="info-box-title">📝 API DOM în JavaScript</div>
+                    <p><code>document.getElementById()</code>, <code>element.children</code>, <code>element.parentNode</code> - toate operează pe arbore!</p>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 24: ERORI FRECVENTE - MEMORY LEAKS
+                 ============================================================ -->
+            <div class="slide" data-slide="24">
+                <h1>⚠️ Erori Frecvente: Memory Leaks</h1>
+                
+                <div class="two-columns">
+                    <div class="column" style="border-color: var(--accent-red);">
+                        <h3 style="color: var(--accent-red);">❌ GREȘIT</h3>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>Memory leak - pierdem referința</span>
+                                <span class="lang-badge c">C</span>
+                            </div>
+                            <pre><code class="language-c">void bad_example(void) {
+    TreeNode *root = createNode(10);
+    root->left = createNode(5);
+    root->right = createNode(15);
+    
+    /* Funcția se termină fără 
+       eliberarea memoriei!
+       Memory leak: 3 noduri × 
+       sizeof(TreeNode) */
+}
+
+/* Sau: */
+root = createNode(20);  
+/* Pierdem referința la arborele 
+   anterior! */</code></pre>
+                        </div>
+                    </div>
+                    <div class="column" style="border-color: var(--accent-green);">
+                        <h3 style="color: var(--accent-green);">✓ CORECT</h3>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>Eliberare corectă</span>
+                                <span class="lang-badge c">C</span>
+                            </div>
+                            <pre><code class="language-c">void good_example(void) {
+    TreeNode *root = createNode(10);
+    root->left = createNode(5);
+    root->right = createNode(15);
+    
+    /* ... procesare ... */
+    
+    /* Eliberăm ÎNAINTE de 
+       terminarea funcției */
+    freeTree(root);
+    root = NULL;
+}
+
+/* Sau: */
+freeTree(root);  /* Eliberăm vechiul */
+root = createNode(20);  /* Apoi alocăm */</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 25: ERORI FRECVENTE - NULL POINTER
+                 ============================================================ -->
+            <div class="slide" data-slide="25">
+                <h1>⚠️ Erori Frecvente: NULL Pointer Dereference</h1>
+                
+                <div class="two-columns">
+                    <div class="column" style="border-color: var(--accent-red);">
+                        <h3 style="color: var(--accent-red);">❌ GREȘIT</h3>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>Crash: accesare NULL</span>
+                                <span class="lang-badge c">C</span>
+                            </div>
+                            <pre><code class="language-c">void bad_traversal(TreeNode *node) {
+    /* CRASH dacă node == NULL! */
+    printf("%d\n", node->data);
+    
+    /* De asemenea CRASH: */
+    if (node->left->data == 5) {
+        /* node->left poate fi NULL! */
+    }
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="column" style="border-color: var(--accent-green);">
+                        <h3 style="color: var(--accent-green);">✓ CORECT</h3>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>Verificare înainte de acces</span>
+                                <span class="lang-badge c">C</span>
+                            </div>
+                            <pre><code class="language-c">void good_traversal(TreeNode *node) {
+    /* ÎNTÂI verificăm NULL */
+    if (node == NULL) {
+        return;
+    }
+    printf("%d\n", node->data);
+    
+    /* Verificăm și copiii: */
+    if (node->left != NULL && 
+        node->left->data == 5) {
+        /* Acum e sigur */
+    }
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-box danger">
+                    <div class="info-box-title">🚫 Regula de aur</div>
+                    <p><strong>ÎNTOTDEAUNA</strong> verificați <code>if (node == NULL)</code> ca <strong>PRIMUL</strong> lucru în orice funcție recursivă pe arbori!</p>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 26: ERORI FRECVENTE - RECURSIVITATE
+                 ============================================================ -->
+            <div class="slide" data-slide="26">
+                <h1>⚠️ Erori Frecvente: Recursivitate Infinită</h1>
+                
+                <div class="two-columns">
+                    <div class="column" style="border-color: var(--accent-red);">
+                        <h3 style="color: var(--accent-red);">❌ GREȘIT</h3>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>Stack overflow!</span>
+                                <span class="lang-badge c">C</span>
+                            </div>
+                            <pre><code class="language-c">int badHeight(TreeNode *node) {
+    /* Lipsește cazul de bază! */
+    int l = badHeight(node->left);
+    int r = badHeight(node->right);
+    return 1 + (l > r ? l : r);
+    /* Recursie infinită → 
+       Stack Overflow */
+}
+
+int badCount(TreeNode *node) {
+    /* Cazul de bază nu oprește */
+    if (node == NULL) {
+        return badCount(node->left);
+        /* Apelăm în continuare! */
+    }
+    return 1 + badCount(node->left);
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="column" style="border-color: var(--accent-green);">
+                        <h3 style="color: var(--accent-green);">✓ CORECT</h3>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>Caz de bază corect</span>
+                                <span class="lang-badge c">C</span>
+                            </div>
+                            <pre><code class="language-c">int goodHeight(TreeNode *node) {
+    /* Caz de bază OBLIGATORIU */
+    if (node == NULL) {
+        return -1;  /* STOP! */
+    }
+    int l = goodHeight(node->left);
+    int r = goodHeight(node->right);
+    return 1 + (l > r ? l : r);
+}
+
+int goodCount(TreeNode *node) {
+    if (node == NULL) {
+        return 0;  /* STOP și returnează */
+    }
+    return 1 + goodCount(node->left)
+             + goodCount(node->right);
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 27: DEBUGGING CU GDB
+                 ============================================================ -->
+            <div class="slide" data-slide="27">
+                <h1>🔧 Debugging cu GDB</h1>
+                <p>GNU Debugger (GDB) este esențial pentru depanarea programelor cu arbori.</p>
+                
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>Comenzi GDB utile pentru arbori</span>
+                        <span class="lang-badge pseudo">GDB</span>
+                    </div>
+                    <pre><code># Compilare cu simboluri debug
+gcc -g -Wall -o program program.c
+
+# Pornire debugger
+gdb ./program
+
+# Comenzi în GDB:
+(gdb) break inorderTraversal    # Breakpoint la funcție
+(gdb) run                        # Rulează programul
+(gdb) print node                 # Afișează valoarea pointerului
+(gdb) print *node                # Afișează conținutul nodului
+(gdb) print node->data           # Afișează câmpul data
+(gdb) print node->left           # Afișează pointer copil stâng
+(gdb) step                       # Intră în funcție (recursiv)
+(gdb) next                       # Următoarea linie
+(gdb) backtrace                  # Afișează call stack (foarte util pt recursie!)
+(gdb) watch node                 # Oprește când node se modifică
+(gdb) continue                   # Continuă execuția
+(gdb) quit                       # Ieșire</code></pre>
+                </div>
+                
+                <div class="info-box tip">
+                    <div class="info-box-title">💡 Sfat</div>
+                    <p>Folosiți <code>backtrace</code> pentru a vedea lanțul de apeluri recursive și pentru a identifica unde a apărut eroarea.</p>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 28: DEBUGGING CU VALGRIND
+                 ============================================================ -->
+            <div class="slide" data-slide="28">
+                <h1>🔧 Verificare Memorie cu Valgrind</h1>
+                
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>Utilizare Valgrind pentru memory leaks</span>
+                        <span class="lang-badge pseudo">Terminal</span>
+                    </div>
+                    <pre><code># Compilare cu debug symbols
+gcc -g -Wall -o program program.c
+
+# Rulare cu Valgrind
+valgrind --leak-check=full --show-leak-kinds=all ./program
+
+# Output pentru program CORECT:
+==12345== HEAP SUMMARY:
+==12345==     in use at exit: 0 bytes in 0 blocks
+==12345==   total heap usage: 5 allocs, 5 frees, 120 bytes allocated
+==12345== All heap blocks were freed -- no leaks are possible
+
+# Output pentru program cu MEMORY LEAK:
+==12345== LEAK SUMMARY:
+==12345==    definitely lost: 24 bytes in 1 blocks
+==12345==    indirectly lost: 48 bytes in 2 blocks
+==12345==      possibly lost: 0 bytes in 0 blocks
+==12345==    still reachable: 0 bytes in 0 blocks
+==12345==         suppressed: 0 bytes in 0 blocks</code></pre>
+                </div>
+                
+                <div class="info-box danger">
+                    <div class="info-box-title">🚫 „definitely lost"</div>
+                    <p>Dacă vedeți „definitely lost", aveți memory leaks! Verificați că apelați <code>freeTree()</code> pentru toate arborii alocați.</p>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 29: BEST PRACTICES
+                 ============================================================ -->
+            <div class="slide" data-slide="29">
+                <h1>✅ Best Practices</h1>
+                
+                <div class="two-columns">
+                    <div class="column" style="border-color: var(--accent-green);">
+                        <h3 style="color: var(--accent-green);">✓ DO (Faceți)</h3>
+                        <ul>
+                            <li>Verificați <code>NULL</code> la începutul fiecărei funcții</li>
+                            <li>Verificați returnul <code>malloc()</code></li>
+                            <li>Folosiți <code>freeTree()</code> cu postorder</li>
+                            <li>Setați pointerii la <code>NULL</code> după <code>free()</code></li>
+                            <li>Compilați cu <code>-Wall -Wextra</code></li>
+                            <li>Testați cu Valgrind regulat</li>
+                            <li>Documentați funcțiile cu comentarii</li>
+                            <li>Folosiți nume descriptive</li>
+                        </ul>
+                    </div>
+                    <div class="column" style="border-color: var(--accent-red);">
+                        <h3 style="color: var(--accent-red);">✗ DON'T (Evitați)</h3>
+                        <ul>
+                            <li>Nu accesați <code>node->data</code> fără verificare NULL</li>
+                            <li>Nu uitați să eliberați memoria</li>
+                            <li>Nu folosiți <code>free()</code> fără postorder</li>
+                            <li>Nu ignorați warning-urile compilatorului</li>
+                            <li>Nu presupuneți că malloc() reușește mereu</li>
+                            <li>Nu hardcodați dimensiuni de array-uri</li>
+                            <li>Nu uitați cazul de bază în recursie</li>
+                            <li>Nu mixați diferite convenții de height</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 30: TIPURI DE BINARY TREES
+                 ============================================================ -->
+            <div class="slide" data-slide="30">
+                <h1>🌲 Tipuri de Binary Trees</h1>
+                
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <h4>Full Binary Tree</h4>
+                        <p>Fiecare nod are 0 sau 2 copii (niciodată 1)</p>
+                    </div>
+                    <div class="summary-card">
+                        <h4>Complete Binary Tree</h4>
+                        <p>Toate nivelurile sunt pline, cu excepția ultimului (umplut de la stânga)</p>
+                    </div>
+                    <div class="summary-card">
+                        <h4>Perfect Binary Tree</h4>
+                        <p>Toate nodurile interne au 2 copii, toate frunzele la același nivel</p>
+                    </div>
+                    <div class="summary-card">
+                        <h4>Balanced Binary Tree</h4>
+                        <p>Înălțimile subarborilor diferă cu maxim 1 pentru orice nod</p>
+                    </div>
+                    <div class="summary-card">
+                        <h4>Degenerate Tree</h4>
+                        <p>Fiecare nod are un singur copil (practic o listă)</p>
+                    </div>
+                    <div class="summary-card">
+                        <h4>Binary Search Tree</h4>
+                        <p>left < node < right (săptămâna viitoare)</p>
+                    </div>
+                </div>
+                
+                <div class="ascii-diagram">
+<pre>
+   Full        Complete      Perfect      Degenerate
+    ●             ●            ●              ●
+   / \           / \          / \              \
+  ●   ●         ●   ●        ●   ●              ●
+ / \           / \          / \ / \              \
+●   ●         ●   ●        ●  ● ●  ●              ●
+</pre>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 31: PROPRIETĂȚI MATEMATICE
+                 ============================================================ -->
+            <div class="slide" data-slide="31">
+                <h1>📐 Proprietăți Matematice</h1>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Proprietate</th>
+                                <th>Formulă</th>
+                                <th>Exemplu (h=3)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Nr. maxim noduri la nivel k</td>
+                                <td>2<sup>k</sup></td>
+                                <td>2³ = 8 noduri la nivelul 3</td>
+                            </tr>
+                            <tr>
+                                <td>Nr. maxim noduri în arbore (h nivele)</td>
+                                <td>2<sup>h+1</sup> - 1</td>
+                                <td>2⁴ - 1 = 15 noduri</td>
+                            </tr>
+                            <tr>
+                                <td>Înălțime minimă pentru n noduri</td>
+                                <td>⌈log₂(n+1)⌉ - 1</td>
+                                <td>Pentru n=15: h=3</td>
+                            </tr>
+                            <tr>
+                                <td>Nr. frunze în full binary tree</td>
+                                <td>(n + 1) / 2</td>
+                                <td>Pentru n=15: 8 frunze</td>
+                            </tr>
+                            <tr>
+                                <td>Relație frunze - noduri interne</td>
+                                <td>L = I + 1</td>
+                                <td>8 frunze = 7 interne + 1</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="info-box note">
+                    <div class="info-box-title">📝 Notații</div>
+                    <p><strong>h</strong> = înălțime, <strong>n</strong> = număr total noduri, <strong>L</strong> = număr frunze (leaves), <strong>I</strong> = număr noduri interne</p>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 32: RECURSIVITATE VS ITERATIVITATE
+                 ============================================================ -->
+            <div class="slide" data-slide="32">
+                <h1>🔄 Recursiv vs Iterativ</h1>
+                
+                <div class="two-columns">
+                    <div>
+                        <h3>Abordare Recursivă</h3>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>Inorder recursiv</span>
+                                <span class="lang-badge c">C</span>
+                            </div>
+                            <pre><code class="language-c">void inorderRecursive(TreeNode *n) {
+    if (n == NULL) return;
+    inorderRecursive(n->left);
+    printf("%d ", n->data);
+    inorderRecursive(n->right);
+}</code></pre>
+                        </div>
+                        <p><span class="highlight-green">✓ Avantaje:</span> Cod clar, elegant, ușor de înțeles</p>
+                        <p><span class="highlight-red">✗ Dezavantaje:</span> Stack overflow pentru arbori adânci</p>
+                    </div>
+                    <div>
+                        <h3>Abordare Iterativă</h3>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>Inorder iterativ cu stack</span>
+                                <span class="lang-badge c">C</span>
+                            </div>
+                            <pre><code class="language-c">void inorderIterative(TreeNode *root) {
+    TreeNode *stack[1000];
+    int top = -1;
+    TreeNode *curr = root;
+    
+    while (curr != NULL || top >= 0) {
+        while (curr != NULL) {
+            stack[++top] = curr;
+            curr = curr->left;
+        }
+        curr = stack[top--];
+        printf("%d ", curr->data);
+        curr = curr->right;
+    }
+}</code></pre>
+                        </div>
+                        <p><span class="highlight-green">✓ Avantaje:</span> Fără risc de stack overflow</p>
+                        <p><span class="highlight-red">✗ Dezavantaje:</span> Cod mai complex</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 33: CONSTRUCȚIA ARBORELUI DIN ARRAY
+                 ============================================================ -->
+            <div class="slide" data-slide="33">
+                <h1>🏗️ Construcția din Array</h1>
+                <p>Putem construi un binary tree complet dintr-un array folosind indexarea:</p>
+                
+                <div class="ascii-diagram">
+<pre>
+Array: [1, 2, 3, 4, 5, 6, 7]
+Index:  0  1  2  3  4  5  6
+
+       [1]           index 0
+      /   \
+    [2]   [3]        index 1, 2
+   /   \  /   \
+ [4] [5][6]  [7]     index 3, 4, 5, 6
+
+Reguli pentru nodul la index i:
+- Copil stâng:  2*i + 1
+- Copil drept:  2*i + 2
+- Părinte:      (i - 1) / 2
+</pre>
+                </div>
+                
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>Construcție recursivă din array</span>
+                        <span class="lang-badge c">C</span>
+                    </div>
+                    <pre><code class="language-c">TreeNode* buildTree(int arr[], int i, int n) {
+    if (i >= n) return NULL;  /* Index invalid */
+    
+    TreeNode *node = createNode(arr[i]);
+    node->left = buildTree(arr, 2*i + 1, n);   /* Copil stâng */
+    node->right = buildTree(arr, 2*i + 2, n);  /* Copil drept */
+    return node;
+}
+/* Utilizare: TreeNode *root = buildTree(arr, 0, 7); */</code></pre>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 34: LABORATOR - PREVIEW
+                 ============================================================ -->
+            <div class="slide" data-slide="34">
+                <h1>💻 Previzualizare Laborator</h1>
+                
+                <div class="two-columns">
+                    <div>
+                        <h3>Exercițiul 1: Operații Fundamentale</h3>
+                        <p>Implementați:</p>
+                        <ul>
+                            <li>Structura <code>TreeNode</code> și <code>createNode()</code></li>
+                            <li>Cele 4 tipuri de traversare</li>
+                            <li>Calcularea înălțimii și numărarea nodurilor</li>
+                            <li>Căutarea unei valori</li>
+                            <li>Eliberarea memoriei</li>
+                        </ul>
+                        <p><strong>TODOs:</strong> 8-10</p>
+                    </div>
+                    <div>
+                        <h3>Exercițiul 2: Expression Trees</h3>
+                        <p>Implementați:</p>
+                        <ul>
+                            <li>Structura <code>ExprNode</code></li>
+                            <li>Construcția arborelui din expresie postfix</li>
+                            <li>Evaluarea expresiei</li>
+                            <li>Afișarea în notații diferite</li>
+                            <li>Tratarea erorilor (div by zero)</li>
+                        </ul>
+                        <p><strong>TODOs:</strong> 10-12</p>
+                    </div>
+                </div>
+                
+                <div class="info-box tip">
+                    <div class="info-box-title">💡 Sfat</div>
+                    <p>Începeți cu funcțiile simple (<code>createNode</code>, traversări) și construiți progresiv. Testați cu Valgrind după fiecare pas!</p>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 35: KEY TAKEAWAYS
+                 ============================================================ -->
+            <div class="slide" data-slide="35">
+                <h1>📌 Concluzii Cheie</h1>
+                
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <h4>🌳 Structura</h4>
+                        <p>Binary tree = noduri cu maxim 2 copii. Terminologie: root, leaf, parent, child, height, depth.</p>
+                    </div>
+                    <div class="summary-card">
+                        <h4>🔄 Traversări</h4>
+                        <p>4 metode: Inorder (LNR), Preorder (NLR), Postorder (LRN), Level-order (BFS). Toate O(n).</p>
+                    </div>
+                    <div class="summary-card">
+                        <h4>🔁 Recursivitate</h4>
+                        <p>Cazul de bază (<code>if NULL</code>) este OBLIGATORIU. Recursivitatea este naturală pentru arbori.</p>
+                    </div>
+                    <div class="summary-card">
+                        <h4>💾 Memorie</h4>
+                        <p>malloc() pentru alocare, free() cu postorder pentru dealoccare. Verificați ÎNTOTDEAUNA NULL!</p>
+                    </div>
+                    <div class="summary-card">
+                        <h4>📊 Complexitate</h4>
+                        <p>Timp: O(n) pentru traversări. Spațiu: O(h) pentru recursie unde h = înălțime.</p>
+                    </div>
+                    <div class="summary-card">
+                        <h4>🏭 Aplicații</h4>
+                        <p>Compilatoare (AST), DOM, sisteme de fișiere, decision trees, expression evaluation.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 36: RESURSE
+                 ============================================================ -->
+            <div class="slide" data-slide="36">
+                <h1>📖 Resurse de Studiu</h1>
+                
+                <div class="two-columns">
+                    <div>
+                        <h3>Cărți</h3>
+                        <ul>
+                            <li><strong>Knuth</strong> - "The Art of Computer Programming", Vol. 1, Cap. 2.3</li>
+                            <li><strong>Cormen et al.</strong> - "Introduction to Algorithms", Cap. 10, 12</li>
+                            <li><strong>Sedgewick</strong> - "Algorithms in C", Cap. 5</li>
+                        </ul>
+                        
+                        <h3>Online</h3>
+                        <ul>
+                            <li><a href="https://visualgo.net/en/bst" style="color: var(--accent-blue);">Visualgo - Vizualizări interactive</a></li>
+                            <li><a href="https://www.geeksforgeeks.org/binary-tree-data-structure/" style="color: var(--accent-blue);">GeeksforGeeks - Tutoriale</a></li>
+                            <li><a href="https://cs50.harvard.edu/x/" style="color: var(--accent-blue);">CS50 Harvard - Curs gratuit</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>Practică</h3>
+                        <ul>
+                            <li><a href="https://leetcode.com/tag/binary-tree/" style="color: var(--accent-blue);">LeetCode - Binary Tree problems</a></li>
+                            <li><a href="https://www.hackerrank.com/domains/data-structures/trees" style="color: var(--accent-blue);">HackerRank - Trees challenges</a></li>
+                        </ul>
+                        
+                        <h3>Documentație</h3>
+                        <ul>
+                            <li>Man pages: <code>man malloc</code>, <code>man free</code></li>
+                            <li>GDB documentation</li>
+                            <li>Valgrind quick start guide</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 37: PREVIEW SĂPTĂMÂNA VIITOARE
+                 ============================================================ -->
+            <div class="slide" data-slide="37">
+                <h1>🔮 Săptămâna Viitoare</h1>
+                <h2>Binary Search Trees (BST)</h2>
+                
+                <div class="two-columns">
+                    <div>
+                        <p>Vom explora:</p>
+                        <ul>
+                            <li>Proprietatea de ordonare: <span class="highlight">left < node < right</span></li>
+                            <li>Operații eficiente: search, insert, delete în <span class="highlight-green">O(log n)</span></li>
+                            <li>Degenerarea în O(n) și necesitatea echilibrării</li>
+                            <li>Introducere în arbori AVL</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <div class="ascii-diagram">
+<pre>
+        [50]
+       /    \
+    [30]    [70]
+   /    \   /    \
+ [20] [40][60]  [80]
+
+Căutare 60:
+50 → 70 → 60 ✓
+(doar 3 comparații!)
+</pre>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-box note">
+                    <div class="info-box-title">📝 Pregătire</div>
+                    <p>Asigurați-vă că înțelegeți bine traversările și recursivitatea înainte de săptămâna viitoare!</p>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SLIDE 38: ÎNTREBĂRI
+                 ============================================================ -->
+            <div class="slide end-slide" data-slide="38">
+                <div class="questions-icon">❓</div>
+                <h1>Întrebări?</h1>
+                <p style="font-size: 1.3rem; color: var(--text-secondary); margin-top: 2rem;">
+                    Mulțumesc pentru atenție!
+                </p>
+                <p style="color: var(--text-muted); margin-top: 1rem;">
+                    Săptămâna 7 | Arbori Binari (Binary Trees)
+                </p>
+                <p style="color: var(--text-muted); margin-top: 0.5rem;">
+                    Algoritmi și Tehnici de Programare | ASE București
+                </p>
+                
+                <div style="margin-top: 3rem;">
+                    <p style="color: var(--accent-blue);">Navigare: <kbd>←</kbd> <kbd>→</kbd> <kbd>Space</kbd> <kbd>Home</kbd> <kbd>End</kbd></p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Navigare -->
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn" title="Slide anterior (←)">←</button>
+        <button class="nav-btn" id="nextBtn" title="Slide următor (→)">→</button>
+    </div>
+
+    <!-- Contor Slide-uri -->
+    <div class="slide-counter">
+        <span id="currentSlide">1</span> / <span id="totalSlides">38</span>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inițializare highlight.js
+            hljs.highlightAll();
+            
+            // Variabile
+            const slides = document.querySelectorAll('.slide');
+            const totalSlides = slides.length;
+            let currentSlide = 1;
+            
+            // Elemente DOM
+            const progressBar = document.getElementById('progressBar');
+            const currentSlideEl = document.getElementById('currentSlide');
+            const totalSlidesEl = document.getElementById('totalSlides');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            // Setare total
+            totalSlidesEl.textContent = totalSlides;
+            
+            // Funcție pentru afișarea slide-ului
+            function showSlide(n) {
+                // Validare
+                if (n < 1) n = 1;
+                if (n > totalSlides) n = totalSlides;
+                
+                // Actualizare slide curent
+                currentSlide = n;
+                
+                // Ascundem toate slide-urile
+                slides.forEach(slide => slide.classList.remove('active'));
+                
+                // Afișăm slide-ul curent
+                slides[currentSlide - 1].classList.add('active');
+                
+                // Actualizăm progress bar
+                const progress = (currentSlide / totalSlides) * 100;
+                progressBar.style.width = progress + '%';
+                
+                // Actualizăm contorul
+                currentSlideEl.textContent = currentSlide;
+                
+                // Actualizăm starea butoanelor
+                prevBtn.disabled = (currentSlide === 1);
+                nextBtn.disabled = (currentSlide === totalSlides);
+                
+                // Salvăm în localStorage pentru a păstra poziția
+                localStorage.setItem('week07-slide', currentSlide);
+            }
+            
+            // Navigare
+            function nextSlide() {
+                showSlide(currentSlide + 1);
+            }
+            
+            function prevSlide() {
+                showSlide(currentSlide - 1);
+            }
+            
+            // Event listeners pentru butoane
+            prevBtn.addEventListener('click', prevSlide);
+            nextBtn.addEventListener('click', nextSlide);
+            
+            // Navigare cu tastatura
+            document.addEventListener('keydown', function(e) {
+                switch(e.key) {
+                    case 'ArrowRight':
+                    case ' ':
+                        e.preventDefault();
+                        nextSlide();
+                        break;
+                    case 'ArrowLeft':
+                        prevSlide();
+                        break;
+                    case 'Home':
+                        showSlide(1);
+                        break;
+                    case 'End':
+                        showSlide(totalSlides);
+                        break;
+                }
+            });
+            
+            // Touch support pentru mobile
+            let touchStartX = 0;
+            let touchEndX = 0;
+            
+            document.addEventListener('touchstart', function(e) {
+                touchStartX = e.changedTouches[0].screenX;
+            });
+            
+            document.addEventListener('touchend', function(e) {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            });
+            
+            function handleSwipe() {
+                const swipeThreshold = 50;
+                const diff = touchStartX - touchEndX;
+                
+                if (Math.abs(diff) > swipeThreshold) {
+                    if (diff > 0) {
+                        nextSlide();
+                    } else {
+                        prevSlide();
+                    }
+                }
+            }
+            
+            // Restaurare poziție din localStorage
+            const savedSlide = localStorage.getItem('week07-slide');
+            if (savedSlide) {
+                showSlide(parseInt(savedSlide));
+            } else {
+                showSlide(1);
+            }
+        });
+    </script>
+</body>
+</html>

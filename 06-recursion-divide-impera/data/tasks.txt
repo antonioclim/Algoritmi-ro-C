@@ -1,0 +1,35 @@
+# Date de test pentru Exercise 2 - Task Scheduler
+# Format: COMMAND args...
+
+# Programăm task-uri cu diferite priorități
+SCHEDULE CRITICAL System_backup_urgent
+SCHEDULE NORMAL Email_newsletter_send
+SCHEDULE LOW Log_cleanup_monthly
+SCHEDULE HIGH Database_optimization
+SCHEDULE NORMAL Report_generation
+SCHEDULE CRITICAL Security_patch_install
+SCHEDULE LOW Archive_old_data
+SCHEDULE HIGH Cache_refresh
+
+# Verificăm starea
+STATUS
+LIST
+
+# Executăm câteva task-uri (ar trebui să fie în ordinea priorității)
+EXECUTE
+EXECUTE
+EXECUTE
+
+# Verificăm din nou
+STATUS
+LIST
+
+# Adăugăm mai multe task-uri
+SCHEDULE NORMAL User_notification
+SCHEDULE LOW Temp_files_cleanup
+
+# Executăm toate task-urile rămase
+EXECUTE_ALL
+
+# Statistici finale
+STATS

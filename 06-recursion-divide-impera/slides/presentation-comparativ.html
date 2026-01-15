@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Săptămâna 6: Comparație Pseudocod / C / Python - Queues</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-yellow: #d29922;
+            --accent-red: #f85149;
+            --accent-purple: #a371f7;
+            --border-color: #30363d;
+            --pseudo-color: #f0883e;
+            --c-color: #58a6ff;
+            --python-color: #3fb950;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--pseudo-color), var(--c-color), var(--python-color));
+            transition: width 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .slides-container {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 50px 60px;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            overflow-y: auto;
+        }
+        
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            opacity: 1;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--pseudo-color), var(--c-color), var(--python-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: var(--accent-blue);
+        }
+        
+        h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .three-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            flex: 1;
+            margin: 15px 0;
+        }
+        
+        .column {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .column.pseudocod {
+            border-color: var(--pseudo-color);
+        }
+        
+        .column.c-lang {
+            border-color: var(--c-color);
+        }
+        
+        .column.python {
+            border-color: var(--python-color);
+        }
+        
+        .column-header {
+            padding: 12px 15px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .column.pseudocod .column-header {
+            background: rgba(240, 136, 62, 0.2);
+            color: var(--pseudo-color);
+        }
+        
+        .column.c-lang .column-header {
+            background: rgba(88, 166, 255, 0.2);
+            color: var(--c-color);
+        }
+        
+        .column.python .column-header {
+            background: rgba(63, 185, 80, 0.2);
+            color: var(--python-color);
+        }
+        
+        .column-content {
+            flex: 1;
+            padding: 0;
+            overflow: auto;
+        }
+        
+        pre {
+            margin: 0;
+            padding: 15px;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            overflow-x: auto;
+        }
+        
+        code {
+            font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+        }
+        
+        .title-slide {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .title-slide h1 {
+            font-size: 3.5rem;
+        }
+        
+        .subtitle {
+            font-size: 1.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+        
+        .info-box {
+            background: var(--bg-secondary);
+            border-left: 4px solid var(--accent-blue);
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+        
+        .comparison-table th {
+            background: var(--bg-tertiary);
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background: var(--bg-secondary);
+        }
+        
+        .nav-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+        
+        .nav-btn {
+            width: 45px;
+            height: 45px;
+            border: none;
+            border-radius: 8px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .nav-btn:hover {
+            background: var(--accent-blue);
+            color: var(--bg-primary);
+        }
+        
+        .slide-counter {
+            position: fixed;
+            bottom: 25px;
+            left: 30px;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+        
+        .highlight-pseudo { color: var(--pseudo-color); }
+        .highlight-c { color: var(--c-color); }
+        .highlight-python { color: var(--python-color); }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .badge-pseudo { background: var(--pseudo-color); color: var(--bg-primary); }
+        .badge-c { background: var(--c-color); color: var(--bg-primary); }
+        .badge-python { background: var(--python-color); color: var(--bg-primary); }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide.active > * {
+            animation: fadeIn 0.4s ease forwards;
+        }
+        
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    
+    <div class="slides-container">
+        <!-- Slide 1: Title -->
+        <div class="slide title-slide active" data-slide="1">
+            <p style="font-size: 1.3rem; color: var(--text-secondary);">Algoritmi și Tehnici de Programare - Săptămâna 6</p>
+            <h1>Cozi (Queues)</h1>
+            <div class="subtitle">Comparație între Limbaje</div>
+            <div style="display: flex; gap: 15px; justify-content: center; margin-top: 30px;">
+                <span class="badge badge-pseudo">📝 Pseudocod</span>
+                <span class="badge badge-c">⚙️ C</span>
+                <span class="badge badge-python">🐍 Python</span>
+            </div>
+        </div>
+
+        <!-- Slide 2: Why Compare -->
+        <div class="slide" data-slide="2">
+            <h2>🤔 De Ce Comparăm Limbaje?</h2>
+            <div class="three-columns" style="flex: none;">
+                <div class="info-box" style="border-color: var(--pseudo-color);">
+                    <h3 class="highlight-pseudo">📝 Pseudocod</h3>
+                    <ul>
+                        <li>Focalizare pe algoritm</li>
+                        <li>Independent de sintaxă</li>
+                        <li>Ideal pentru proiectare</li>
+                        <li>Comunicare în echipă</li>
+                    </ul>
+                </div>
+                <div class="info-box" style="border-color: var(--c-color);">
+                    <h3 class="highlight-c">⚙️ C</h3>
+                    <ul>
+                        <li>Control total al memoriei</li>
+                        <li>Performanță maximă</li>
+                        <li>Înțelegere profundă</li>
+                        <li>Bază pentru sistem</li>
+                    </ul>
+                </div>
+                <div class="info-box" style="border-color: var(--python-color);">
+                    <h3 class="highlight-python">🐍 Python</h3>
+                    <ul>
+                        <li>Prototipare rapidă</li>
+                        <li>Sintaxă curată</li>
+                        <li>Biblioteci bogate</li>
+                        <li>Productivitate înaltă</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="info-box" style="margin-top: 20px;">
+                <strong>💡 Beneficiu:</strong> Înțelegerea aceluiași concept în mai multe limbaje consolidează cunoștințele și dezvoltă flexibilitate în gândire.
+            </div>
+        </div>
+
+        <!-- Slide 3: Queue Structure -->
+        <div class="slide" data-slide="3">
+            <h2>📦 Definirea Structurii Queue</h2>
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <div class="column-header">📝 Pseudocod</div>
+                    <div class="column-content">
+                        <pre><code class="language-plaintext">STRUCTURE Queue:
+    data: ARRAY[0..MAX-1] of T
+    front: INTEGER ← 0
+    rear: INTEGER ← 0
+    count: INTEGER ← 0
+    capacity: INTEGER ← MAX
+END STRUCTURE
+
+FUNCTION createQueue(size):
+    q ← NEW Queue
+    q.capacity ← size
+    q.front ← 0
+    q.rear ← 0
+    q.count ← 0
+    RETURN q
+END FUNCTION</code></pre>
+                    </div>
+                </div>
+                <div class="column c-lang">
+                    <div class="column-header">⚙️ C</div>
+                    <div class="column-content">
+                        <pre><code class="language-c">#define MAX_SIZE 100
+
+typedef struct {
+    int data[MAX_SIZE];
+    int front;
+    int rear;
+    int count;
+    int capacity;
+} Queue;
+
+Queue* queue_create(int size) {
+    Queue *q = malloc(sizeof(Queue));
+    if (q == NULL) return NULL;
+    q->capacity = size;
+    q->front = 0;
+    q->rear = 0;
+    q->count = 0;
+    return q;
+}</code></pre>
+                    </div>
+                </div>
+                <div class="column python">
+                    <div class="column-header">🐍 Python</div>
+                    <div class="column-content">
+                        <pre><code class="language-python">class Queue:
+    def __init__(self, capacity=100):
+        self.data = [None] * capacity
+        self.front = 0
+        self.rear = 0
+        self.count = 0
+        self.capacity = capacity
+    
+# Sau folosind collections:
+from collections import deque
+
+class SimpleQueue:
+    def __init__(self):
+        self._data = deque()
+    
+    def __len__(self):
+        return len(self._data)</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Enqueue Operation -->
+        <div class="slide" data-slide="4">
+            <h2>➕ Operația enqueue</h2>
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <div class="column-header">📝 Pseudocod</div>
+                    <div class="column-content">
+                        <pre><code class="language-plaintext">FUNCTION enqueue(q, item):
+    IF q.count >= q.capacity THEN
+        RETURN FALSE  // Queue plină
+    END IF
+    
+    q.data[q.rear] ← item
+    q.rear ← (q.rear + 1) MOD q.capacity
+    q.count ← q.count + 1
+    
+    RETURN TRUE
+END FUNCTION
+
+// Complexitate: O(1)</code></pre>
+                    </div>
+                </div>
+                <div class="column c-lang">
+                    <div class="column-header">⚙️ C</div>
+                    <div class="column-content">
+                        <pre><code class="language-c">int queue_enqueue(Queue *q, int item) {
+    // Verificare overflow
+    if (q->count >= q->capacity) {
+        return 0;  // Eșec
+    }
+    
+    // Adăugare element
+    q->data[q->rear] = item;
+    
+    // Avans circular
+    q->rear = (q->rear + 1) % q->capacity;
+    
+    // Incrementare contor
+    q->count++;
+    
+    return 1;  // Succes
+}
+
+// Complexitate: O(1)</code></pre>
+                    </div>
+                </div>
+                <div class="column python">
+                    <div class="column-header">🐍 Python</div>
+                    <div class="column-content">
+                        <pre><code class="language-python">def enqueue(self, item):
+    if self.count >= self.capacity:
+        raise OverflowError("Queue is full")
+    
+    self.data[self.rear] = item
+    self.rear = (self.rear + 1) % self.capacity
+    self.count += 1
+
+# Cu deque (built-in):
+def enqueue(self, item):
+    self._data.append(item)
+
+# Complexitate: O(1) amortizat</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Dequeue Operation -->
+        <div class="slide" data-slide="5">
+            <h2>➖ Operația dequeue</h2>
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <div class="column-header">📝 Pseudocod</div>
+                    <div class="column-content">
+                        <pre><code class="language-plaintext">FUNCTION dequeue(q):
+    IF q.count = 0 THEN
+        ERROR "Queue goală"
+    END IF
+    
+    item ← q.data[q.front]
+    q.front ← (q.front + 1) MOD q.capacity
+    q.count ← q.count - 1
+    
+    RETURN item
+END FUNCTION
+
+// Complexitate: O(1)</code></pre>
+                    </div>
+                </div>
+                <div class="column c-lang">
+                    <div class="column-header">⚙️ C</div>
+                    <div class="column-content">
+                        <pre><code class="language-c">int queue_dequeue(Queue *q, int *result) {
+    // Verificare underflow
+    if (q->count == 0) {
+        return 0;  // Eșec
+    }
+    
+    // Extragere element
+    *result = q->data[q->front];
+    
+    // Avans circular
+    q->front = (q->front + 1) % q->capacity;
+    
+    // Decrementare contor
+    q->count--;
+    
+    return 1;  // Succes
+}
+
+// Complexitate: O(1)</code></pre>
+                    </div>
+                </div>
+                <div class="column python">
+                    <div class="column-header">🐍 Python</div>
+                    <div class="column-content">
+                        <pre><code class="language-python">def dequeue(self):
+    if self.count == 0:
+        raise IndexError("Queue is empty")
+    
+    item = self.data[self.front]
+    self.front = (self.front + 1) % self.capacity
+    self.count -= 1
+    return item
+
+# Cu deque (built-in):
+def dequeue(self):
+    if not self._data:
+        raise IndexError("Queue is empty")
+    return self._data.popleft()
+
+# Complexitate: O(1)</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Peek and isEmpty -->
+        <div class="slide" data-slide="6">
+            <h2>👁️ Operațiile peek și isEmpty</h2>
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <div class="column-header">📝 Pseudocod</div>
+                    <div class="column-content">
+                        <pre><code class="language-plaintext">FUNCTION peek(q):
+    IF isEmpty(q) THEN
+        ERROR "Queue goală"
+    END IF
+    RETURN q.data[q.front]
+END FUNCTION
+
+FUNCTION isEmpty(q):
+    RETURN q.count = 0
+END FUNCTION
+
+FUNCTION isFull(q):
+    RETURN q.count = q.capacity
+END FUNCTION
+
+FUNCTION size(q):
+    RETURN q.count
+END FUNCTION</code></pre>
+                    </div>
+                </div>
+                <div class="column c-lang">
+                    <div class="column-header">⚙️ C</div>
+                    <div class="column-content">
+                        <pre><code class="language-c">int queue_peek(const Queue *q, int *result) {
+    if (q->count == 0) {
+        return 0;
+    }
+    *result = q->data[q->front];
+    return 1;
+}
+
+int queue_is_empty(const Queue *q) {
+    return q->count == 0;
+}
+
+int queue_is_full(const Queue *q) {
+    return q->count >= q->capacity;
+}
+
+int queue_size(const Queue *q) {
+    return q->count;
+}</code></pre>
+                    </div>
+                </div>
+                <div class="column python">
+                    <div class="column-header">🐍 Python</div>
+                    <div class="column-content">
+                        <pre><code class="language-python">def peek(self):
+    if self.is_empty():
+        raise IndexError("Queue is empty")
+    return self.data[self.front]
+
+def is_empty(self):
+    return self.count == 0
+
+def is_full(self):
+    return self.count >= self.capacity
+
+def __len__(self):
+    return self.count
+
+# Pythonic:
+if not queue:  # uses __len__
+    print("Empty")</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Linked List Queue -->
+        <div class="slide" data-slide="7">
+            <h2>🔗 Queue cu Linked List</h2>
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <div class="column-header">📝 Pseudocod</div>
+                    <div class="column-content">
+                        <pre><code class="language-plaintext">STRUCTURE Node:
+    data: T
+    next: POINTER TO Node
+END STRUCTURE
+
+STRUCTURE LinkedQueue:
+    front: POINTER TO Node
+    rear: POINTER TO Node
+    count: INTEGER
+END STRUCTURE
+
+FUNCTION enqueue(q, item):
+    newNode ← NEW Node
+    newNode.data ← item
+    newNode.next ← NULL
+    
+    IF q.rear = NULL THEN
+        q.front ← newNode
+        q.rear ← newNode
+    ELSE
+        q.rear.next ← newNode
+        q.rear ← newNode
+    END IF
+    q.count ← q.count + 1
+END FUNCTION</code></pre>
+                    </div>
+                </div>
+                <div class="column c-lang">
+                    <div class="column-header">⚙️ C</div>
+                    <div class="column-content">
+                        <pre><code class="language-c">typedef struct Node {
+    int data;
+    struct Node *next;
+} Node;
+
+typedef struct {
+    Node *front;
+    Node *rear;
+    int count;
+} LinkedQueue;
+
+int lq_enqueue(LinkedQueue *q, int item) {
+    Node *newNode = malloc(sizeof(Node));
+    if (!newNode) return 0;
+    
+    newNode->data = item;
+    newNode->next = NULL;
+    
+    if (q->rear == NULL) {
+        q->front = q->rear = newNode;
+    } else {
+        q->rear->next = newNode;
+        q->rear = newNode;
+    }
+    q->count++;
+    return 1;
+}</code></pre>
+                    </div>
+                </div>
+                <div class="column python">
+                    <div class="column-header">🐍 Python</div>
+                    <div class="column-content">
+                        <pre><code class="language-python">class Node:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+
+class LinkedQueue:
+    def __init__(self):
+        self.front = None
+        self.rear = None
+        self.count = 0
+    
+    def enqueue(self, item):
+        new_node = Node(item)
+        
+        if self.rear is None:
+            self.front = self.rear = new_node
+        else:
+            self.rear.next = new_node
+            self.rear = new_node
+        
+        self.count += 1</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: BFS Algorithm -->
+        <div class="slide" data-slide="8">
+            <h2>🌐 BFS (Breadth-First Search)</h2>
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <div class="column-header">📝 Pseudocod</div>
+                    <div class="column-content">
+                        <pre><code class="language-plaintext">FUNCTION BFS(graph, start):
+    visited ← NEW SET
+    queue ← NEW Queue
+    
+    enqueue(queue, start)
+    ADD start TO visited
+    
+    WHILE NOT isEmpty(queue) DO
+        current ← dequeue(queue)
+        PROCESS(current)
+        
+        FOR EACH neighbor IN adjacents(graph, current) DO
+            IF neighbor NOT IN visited THEN
+                ADD neighbor TO visited
+                enqueue(queue, neighbor)
+            END IF
+        END FOR
+    END WHILE
+END FUNCTION</code></pre>
+                    </div>
+                </div>
+                <div class="column c-lang">
+                    <div class="column-header">⚙️ C</div>
+                    <div class="column-content">
+                        <pre><code class="language-c">void bfs(int adj[][MAX], int n, int start) {
+    bool visited[MAX] = {false};
+    Queue q;
+    queue_init(&q);
+    
+    queue_enqueue(&q, start);
+    visited[start] = true;
+    
+    while (!queue_is_empty(&q)) {
+        int current;
+        queue_dequeue(&q, &current);
+        printf("%d ", current);
+        
+        for (int i = 0; i < n; i++) {
+            if (adj[current][i] && !visited[i]) {
+                visited[i] = true;
+                queue_enqueue(&q, i);
+            }
+        }
+    }
+}</code></pre>
+                    </div>
+                </div>
+                <div class="column python">
+                    <div class="column-header">🐍 Python</div>
+                    <div class="column-content">
+                        <pre><code class="language-python">from collections import deque
+
+def bfs(graph, start):
+    visited = set()
+    queue = deque([start])
+    visited.add(start)
+    result = []
+    
+    while queue:
+        current = queue.popleft()
+        result.append(current)
+        
+        for neighbor in graph[current]:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
+    
+    return result
+
+# Exemplu utilizare:
+# graph = {0: [1, 2], 1: [3], 2: [3], 3: []}
+# print(bfs(graph, 0))  # [0, 1, 2, 3]</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Priority Queue -->
+        <div class="slide" data-slide="9">
+            <h2>⭐ Priority Queue</h2>
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <div class="column-header">📝 Pseudocod</div>
+                    <div class="column-content">
+                        <pre><code class="language-plaintext">STRUCTURE PriorityQueue:
+    levels: ARRAY[0..NUM_PRIORITIES-1] of Queue
+END STRUCTURE
+
+FUNCTION pq_enqueue(pq, item, priority):
+    enqueue(pq.levels[priority], item)
+END FUNCTION
+
+FUNCTION pq_dequeue(pq):
+    FOR i ← 0 TO NUM_PRIORITIES-1 DO
+        IF NOT isEmpty(pq.levels[i]) THEN
+            RETURN dequeue(pq.levels[i])
+        END IF
+    END FOR
+    ERROR "Priority queue goală"
+END FUNCTION</code></pre>
+                    </div>
+                </div>
+                <div class="column c-lang">
+                    <div class="column-header">⚙️ C</div>
+                    <div class="column-content">
+                        <pre><code class="language-c">#define NUM_PRIORITIES 4
+
+typedef struct {
+    Queue levels[NUM_PRIORITIES];
+} PriorityQueue;
+
+void pq_enqueue(PriorityQueue *pq, 
+                int item, int priority) {
+    if (priority < 0 || priority >= NUM_PRIORITIES)
+        priority = NUM_PRIORITIES - 1;
+    queue_enqueue(&pq->levels[priority], item);
+}
+
+int pq_dequeue(PriorityQueue *pq, int *result) {
+    for (int i = 0; i < NUM_PRIORITIES; i++) {
+        if (!queue_is_empty(&pq->levels[i])) {
+            return queue_dequeue(&pq->levels[i], result);
+        }
+    }
+    return 0;  // Goală
+}</code></pre>
+                    </div>
+                </div>
+                <div class="column python">
+                    <div class="column-header">🐍 Python</div>
+                    <div class="column-content">
+                        <pre><code class="language-python">import heapq
+
+class PriorityQueue:
+    def __init__(self):
+        self._heap = []
+        self._index = 0  # pentru stabilitate
+    
+    def enqueue(self, item, priority):
+        # heapq este min-heap, deci -priority
+        heapq.heappush(self._heap, 
+                       (-priority, self._index, item))
+        self._index += 1
+    
+    def dequeue(self):
+        if not self._heap:
+            raise IndexError("Empty")
+        return heapq.heappop(self._heap)[2]
+
+# Sau queue.PriorityQueue (thread-safe):
+from queue import PriorityQueue
+pq = PriorityQueue()
+pq.put((1, "task"))  # (priority, item)</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Comparison Table -->
+        <div class="slide" data-slide="10">
+            <h2>📊 Tabel Comparativ</h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th class="highlight-pseudo">Pseudocod</th>
+                        <th class="highlight-c">C</th>
+                        <th class="highlight-python">Python</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Declarare structură</td>
+                        <td>STRUCTURE...END</td>
+                        <td>typedef struct {...}</td>
+                        <td>class Queue:</td>
+                    </tr>
+                    <tr>
+                        <td>Alocare memorie</td>
+                        <td>NEW</td>
+                        <td>malloc() / free()</td>
+                        <td>Automatică (GC)</td>
+                    </tr>
+                    <tr>
+                        <td>Verificare erori</td>
+                        <td>IF...ERROR</td>
+                        <td>Return codes / errno</td>
+                        <td>Exceptions</td>
+                    </tr>
+                    <tr>
+                        <td>Built-in Queue</td>
+                        <td>Nu</td>
+                        <td>Nu (trebuie implementat)</td>
+                        <td>collections.deque</td>
+                    </tr>
+                    <tr>
+                        <td>Complexitate cod</td>
+                        <td>Minimă</td>
+                        <td>Mare (pointer management)</td>
+                        <td>Mică</td>
+                    </tr>
+                    <tr>
+                        <td>Performanță</td>
+                        <td>N/A</td>
+                        <td>Maximă</td>
+                        <td>Bună (overhead interpret)</td>
+                    </tr>
+                    <tr>
+                        <td>Memory leaks</td>
+                        <td>N/A</td>
+                        <td>Posibile (free manual)</td>
+                        <td>Nu (garbage collector)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Slide 11: When to Use Which -->
+        <div class="slide" data-slide="11">
+            <h2>🎯 Când Folosim Ce?</h2>
+            <div class="three-columns" style="flex: none;">
+                <div class="info-box" style="border-color: var(--pseudo-color);">
+                    <h3 class="highlight-pseudo">📝 Pseudocod</h3>
+                    <p><strong>Folosește când:</strong></p>
+                    <ul>
+                        <li>Proiectezi un algoritm nou</li>
+                        <li>Documentezi pentru echipă</li>
+                        <li>Predai concepte</li>
+                        <li>Discuți la whiteboard</li>
+                        <li>Scrii în lucrări academice</li>
+                    </ul>
+                </div>
+                <div class="info-box" style="border-color: var(--c-color);">
+                    <h3 class="highlight-c">⚙️ C</h3>
+                    <p><strong>Folosește când:</strong></p>
+                    <ul>
+                        <li>Performanța este critică</li>
+                        <li>Sisteme embedded</li>
+                        <li>Kernel / drivere</li>
+                        <li>Biblioteci de sistem</li>
+                        <li>Vrei control total</li>
+                    </ul>
+                </div>
+                <div class="info-box" style="border-color: var(--python-color);">
+                    <h3 class="highlight-python">🐍 Python</h3>
+                    <p><strong>Folosește când:</strong></p>
+                    <ul>
+                        <li>Prototipare rapidă</li>
+                        <li>Scripting și automatizare</li>
+                        <li>Data science / ML</li>
+                        <li>Web development</li>
+                        <li>Testare algoritmi</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="info-box" style="margin-top: 20px;">
+                <strong>💡 Pro tip:</strong> În practică, mulți dezvoltatori prototipează în Python, apoi optimizează părțile critice în C/C++.
+            </div>
+        </div>
+
+        <!-- Slide 12: Conclusion -->
+        <div class="slide" data-slide="12">
+            <h2>🎓 Concluzii</h2>
+            <div class="info-box" style="margin-bottom: 20px;">
+                <h3>📌 Concepte Universale</h3>
+                <ul style="margin-left: 20px;">
+                    <li><strong>FIFO</strong> - principiul rămâne identic în toate limbajele</li>
+                    <li><strong>Circular indexing</strong> - (index + 1) % capacity funcționează universal</li>
+                    <li><strong>Complexitate O(1)</strong> - implementarea corectă garantează eficiență constantă</li>
+                </ul>
+            </div>
+            <div class="three-columns" style="flex: none;">
+                <div style="background: var(--bg-secondary); padding: 15px; border-radius: 8px; text-align: center; border: 2px solid var(--pseudo-color);">
+                    <span style="font-size: 2rem;">📝</span>
+                    <p><strong>Pseudocod</strong></p>
+                    <p style="color: var(--text-secondary);">Gândire algoritmică</p>
+                </div>
+                <div style="background: var(--bg-secondary); padding: 15px; border-radius: 8px; text-align: center; border: 2px solid var(--c-color);">
+                    <span style="font-size: 2rem;">⚙️</span>
+                    <p><strong>C</strong></p>
+                    <p style="color: var(--text-secondary);">Implementare low-level</p>
+                </div>
+                <div style="background: var(--bg-secondary); padding: 15px; border-radius: 8px; text-align: center; border: 2px solid var(--python-color);">
+                    <span style="font-size: 2rem;">🐍</span>
+                    <p><strong>Python</strong></p>
+                    <p style="color: var(--text-secondary);">Productivitate maximă</p>
+                </div>
+            </div>
+            <div class="info-box" style="margin-top: 20px; border-color: var(--accent-green);">
+                <strong>🚀 Următorul pas:</strong> Implementează o queue în toate cele trei stiluri pentru a consolida înțelegerea!
+            </div>
+        </div>
+
+        <!-- Slide 13: Questions -->
+        <div class="slide title-slide" data-slide="13">
+            <h1>❓ Întrebări?</h1>
+            <div class="subtitle">Comparație Pseudocod / C / Python</div>
+            <div style="display: flex; gap: 15px; justify-content: center; margin-top: 30px;">
+                <span class="badge badge-pseudo">📝 Pseudocod</span>
+                <span class="badge badge-c">⚙️ C</span>
+                <span class="badge badge-python">🐍 Python</span>
+            </div>
+            <p style="margin-top: 50px; color: var(--text-secondary);">Săptămâna 6: Cozi (Queues)</p>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="slide-counter">
+        <span id="currentSlide">1</span> / <span id="totalSlides">13</span>
+    </div>
+    
+    <div class="nav-controls">
+        <button class="nav-btn" onclick="goToSlide(1)">⏮</button>
+        <button class="nav-btn" onclick="prevSlide()">◀</button>
+        <button class="nav-btn" onclick="nextSlide()">▶</button>
+        <button class="nav-btn" onclick="goToSlide(totalSlides)">⏭</button>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function updateProgress() {
+            const progress = (currentSlide / totalSlides) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('currentSlide').textContent = currentSlide;
+        }
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            currentSlide = n;
+            if (currentSlide > totalSlides) currentSlide = 1;
+            if (currentSlide < 1) currentSlide = totalSlides;
+            slides[currentSlide - 1].classList.add('active');
+            updateProgress();
+        }
+
+        function nextSlide() { showSlide(currentSlide + 1); }
+        function prevSlide() { showSlide(currentSlide - 1); }
+        function goToSlide(n) { showSlide(n); }
+
+        document.addEventListener('keydown', function(e) {
+            switch(e.key) {
+                case 'ArrowRight': case ' ': case 'PageDown':
+                    e.preventDefault(); nextSlide(); break;
+                case 'ArrowLeft': case 'PageUp':
+                    e.preventDefault(); prevSlide(); break;
+                case 'Home': e.preventDefault(); goToSlide(1); break;
+                case 'End': e.preventDefault(); goToSlide(totalSlides); break;
+            }
+        });
+
+        hljs.highlightAll();
+        updateProgress();
+    </script>
+</body>
+</html>
