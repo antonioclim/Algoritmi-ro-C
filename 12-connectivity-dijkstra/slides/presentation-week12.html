@@ -1,0 +1,1994 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Săptămâna 12: Grafuri — Noțiuni Fundamentale | ATP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/c.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-yellow: #d29922;
+            --accent-red: #f85149;
+            --accent-purple: #a371f7;
+            --border-color: #30363d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow: hidden;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            z-index: 1000;
+            transition: width 0.3s ease;
+        }
+
+        /* Slide Container */
+        .slides-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 60px 80px;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 2.8rem;
+            color: var(--accent-blue);
+            margin-bottom: 1.5rem;
+            border-bottom: 3px solid var(--accent-purple);
+            padding-bottom: 0.5rem;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+            color: var(--accent-green);
+            margin-bottom: 1.2rem;
+        }
+
+        h3 {
+            font-size: 1.6rem;
+            color: var(--accent-yellow);
+            margin-bottom: 1rem;
+        }
+
+        p, li {
+            font-size: 1.25rem;
+            margin-bottom: 0.8rem;
+            color: var(--text-primary);
+        }
+
+        ul, ol {
+            margin-left: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Title Slide */
+        .title-slide {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+        }
+
+        .title-slide h1 {
+            font-size: 3.5rem;
+            border: none;
+            margin-bottom: 0.5rem;
+        }
+
+        .title-slide .subtitle {
+            font-size: 2rem;
+            color: var(--accent-purple);
+            margin-bottom: 2rem;
+        }
+
+        .title-slide .course-info {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+        }
+
+        .title-slide .week-badge {
+            background: var(--accent-blue);
+            color: var(--bg-primary);
+            padding: 0.5rem 2rem;
+            border-radius: 25px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        /* Code Blocks */
+        .code-block {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .code-header {
+            background: var(--bg-tertiary);
+            padding: 0.5rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .code-header span {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .lang-badge {
+            background: var(--accent-blue);
+            color: var(--bg-primary);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 1rem;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* Diagram Box */
+        .diagram-box {
+            background: var(--bg-secondary);
+            border: 2px solid var(--accent-purple);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            font-family: 'Consolas', monospace;
+            white-space: pre;
+            font-size: 1rem;
+            line-height: 1.4;
+            overflow-x: auto;
+        }
+
+        /* Info Boxes */
+        .info-box {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid;
+        }
+
+        .info-box.tip {
+            background: rgba(63, 185, 80, 0.1);
+            border-color: var(--accent-green);
+        }
+
+        .info-box.warning {
+            background: rgba(210, 153, 34, 0.1);
+            border-color: var(--accent-yellow);
+        }
+
+        .info-box.danger {
+            background: rgba(248, 81, 73, 0.1);
+            border-color: var(--accent-red);
+        }
+
+        .info-box.note {
+            background: rgba(88, 166, 255, 0.1);
+            border-color: var(--accent-blue);
+        }
+
+        .info-box-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Two Column Layout */
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 1rem 0;
+        }
+
+        .column {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .column h3 {
+            margin-top: 0;
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 1.1rem;
+        }
+
+        th, td {
+            padding: 0.8rem 1rem;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--bg-tertiary);
+            color: var(--accent-blue);
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: var(--bg-secondary);
+        }
+
+        /* Complexity Badge */
+        .complexity {
+            display: inline-block;
+            background: var(--accent-purple);
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        /* Quote Box */
+        .quote-box {
+            background: var(--bg-secondary);
+            border-left: 4px solid var(--accent-purple);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            font-style: italic;
+            font-size: 1.3rem;
+        }
+
+        .quote-author {
+            text-align: right;
+            color: var(--text-secondary);
+            font-style: normal;
+            margin-top: 1rem;
+        }
+
+        /* Key Takeaway Cards */
+        .takeaway-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .takeaway-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .takeaway-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent-blue);
+        }
+
+        .takeaway-card .icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Navigation */
+        .nav-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: var(--accent-blue);
+            color: var(--bg-primary);
+        }
+
+        /* Slide Counter */
+        .slide-counter {
+            position: fixed;
+            bottom: 25px;
+            left: 30px;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            z-index: 100;
+        }
+
+        /* Highlight effects */
+        .highlight {
+            background: linear-gradient(120deg, var(--accent-yellow) 0%, var(--accent-yellow) 100%);
+            background-repeat: no-repeat;
+            background-size: 100% 0.3em;
+            background-position: 0 88%;
+        }
+
+        .keyword {
+            color: var(--accent-blue);
+            font-weight: bold;
+        }
+
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide.active > * {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-blue);
+        }
+
+        /* Checklist */
+        .checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .checklist li {
+            padding-left: 2rem;
+            position: relative;
+            margin-bottom: 0.6rem;
+        }
+
+        .checklist li::before {
+            content: "☐";
+            position: absolute;
+            left: 0;
+            color: var(--accent-blue);
+        }
+
+        /* Algorithm Box */
+        .algorithm-box {
+            background: var(--bg-secondary);
+            border: 2px solid var(--accent-green);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .algorithm-box h4 {
+            color: var(--accent-green);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 0.8rem;
+        }
+
+        .step-number {
+            background: var(--accent-blue);
+            color: var(--bg-primary);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        /* Resource list */
+        .resource-list {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .resource-list li {
+            padding: 0.8rem 1rem;
+            background: var(--bg-secondary);
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            border-left: 3px solid var(--accent-blue);
+        }
+
+        .resource-list li a {
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+
+        .resource-list li a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    
+    <div class="slides-container" id="slidesContainer">
+        
+        <!-- Slide 1: Title -->
+        <div class="slide title-slide active">
+            <div class="week-badge">SĂPTĂMÂNA 12</div>
+            <h1>Grafuri — Noțiuni Fundamentale</h1>
+            <p class="subtitle">Graph Data Structures, BFS & DFS</p>
+            <p class="course-info">Algoritmi și Tehnici de Programare</p>
+            <p class="course-info">Academia de Studii Economice București — CSIE</p>
+        </div>
+
+        <!-- Slide 2: Learning Objectives -->
+        <div class="slide">
+            <h1>🎯 Obiective de Învățare</h1>
+            <ul>
+                <li><strong>Reține:</strong> Definițiile de graf orientat/neorientat, nod, muchie, arc, grad</li>
+                <li><strong>Înțelege:</strong> Diferențele între matricea de adiacență și listele de adiacență</li>
+                <li><strong>Aplică:</strong> Implementează algoritmii BFS și DFS pentru parcurgerea grafurilor</li>
+                <li><strong>Analizează:</strong> Compară complexitățile O(V+E) vs O(V²) pentru diferite operații</li>
+                <li><strong>Evaluează:</strong> Selectează reprezentarea optimă în funcție de caracteristicile grafului</li>
+                <li><strong>Creează:</strong> Proiectează soluții pentru probleme reale folosind grafuri</li>
+            </ul>
+            <div class="info-box note">
+                <div class="info-box-title">📋 Notă</div>
+                Această săptămână pune bazele pentru algoritmii avansați pe grafuri (Dijkstra, Bellman-Ford, Floyd-Warshall) din săptămâna următoare.
+            </div>
+        </div>
+
+        <!-- Slide 3: Historical Context -->
+        <div class="slide">
+            <h1>📜 Context Istoric</h1>
+            <h2>Cele Șapte Poduri din Königsberg (1736)</h2>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Problema</h3>
+                    <p>Este posibil să traversezi toate cele 7 poduri ale orașului Königsberg exact o singură dată și să te întorci la punctul de plecare?</p>
+                    <div class="diagram-box">
+     A ════════════ B
+      ╲  bridge  ╱
+       ╲   1   ╱
+        ╲    ╱ 
+    ═══════╳═══════
+   2,3   ╱    ╲  4,5
+      ╱        ╲
+     C ══════════ D
+          6,7
+                    </div>
+                </div>
+                <div class="column">
+                    <h3>Soluția lui Euler</h3>
+                    <p><strong>Leonhard Euler</strong> a demonstrat că este <span class="keyword">imposibil</span>.</p>
+                    <p>Motivul: Un nod trebuie să aibă grad par pentru a putea fi traversat (intrare + ieșire). Toate cele 4 zone aveau grad impar.</p>
+                    <p>Această demonstrație a fondat <span class="highlight">teoria grafurilor</span>.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Key Figure - Euler -->
+        <div class="slide">
+            <h1>👤 Figură Cheie: Leonhard Euler</h1>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Biografie (1707–1783)</h3>
+                    <ul>
+                        <li>Matematician și fizician elvețian</li>
+                        <li>Unul dintre cei mai prolifici din istorie</li>
+                        <li>Contribuții în: calcul, teoria numerelor, mecanică, optică, astronomie</li>
+                        <li>A lucrat la Academia din Sankt Petersburg și Berlin</li>
+                        <li>A rămas productiv chiar și după ce a orbit</li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <h3>Contribuții la Informatică</h3>
+                    <ul>
+                        <li>Fondator al teoriei grafurilor (1736)</li>
+                        <li>Formula lui Euler pentru poliedre: V - E + F = 2</li>
+                        <li>Ciclul/drumul eulerian</li>
+                        <li>Baza pentru topologie</li>
+                    </ul>
+                    <div class="quote-box">
+                        „Pentru a ajunge la cunoaștere, trebuie să studiezi; pentru a ajunge la înțelepciune, trebuie să observi."
+                        <div class="quote-author">— Leonhard Euler</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Graph Definition -->
+        <div class="slide">
+            <h1>📐 Ce Este un Graf?</h1>
+            <h2>Definiție Formală</h2>
+            <p>Un <span class="keyword">graf</span> G = (V, E) este o structură algebrică formată din:</p>
+            <ul>
+                <li><strong>V</strong> (Vertices): Mulțimea nodurilor (vârfurilor)</li>
+                <li><strong>E</strong> (Edges): Mulțimea muchiilor care conectează perechi de noduri</li>
+            </ul>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Graf Neorientat</h3>
+                    <div class="diagram-box">
+       (A)───────(B)
+        │╲       ╱│
+        │ ╲     ╱ │
+        │  ╲   ╱  │
+        │   ╲ ╱   │
+       (C)───(D)──(E)
+       
+  Muchie {A,B}: fără direcție
+  E = {{A,B}, {A,C}, {A,D}, ...}
+                    </div>
+                </div>
+                <div class="column">
+                    <h3>Graf Orientat (Digraf)</h3>
+                    <div class="diagram-box">
+       (A)───────→(B)
+        │╲       ↗ │
+        ↓ ╲     ╱  ↓
+        │  ↘   ╱   │
+        │   ╲ ╱    │
+       (C)←──(D)──→(E)
+       
+  Arc (A,B): de la A spre B
+  E = {(A,B), (A,C), (A,D), ...}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Terminology -->
+        <div class="slide">
+            <h1>📖 Terminologie Esențială</h1>
+            <table>
+                <tr>
+                    <th>Termen</th>
+                    <th>Definiție</th>
+                    <th>Exemplu</th>
+                </tr>
+                <tr>
+                    <td><strong>Grad (degree)</strong></td>
+                    <td>Numărul de muchii incidente unui nod</td>
+                    <td>grad(A) = 3</td>
+                </tr>
+                <tr>
+                    <td><strong>Grad intrare (in-degree)</strong></td>
+                    <td>Arce care intră în nod (digraf)</td>
+                    <td>grad⁺(B) = 2</td>
+                </tr>
+                <tr>
+                    <td><strong>Grad ieșire (out-degree)</strong></td>
+                    <td>Arce care ies din nod (digraf)</td>
+                    <td>grad⁻(A) = 3</td>
+                </tr>
+                <tr>
+                    <td><strong>Drum (path)</strong></td>
+                    <td>Secvență de noduri conectate prin muchii</td>
+                    <td>A → B → D → E</td>
+                </tr>
+                <tr>
+                    <td><strong>Ciclu (cycle)</strong></td>
+                    <td>Drum care se întoarce la nodul de start</td>
+                    <td>A → B → D → A</td>
+                </tr>
+                <tr>
+                    <td><strong>Graf conex</strong></td>
+                    <td>Există drum între oricare două noduri</td>
+                    <td>Componentă unică</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Slide 7: Graph Types -->
+        <div class="slide">
+            <h1>🔷 Tipuri de Grafuri</h1>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>După structură</h3>
+                    <ul>
+                        <li><strong>Graf simplu:</strong> Fără bucle (self-loops) și fără muchii multiple</li>
+                        <li><strong>Multigraf:</strong> Permite muchii multiple între aceleași noduri</li>
+                        <li><strong>Graf complet Kₙ:</strong> Toate perechile conectate</li>
+                        <li><strong>Graf bipartit:</strong> Nodurile în două mulțimi disjuncte</li>
+                        <li><strong>Arbore:</strong> Graf conex aciclic</li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <h3>După densitate</h3>
+                    <ul>
+                        <li><strong>Graf dens:</strong> |E| ≈ |V|² (multe muchii)</li>
+                        <li><strong>Graf rar (sparse):</strong> |E| << |V|² (puține muchii)</li>
+                    </ul>
+                    <div class="info-box tip">
+                        <div class="info-box-title">💡 Regulă practică</div>
+                        Graf complet: |E| = |V|(|V|-1)/2<br>
+                        Graf rar: |E| = O(|V|)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Adjacency Matrix -->
+        <div class="slide">
+            <h1>📊 Matricea de Adiacență</h1>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Reprezentare</h3>
+                    <div class="diagram-box">
+Graf:           Matrice:
+  (0)──(1)         0  1  2  3
+   │╲  │        0 [0, 1, 1, 0]
+   │ ╲ │        1 [1, 0, 1, 1]
+  (2)──(3)      2 [1, 1, 0, 1]
+                3 [0, 1, 1, 0]
+                
+adj[i][j] = 1 dacă există muchie
+adj[i][j] = 0 altfel
+                    </div>
+                </div>
+                <div class="column">
+                    <h3>Caracteristici</h3>
+                    <table>
+                        <tr><th>Operație</th><th>Complexitate</th></tr>
+                        <tr><td>Spațiu</td><td><span class="complexity">O(V²)</span></td></tr>
+                        <tr><td>Verifică muchie</td><td><span class="complexity">O(1)</span></td></tr>
+                        <tr><td>Adaugă muchie</td><td><span class="complexity">O(1)</span></td></tr>
+                        <tr><td>Enumeră vecini</td><td><span class="complexity">O(V)</span></td></tr>
+                    </table>
+                </div>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Declarație în C</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">#define MAX_V 1000
+int adj[MAX_V][MAX_V];  // Matricea de adiacență
+int n;                   // Numărul de noduri</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 9: Adjacency Matrix Implementation -->
+        <div class="slide">
+            <h1>💻 Implementare Matrice de Adiacență</h1>
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Operații de bază</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">// Inițializare graf cu n noduri
+void init_graph(int n) {
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+            adj[i][j] = 0;
+}
+
+// Adaugă muchie (graf neorientat)
+void add_edge(int u, int v) {
+    adj[u][v] = 1;
+    adj[v][u] = 1;  // Simetric pentru graf neorientat
+}
+
+// Verifică existența muchiei
+int has_edge(int u, int v) {
+    return adj[u][v];
+}
+
+// Afișează vecinii unui nod
+void print_neighbors(int u, int n) {
+    printf("Vecinii lui %d: ", u);
+    for (int v = 0; v < n; v++)
+        if (adj[u][v])
+            printf("%d ", v);
+    printf("\n");
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 10: Adjacency List -->
+        <div class="slide">
+            <h1>📋 Liste de Adiacență</h1>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Reprezentare</h3>
+                    <div class="diagram-box">
+Graf:           Liste:
+  (0)──(1)      0 → [1] → [2]
+   │╲  │        1 → [0] → [2] → [3]
+   │ ╲ │        2 → [0] → [1] → [3]
+  (2)──(3)      3 → [1] → [2]
+
+Fiecare nod are o listă
+a vecinilor săi
+                    </div>
+                </div>
+                <div class="column">
+                    <h3>Caracteristici</h3>
+                    <table>
+                        <tr><th>Operație</th><th>Complexitate</th></tr>
+                        <tr><td>Spațiu</td><td><span class="complexity">O(V + E)</span></td></tr>
+                        <tr><td>Verifică muchie</td><td><span class="complexity">O(grad(v))</span></td></tr>
+                        <tr><td>Adaugă muchie</td><td><span class="complexity">O(1)</span></td></tr>
+                        <tr><td>Enumeră vecini</td><td><span class="complexity">O(grad(v))</span></td></tr>
+                    </table>
+                </div>
+            </div>
+            <div class="info-box tip">
+                <div class="info-box-title">💡 Avantaj major</div>
+                Pentru grafuri rare (sparse), listele economisesc memorie semnificativ: O(V + E) vs O(V²)
+            </div>
+        </div>
+
+        <!-- Slide 11: Adjacency List Implementation -->
+        <div class="slide">
+            <h1>💻 Implementare Liste de Adiacență</h1>
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Structuri de date</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">// Nod în lista de adiacență
+typedef struct Node {
+    int vertex;           // Indicele nodului vecin
+    struct Node* next;    // Pointer către următorul vecin
+} Node;
+
+// Structura grafului
+typedef struct Graph {
+    int numVertices;      // Numărul de noduri
+    Node** adjLists;      // Array de liste de adiacență
+    int* visited;         // Array pentru marcarea vizitării
+} Graph;
+
+// Creare nod nou
+Node* create_node(int v) {
+    Node* newNode = malloc(sizeof(Node));
+    newNode->vertex = v;
+    newNode->next = NULL;
+    return newNode;
+}
+
+// Creare graf
+Graph* create_graph(int vertices) {
+    Graph* graph = malloc(sizeof(Graph));
+    graph->numVertices = vertices;
+    graph->adjLists = malloc(vertices * sizeof(Node*));
+    graph->visited = malloc(vertices * sizeof(int));
+    
+    for (int i = 0; i < vertices; i++) {
+        graph->adjLists[i] = NULL;
+        graph->visited[i] = 0;
+    }
+    return graph;
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 12: Add Edge to List -->
+        <div class="slide">
+            <h1>💻 Adăugare Muchie în Liste</h1>
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Funcția add_edge pentru liste de adiacență</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">// Adaugă muchie la graf neorientat
+void add_edge(Graph* graph, int src, int dest) {
+    // Adaugă muchie de la src la dest
+    Node* newNode = create_node(dest);
+    newNode->next = graph->adjLists[src];
+    graph->adjLists[src] = newNode;
+    
+    // Adaugă muchie de la dest la src (graf neorientat)
+    newNode = create_node(src);
+    newNode->next = graph->adjLists[dest];
+    graph->adjLists[dest] = newNode;
+}
+
+// Afișare graf
+void print_graph(Graph* graph) {
+    for (int v = 0; v < graph->numVertices; v++) {
+        Node* temp = graph->adjLists[v];
+        printf("Nod %d: ", v);
+        while (temp) {
+            printf("%d -> ", temp->vertex);
+            temp = temp->next;
+        }
+        printf("NULL\n");
+    }
+}</code></pre>
+            </div>
+            <div class="info-box warning">
+                <div class="info-box-title">⚠️ Atenție</div>
+                Inserarea la început (O(1)) inversează ordinea. Pentru ordine specifică, inserați la final sau sortați.
+            </div>
+        </div>
+
+        <!-- Slide 13: Comparison Table -->
+        <div class="slide">
+            <h1>⚖️ Comparație: Matrice vs Liste</h1>
+            <table>
+                <tr>
+                    <th>Criteriu</th>
+                    <th>Matrice de Adiacență</th>
+                    <th>Liste de Adiacență</th>
+                </tr>
+                <tr>
+                    <td>Spațiu</td>
+                    <td><span class="complexity">O(V²)</span></td>
+                    <td><span class="complexity">O(V + E)</span></td>
+                </tr>
+                <tr>
+                    <td>Verificare muchie (u,v)</td>
+                    <td><span class="complexity">O(1)</span> ✅</td>
+                    <td><span class="complexity">O(grad(u))</span></td>
+                </tr>
+                <tr>
+                    <td>Adăugare muchie</td>
+                    <td><span class="complexity">O(1)</span></td>
+                    <td><span class="complexity">O(1)</span></td>
+                </tr>
+                <tr>
+                    <td>Ștergere muchie</td>
+                    <td><span class="complexity">O(1)</span></td>
+                    <td><span class="complexity">O(grad(v))</span></td>
+                </tr>
+                <tr>
+                    <td>Enumerare vecini</td>
+                    <td><span class="complexity">O(V)</span></td>
+                    <td><span class="complexity">O(grad(v))</span> ✅</td>
+                </tr>
+                <tr>
+                    <td>BFS/DFS complet</td>
+                    <td><span class="complexity">O(V²)</span></td>
+                    <td><span class="complexity">O(V + E)</span> ✅</td>
+                </tr>
+            </table>
+            <div class="info-box note">
+                <div class="info-box-title">📊 Concluzie</div>
+                <strong>Matrice:</strong> Grafuri dense, verificări frecvente de muchii<br>
+                <strong>Liste:</strong> Grafuri rare, parcurgeri frecvente (majoritatea aplicațiilor reale)
+            </div>
+        </div>
+
+        <!-- Slide 14: BFS Introduction -->
+        <div class="slide">
+            <h1>🌊 BFS — Breadth-First Search</h1>
+            <h2>Parcurgerea în Lățime</h2>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Principiu</h3>
+                    <p>Explorează graful <span class="keyword">nivel cu nivel</span>, pornind de la nodul sursă:</p>
+                    <ol>
+                        <li>Vizitează toate nodurile la distanță 1</li>
+                        <li>Apoi toate nodurile la distanță 2</li>
+                        <li>Și așa mai departe...</li>
+                    </ol>
+                    <p>Folosește o <span class="keyword">coadă (queue)</span> FIFO.</p>
+                </div>
+                <div class="column">
+                    <h3>Vizualizare</h3>
+                    <div class="diagram-box">
+Nivel 0:    [A]        Start
+             ↓
+Nivel 1:  [B] [C]      Distanță 1
+           ↓   ↓
+Nivel 2: [D] [E] [F]   Distanță 2
+           ↓
+Nivel 3:  [G]          Distanță 3
+
+Ordinea vizitării:
+A → B → C → D → E → F → G
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 15: BFS Algorithm -->
+        <div class="slide">
+            <h1>📝 Algoritmul BFS</h1>
+            <div class="algorithm-box">
+                <h4>BFS(Graf G, Nod sursă s)</h4>
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div>Creează o coadă Q goală</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div>Marchează nodul sursă s ca vizitat</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div>Adaugă s în coada Q (enqueue)</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div>CÂT TIMP Q nu este goală:
+                        <ul>
+                            <li>u = scoate primul element din Q (dequeue)</li>
+                            <li>Procesează nodul u</li>
+                            <li>PENTRU fiecare vecin v al lui u:
+                                <ul>
+                                    <li>DACĂ v nu este vizitat:
+                                        <ul>
+                                            <li>Marchează v ca vizitat</li>
+                                            <li>Adaugă v în Q</li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <p><strong>Complexitate:</strong> <span class="complexity">O(V + E)</span> cu liste de adiacență</p>
+        </div>
+
+        <!-- Slide 16: BFS Implementation -->
+        <div class="slide">
+            <h1>💻 Implementare BFS</h1>
+            <div class="code-block">
+                <div class="code-header">
+                    <span>BFS cu coadă în C</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">void bfs(Graph* graph, int startVertex) {
+    // Coadă simplă cu array
+    int queue[MAX_V];
+    int front = 0, rear = 0;
+    
+    // Marchează start și adaugă în coadă
+    graph->visited[startVertex] = 1;
+    queue[rear++] = startVertex;
+    
+    while (front < rear) {
+        // Scoate din coadă (dequeue)
+        int currentVertex = queue[front++];
+        printf("Vizitat: %d\n", currentVertex);
+        
+        // Parcurge toți vecinii
+        Node* temp = graph->adjLists[currentVertex];
+        while (temp) {
+            int adjVertex = temp->vertex;
+            
+            if (graph->visited[adjVertex] == 0) {
+                graph->visited[adjVertex] = 1;
+                queue[rear++] = adjVertex;  // Enqueue
+            }
+            temp = temp->next;
+        }
+    }
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 17: BFS with Distance -->
+        <div class="slide">
+            <h1>📏 BFS cu Calculul Distanțelor</h1>
+            <div class="code-block">
+                <div class="code-header">
+                    <span>BFS care calculează distanța de la sursă</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">void bfs_distance(Graph* graph, int start, int* dist, int* parent) {
+    int queue[MAX_V];
+    int front = 0, rear = 0;
+    
+    // Inițializare
+    for (int i = 0; i < graph->numVertices; i++) {
+        dist[i] = -1;      // -1 = neatins
+        parent[i] = -1;    // -1 = fără părinte
+    }
+    
+    dist[start] = 0;
+    queue[rear++] = start;
+    
+    while (front < rear) {
+        int u = queue[front++];
+        
+        Node* temp = graph->adjLists[u];
+        while (temp) {
+            int v = temp->vertex;
+            if (dist[v] == -1) {        // Nevizitat
+                dist[v] = dist[u] + 1;  // Distanța = părintele + 1
+                parent[v] = u;          // Părintele pe drumul minim
+                queue[rear++] = v;
+            }
+            temp = temp->next;
+        }
+    }
+}</code></pre>
+            </div>
+            <div class="info-box tip">
+                <div class="info-box-title">💡 Aplicație</div>
+                Array-ul <code>parent[]</code> permite reconstrucția drumului minim de la sursă la orice nod.
+            </div>
+        </div>
+
+        <!-- Slide 18: DFS Introduction -->
+        <div class="slide">
+            <h1>🌲 DFS — Depth-First Search</h1>
+            <h2>Parcurgerea în Adâncime</h2>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Principiu</h3>
+                    <p>Explorează <span class="keyword">cât mai adânc</span> posibil înainte de backtracking:</p>
+                    <ol>
+                        <li>Vizitează un nod</li>
+                        <li>Merge la primul vecin nevizitat</li>
+                        <li>Repetă până nu mai sunt vecini</li>
+                        <li>Backtrack și încearcă alt vecin</li>
+                    </ol>
+                    <p>Folosește <span class="keyword">recursivitate</span> sau <span class="keyword">stivă (stack)</span> LIFO.</p>
+                </div>
+                <div class="column">
+                    <h3>Vizualizare</h3>
+                    <div class="diagram-box">
+        [A]
+       ╱   ╲
+     [B]   [C]
+     ╱       ╲
+   [D]       [E]
+   ╱
+ [F]
+
+Ordinea DFS (pre-order):
+A → B → D → F → (back) → (back)
+→ C → E
+
+Stack: A → AB → ABD → ABDF
+       → ABD → AB → A → AC → ACE
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 19: DFS Recursive -->
+        <div class="slide">
+            <h1>💻 DFS Recursiv</h1>
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Implementare recursivă elegantă</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">// Funcția recursivă DFS
+void dfs_recursive(Graph* graph, int vertex) {
+    // Marchează nodul curent ca vizitat
+    graph->visited[vertex] = 1;
+    printf("Vizitat: %d\n", vertex);
+    
+    // Parcurge toți vecinii
+    Node* temp = graph->adjLists[vertex];
+    while (temp) {
+        int adjVertex = temp->vertex;
+        
+        // Dacă vecinul nu a fost vizitat, apelează recursiv
+        if (graph->visited[adjVertex] == 0) {
+            dfs_recursive(graph, adjVertex);
+        }
+        temp = temp->next;
+    }
+}
+
+// Funcția wrapper pentru a iniția DFS
+void dfs(Graph* graph, int startVertex) {
+    // Resetează array-ul visited
+    for (int i = 0; i < graph->numVertices; i++) {
+        graph->visited[i] = 0;
+    }
+    
+    dfs_recursive(graph, startVertex);
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 20: DFS Iterative -->
+        <div class="slide">
+            <h1>💻 DFS Iterativ cu Stivă</h1>
+            <div class="code-block">
+                <div class="code-header">
+                    <span>DFS fără recursivitate (evită stack overflow)</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">void dfs_iterative(Graph* graph, int startVertex) {
+    // Stivă implementată cu array
+    int stack[MAX_V];
+    int top = -1;
+    
+    // Push start pe stivă
+    stack[++top] = startVertex;
+    
+    while (top >= 0) {
+        // Pop din stivă
+        int currentVertex = stack[top--];
+        
+        // Skip dacă deja vizitat
+        if (graph->visited[currentVertex])
+            continue;
+            
+        // Marchează și procesează
+        graph->visited[currentVertex] = 1;
+        printf("Vizitat: %d\n", currentVertex);
+        
+        // Adaugă vecinii nevizitați pe stivă
+        Node* temp = graph->adjLists[currentVertex];
+        while (temp) {
+            if (!graph->visited[temp->vertex]) {
+                stack[++top] = temp->vertex;
+            }
+            temp = temp->next;
+        }
+    }
+}</code></pre>
+            </div>
+            <div class="info-box warning">
+                <div class="info-box-title">⚠️ Notă</div>
+                Versiunea iterativă poate produce o ordine diferită de vizitare decât cea recursivă.
+            </div>
+        </div>
+
+        <!-- Slide 21: BFS vs DFS -->
+        <div class="slide">
+            <h1>⚔️ BFS vs DFS — Când să folosești fiecare?</h1>
+            <table>
+                <tr>
+                    <th>Criteriu</th>
+                    <th>BFS</th>
+                    <th>DFS</th>
+                </tr>
+                <tr>
+                    <td>Structură de date</td>
+                    <td>Coadă (FIFO)</td>
+                    <td>Stivă/Recursie (LIFO)</td>
+                </tr>
+                <tr>
+                    <td>Explorare</td>
+                    <td>Pe nivele (lățime)</td>
+                    <td>Pe ramuri (adâncime)</td>
+                </tr>
+                <tr>
+                    <td>Drum minim</td>
+                    <td>✅ Garantat (neponderat)</td>
+                    <td>❌ Nu garantează</td>
+                </tr>
+                <tr>
+                    <td>Memorie</td>
+                    <td>O(V) — poate fi mare</td>
+                    <td>O(h) — înălțimea</td>
+                </tr>
+                <tr>
+                    <td>Complexitate</td>
+                    <td>O(V + E)</td>
+                    <td>O(V + E)</td>
+                </tr>
+            </table>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Folosește BFS pentru:</h3>
+                    <ul>
+                        <li>Drumuri minime (neponderate)</li>
+                        <li>Explorare pe niveluri</li>
+                        <li>Găsirea vecinilor apropiați</li>
+                        <li>Verificarea bipartitismului</li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <h3>Folosește DFS pentru:</h3>
+                    <ul>
+                        <li>Detectarea ciclurilor</li>
+                        <li>Sortare topologică</li>
+                        <li>Componente conexe</li>
+                        <li>Backtracking, labirinturi</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 22: Connected Components -->
+        <div class="slide">
+            <h1>🔗 Componente Conexe</h1>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Definiție</h3>
+                    <p>O <span class="keyword">componentă conexă</span> este o submulțime maximală de noduri în care există drum între oricare două noduri.</p>
+                    <div class="diagram-box">
+Componenta 1:    Componenta 2:
+   (0)-(1)          (4)-(5)
+    |   |            |
+   (2)-(3)          (6)
+
+Graf cu 2 componente conexe
+                    </div>
+                </div>
+                <div class="column">
+                    <h3>Algoritm</h3>
+                    <div class="algorithm-box">
+                        <h4>Găsire Componente</h4>
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div>componentă = 0</div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div>PENTRU fiecare nod v:
+                                <ul>
+                                    <li>DACĂ v nevizitat:
+                                        <ul>
+                                            <li>componentă++</li>
+                                            <li>BFS/DFS(v) — marchează toți nodurile accesibile</li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div>Returnează componentă</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 23: Connected Components Implementation -->
+        <div class="slide">
+            <h1>💻 Implementare Componente Conexe</h1>
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Numără și afișează componentele conexe</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">int count_components(Graph* graph) {
+    int count = 0;
+    
+    // Resetează visited
+    for (int i = 0; i < graph->numVertices; i++) {
+        graph->visited[i] = 0;
+    }
+    
+    // Pentru fiecare nod nevizitat, pornește un BFS/DFS
+    for (int v = 0; v < graph->numVertices; v++) {
+        if (!graph->visited[v]) {
+            count++;
+            printf("Componenta %d: ", count);
+            bfs_component(graph, v);  // sau dfs_component
+            printf("\n");
+        }
+    }
+    
+    return count;
+}
+
+// BFS care afișează nodurile din componentă
+void bfs_component(Graph* graph, int start) {
+    int queue[MAX_V];
+    int front = 0, rear = 0;
+    
+    graph->visited[start] = 1;
+    queue[rear++] = start;
+    
+    while (front < rear) {
+        int u = queue[front++];
+        printf("%d ", u);
+        
+        Node* temp = graph->adjLists[u];
+        while (temp) {
+            if (!graph->visited[temp->vertex]) {
+                graph->visited[temp->vertex] = 1;
+                queue[rear++] = temp->vertex;
+            }
+            temp = temp->next;
+        }
+    }
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 24: Cycle Detection -->
+        <div class="slide">
+            <h1>🔄 Detectarea Ciclurilor</h1>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Graf Neorientat</h3>
+                    <p>În DFS, dacă găsim un vecin vizitat care <strong>nu este părintele</strong> nodului curent → <span class="keyword">ciclu</span>.</p>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Detectare ciclu</span>
+                            <span class="lang-badge">C</span>
+                        </div>
+                        <pre><code class="language-c">int has_cycle_undirected(Graph* g, 
+                         int v, int parent) {
+    g->visited[v] = 1;
+    
+    Node* temp = g->adjLists[v];
+    while (temp) {
+        int adj = temp->vertex;
+        if (!g->visited[adj]) {
+            if (has_cycle_undirected(g, adj, v))
+                return 1;
+        } else if (adj != parent) {
+            return 1; // Ciclu găsit!
+        }
+        temp = temp->next;
+    }
+    return 0;
+}</code></pre>
+                    </div>
+                </div>
+                <div class="column">
+                    <h3>Graf Orientat</h3>
+                    <p>Folosim colorare cu 3 culori:</p>
+                    <ul>
+                        <li><strong>ALB (0):</strong> Nevizitat</li>
+                        <li><strong>GRI (1):</strong> În procesare</li>
+                        <li><strong>NEGRU (2):</strong> Finalizat</li>
+                    </ul>
+                    <p>Dacă găsim un nod GRI → <span class="keyword">back edge</span> → ciclu!</p>
+                    <div class="info-box note">
+                        <div class="info-box-title">📌 Important</div>
+                        Ciclurile în grafuri orientate sunt esențiale pentru sortarea topologică — un graf cu cicluri nu poate fi sortat topologic.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 25: Common Mistakes -->
+        <div class="slide">
+            <h1>⚠️ Greșeli Comune</h1>
+            <div class="info-box danger">
+                <div class="info-box-title">❌ Eroare 1: Uitarea marcării ca vizitat ÎNAINTE de enqueue</div>
+                <p>Dacă marcăm <em>după</em> ce scoatem din coadă, același nod poate fi adăugat de mai multe ori.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Greșit vs Corect</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">// ❌ GREȘIT - poate adăuga duplicat
+if (!visited[v]) {
+    queue[rear++] = v;
+}
+// ... mai târziu
+visited[current] = 1;  // Prea târziu!
+
+// ✅ CORECT - marcăm imediat
+if (!visited[v]) {
+    visited[v] = 1;     // Marcăm ACUM
+    queue[rear++] = v;
+}</code></pre>
+            </div>
+            <div class="info-box danger">
+                <div class="info-box-title">❌ Eroare 2: Memory leak la eliberarea grafului</div>
+                <p>Trebuie eliberate toate nodurile din fiecare listă, apoi array-urile, apoi structura.</p>
+            </div>
+            <div class="info-box danger">
+                <div class="info-box-title">❌ Eroare 3: Stack overflow la DFS recursiv pe grafuri mari</div>
+                <p>Soluție: Folosiți DFS iterativ cu stivă explicită pentru grafuri cu mii de noduri.</p>
+            </div>
+        </div>
+
+        <!-- Slide 26: Memory Diagram -->
+        <div class="slide">
+            <h1>🧠 Model de Memorie</h1>
+            <div class="diagram-box">
+┌─────────────────────────────────────────────────────────────────┐
+│                          HEAP                                   │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  Graph struct:                     Liste de adiacență:          │
+│  ┌──────────────┐                                               │
+│  │ numVertices  │───→ 5            adjLists[0] → [1]→[2]→NULL   │
+│  │ *adjLists    │───┐              adjLists[1] → [0]→[2]→NULL   │
+│  │ *visited     │───┼──┐           adjLists[2] → [0]→[1]→[3]    │
+│  └──────────────┘   │  │           adjLists[3] → [2]→[4]→NULL   │
+│                     │  │           adjLists[4] → [3]→NULL       │
+│                     ▼  │                                        │
+│  ┌─────────────────┐  │                                         │
+│  │ [0][1][2][3][4] │  │           Node struct:                  │
+│  │  ↓  ↓  ↓  ↓  ↓  │  │           ┌─────────┐                   │
+│  └─────────────────┘  │           │ vertex  │                   │
+│         adjLists      │           │ *next   │───→ (next Node)   │
+│                       ▼           └─────────┘                   │
+│  ┌─────────────────────┐                                        │
+│  │ [0][0][1][0][0]     │  visited array                         │
+│  └─────────────────────┘                                        │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│                          STACK                                  │
+├─────────────────────────────────────────────────────────────────┤
+│  main()                                                         │
+│    └─ Graph* graph = create_graph(5);                           │
+│         └─ bfs(graph, 0);                                       │
+│              └─ queue[MAX_V], front, rear                       │
+└─────────────────────────────────────────────────────────────────┘
+            </div>
+        </div>
+
+        <!-- Slide 27: Memory Deallocation -->
+        <div class="slide">
+            <h1>🗑️ Eliberarea Corectă a Memoriei</h1>
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Funcția free_graph - evitați memory leaks!</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">void free_graph(Graph* graph) {
+    if (graph == NULL) return;
+    
+    // Pasul 1: Eliberează fiecare listă de adiacență
+    for (int v = 0; v < graph->numVertices; v++) {
+        Node* current = graph->adjLists[v];
+        while (current != NULL) {
+            Node* temp = current;
+            current = current->next;
+            free(temp);  // Eliberează fiecare nod
+        }
+    }
+    
+    // Pasul 2: Eliberează array-ul de liste
+    free(graph->adjLists);
+    
+    // Pasul 3: Eliberează array-ul visited
+    free(graph->visited);
+    
+    // Pasul 4: Eliberează structura Graph
+    free(graph);
+}
+
+// Utilizare cu Valgrind pentru verificare:
+// valgrind --leak-check=full ./program</code></pre>
+            </div>
+            <div class="info-box tip">
+                <div class="info-box-title">💡 Best Practice</div>
+                Întotdeauna verificați cu <code>valgrind</code> că nu aveți memory leaks. Output-ul ideal: <code>All heap blocks were freed -- no leaks are possible</code>
+            </div>
+        </div>
+
+        <!-- Slide 28: Debugging with GDB -->
+        <div class="slide">
+            <h1>🔍 Debugging cu GDB</h1>
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Comenzi utile GDB pentru debugging grafuri</span>
+                    <span class="lang-badge">bash</span>
+                </div>
+                <pre><code class="language-bash"># Compilare cu simboluri de debug
+gcc -g -Wall -o program program.c
+
+# Pornire GDB
+gdb ./program
+
+# Comenzi de bază
+(gdb) break bfs           # Breakpoint la funcția bfs
+(gdb) break program.c:42  # Breakpoint la linia 42
+(gdb) run                 # Rulează programul
+(gdb) next                # Pasul următor (n)
+(gdb) step                # Intră în funcție (s)
+(gdb) print graph->numVertices  # Afișează valoare
+(gdb) print *graph        # Dereferențiază pointer
+
+# Pentru liste înlănțuite
+(gdb) print graph->adjLists[0]->vertex
+(gdb) print graph->adjLists[0]->next->vertex
+
+# Afișare array
+(gdb) print *queue@10     # Primele 10 elemente din queue
+(gdb) print visited[0]@5  # Primele 5 elemente din visited
+
+# Continuare și oprire
+(gdb) continue            # Continuă execuția (c)
+(gdb) quit                # Ieșire (q)</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 29: Valgrind -->
+        <div class="slide">
+            <h1>🔬 Verificare Memorie cu Valgrind</h1>
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Utilizare Valgrind</span>
+                    <span class="lang-badge">bash</span>
+                </div>
+                <pre><code class="language-bash"># Verificare memory leaks
+valgrind --leak-check=full ./program
+
+# Output ideal:
+# ==12345== HEAP SUMMARY:
+# ==12345==     in use at exit: 0 bytes in 0 blocks
+# ==12345==   total heap usage: 42 allocs, 42 frees, 1,024 bytes allocated
+# ==12345== 
+# ==12345== All heap blocks were freed -- no leaks are possible
+
+# Probleme comune detectate:
+# - "definitely lost" - memorie niciodată eliberată
+# - "Invalid read/write" - acces în afara buffer-ului
+# - "Use of uninitialised value" - variabilă neinițializată</code></pre>
+            </div>
+            <div class="info-box warning">
+                <div class="info-box-title">⚠️ Erori frecvente</div>
+                <ul>
+                    <li><strong>Invalid read of size 4:</strong> Accesați memorie eliberată sau nealocată</li>
+                    <li><strong>Conditional jump depends on uninitialised:</strong> Folosiți o variabilă neinițializată</li>
+                    <li><strong>Definitely lost:</strong> Nu ați apelat free() pentru memoria alocată</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 30: Best Practices -->
+        <div class="slide">
+            <h1>✅ Best Practices</h1>
+            <div class="two-columns">
+                <div class="column" style="background: rgba(63, 185, 80, 0.1); border-color: var(--accent-green);">
+                    <h3 style="color: var(--accent-green);">✓ DO's</h3>
+                    <ul>
+                        <li>Marcați nodurile ca vizitate <strong>înainte</strong> de a le adăuga în coadă/stivă</li>
+                        <li>Verificați dacă malloc() returnează NULL</li>
+                        <li>Eliberați memoria în ordine inversă alocării</li>
+                        <li>Folosiți constante pentru dimensiuni (MAX_V)</li>
+                        <li>Inițializați toate variabilele</li>
+                        <li>Testați cu Valgrind înainte de predare</li>
+                        <li>Comentați codul complex</li>
+                    </ul>
+                </div>
+                <div class="column" style="background: rgba(248, 81, 73, 0.1); border-color: var(--accent-red);">
+                    <h3 style="color: var(--accent-red);">✗ DON'Ts</h3>
+                    <ul>
+                        <li>Nu folosiți DFS recursiv pentru grafuri foarte mari</li>
+                        <li>Nu uitați să resetați visited[] între parcurgeri</li>
+                        <li>Nu presupuneți că graful este conex</li>
+                        <li>Nu accesați memoria după free()</li>
+                        <li>Nu ignorați warning-urile compilatorului</li>
+                        <li>Nu hardcodați dimensiunile</li>
+                        <li>Nu returnați pointeri la variabile locale</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 31: Applications -->
+        <div class="slide">
+            <h1>🏭 Aplicații în Lumea Reală</h1>
+            <div class="takeaway-grid">
+                <div class="takeaway-card">
+                    <div class="icon">🌐</div>
+                    <h3>Rețele Sociale</h3>
+                    <p>Recomandări de prieteni, comunități, influenceri</p>
+                </div>
+                <div class="takeaway-card">
+                    <div class="icon">🗺️</div>
+                    <h3>Navigație GPS</h3>
+                    <p>Rute optime, evitare trafic, ETA</p>
+                </div>
+                <div class="takeaway-card">
+                    <div class="icon">🔧</div>
+                    <h3>Compilatoare</h3>
+                    <p>Dependențe, ordine de build, optimizări</p>
+                </div>
+                <div class="takeaway-card">
+                    <div class="icon">🌐</div>
+                    <h3>Internet Routing</h3>
+                    <p>BGP, OSPF, căi optime între routere</p>
+                </div>
+                <div class="takeaway-card">
+                    <div class="icon">🛒</div>
+                    <h3>Recomandări</h3>
+                    <p>Amazon, Netflix — grafuri bipartite</p>
+                </div>
+                <div class="takeaway-card">
+                    <div class="icon">🧬</div>
+                    <h3>Bioinformatică</h3>
+                    <p>Rețele de proteine, analiza genomului</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 32: Reading Files -->
+        <div class="slide">
+            <h1>📁 Citirea Grafului din Fișier</h1>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Format fișier</h3>
+                    <div class="diagram-box">
+5 7          ← N noduri, M muchii
+0 1          ← muchie între 0 și 1
+0 2
+1 2
+1 3
+2 3
+2 4
+3 4
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Citire graf</span>
+                            <span class="lang-badge">C</span>
+                        </div>
+                        <pre><code class="language-c">Graph* read_graph(const char* filename) {
+    FILE* f = fopen(filename, "r");
+    if (!f) {
+        perror("Eroare deschidere");
+        return NULL;
+    }
+    
+    int n, m;
+    fscanf(f, "%d %d", &n, &m);
+    
+    Graph* g = create_graph(n);
+    
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        fscanf(f, "%d %d", &u, &v);
+        add_edge(g, u, v);
+    }
+    
+    fclose(f);
+    return g;
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 33: Complexity Summary -->
+        <div class="slide">
+            <h1>📊 Rezumat Complexități</h1>
+            <table>
+                <tr>
+                    <th>Algoritm/Operație</th>
+                    <th>Timp</th>
+                    <th>Spațiu</th>
+                    <th>Note</th>
+                </tr>
+                <tr>
+                    <td>Creare graf (liste)</td>
+                    <td><span class="complexity">O(V)</span></td>
+                    <td><span class="complexity">O(V)</span></td>
+                    <td>Doar structura, fără muchii</td>
+                </tr>
+                <tr>
+                    <td>Adăugare muchie</td>
+                    <td><span class="complexity">O(1)</span></td>
+                    <td><span class="complexity">O(1)</span></td>
+                    <td>Inserare la început</td>
+                </tr>
+                <tr>
+                    <td>BFS complet</td>
+                    <td><span class="complexity">O(V + E)</span></td>
+                    <td><span class="complexity">O(V)</span></td>
+                    <td>Coadă + visited</td>
+                </tr>
+                <tr>
+                    <td>DFS complet</td>
+                    <td><span class="complexity">O(V + E)</span></td>
+                    <td><span class="complexity">O(V)</span></td>
+                    <td>Stivă/recursie + visited</td>
+                </tr>
+                <tr>
+                    <td>Componente conexe</td>
+                    <td><span class="complexity">O(V + E)</span></td>
+                    <td><span class="complexity">O(V)</span></td>
+                    <td>Un BFS/DFS per componentă</td>
+                </tr>
+                <tr>
+                    <td>Detectare ciclu</td>
+                    <td><span class="complexity">O(V + E)</span></td>
+                    <td><span class="complexity">O(V)</span></td>
+                    <td>DFS modificat</td>
+                </tr>
+            </table>
+            <div class="info-box note">
+                <div class="info-box-title">📌 Observație cheie</div>
+                Pentru grafuri rare (E ≈ V), complexitatea O(V + E) ≈ O(V). Pentru grafuri dense (E ≈ V²), O(V + E) ≈ O(V²).
+            </div>
+        </div>
+
+        <!-- Slide 34: Lab Preview -->
+        <div class="slide">
+            <h1>🔬 Previzualizare Laborator</h1>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Exercițiu 1: Graf cu Liste</h3>
+                    <p><strong>Obiectiv:</strong> Implementarea structurii de date pentru grafuri cu liste de adiacență.</p>
+                    <ul>
+                        <li>Creare și inițializare graf</li>
+                        <li>Adăugare muchii</li>
+                        <li>Afișare structură</li>
+                        <li>Eliberare memorie</li>
+                        <li>Citire din fișier</li>
+                        <li>Verificare conectivitate</li>
+                    </ul>
+                    <p><strong>TODO markers:</strong> 8-10</p>
+                </div>
+                <div class="column">
+                    <h3>Exercițiu 2: BFS și DFS</h3>
+                    <p><strong>Obiectiv:</strong> Implementarea algoritmilor de parcurgere.</p>
+                    <ul>
+                        <li>BFS iterativ cu coadă</li>
+                        <li>DFS recursiv</li>
+                        <li>DFS iterativ cu stivă</li>
+                        <li>Calculul distanțelor (BFS)</li>
+                        <li>Numărarea componentelor conexe</li>
+                        <li>Afișarea drumului minim</li>
+                    </ul>
+                    <p><strong>TODO markers:</strong> 12-15</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 35: Key Takeaways -->
+        <div class="slide">
+            <h1>🎯 Concluzii Cheie</h1>
+            <div class="takeaway-grid">
+                <div class="takeaway-card">
+                    <div class="icon">📐</div>
+                    <h3>Definiție</h3>
+                    <p>G = (V, E)<br>Noduri + Muchii</p>
+                </div>
+                <div class="takeaway-card">
+                    <div class="icon">📊</div>
+                    <h3>Matrice</h3>
+                    <p>O(V²) spațiu<br>O(1) verificare</p>
+                </div>
+                <div class="takeaway-card">
+                    <div class="icon">📋</div>
+                    <h3>Liste</h3>
+                    <p>O(V+E) spațiu<br>Eficient pentru sparse</p>
+                </div>
+                <div class="takeaway-card">
+                    <div class="icon">🌊</div>
+                    <h3>BFS</h3>
+                    <p>Coadă FIFO<br>Drumuri minime</p>
+                </div>
+                <div class="takeaway-card">
+                    <div class="icon">🌲</div>
+                    <h3>DFS</h3>
+                    <p>Stivă/Recursie<br>Cicluri, topological</p>
+                </div>
+                <div class="takeaway-card">
+                    <div class="icon">⚡</div>
+                    <h3>Complexitate</h3>
+                    <p>O(V + E)<br>Ambele parcurgeri</p>
+                </div>
+            </div>
+            <div class="quote-box">
+                „Grafurile sunt pretutindeni — de la rețele sociale la compilatoare, de la biologie la logistică. Stăpânirea lor deschide uși infinite."
+                <div class="quote-author">— Curs ATP, Săptămâna 12</div>
+            </div>
+        </div>
+
+        <!-- Slide 36: Resources -->
+        <div class="slide">
+            <h1>📚 Resurse</h1>
+            <h3>Lectură Esențială</h3>
+            <ul class="resource-list">
+                <li>📖 <strong>CLRS</strong> — Introduction to Algorithms, Capitolele 22-23</li>
+                <li>📖 <strong>Sedgewick</strong> — Algorithms in C, Part 5: Graph Algorithms</li>
+            </ul>
+            <h3>Resurse Online</h3>
+            <ul class="resource-list">
+                <li>🌐 <a href="https://visualgo.net/en/dfsbfs">VisuAlgo — Graph Traversal</a> — Vizualizări interactive BFS/DFS</li>
+                <li>🌐 <a href="https://www.geeksforgeeks.org/graph-data-structure-and-algorithms/">GeeksforGeeks — Graph DS</a></li>
+                <li>🌐 <a href="https://cp-algorithms.com/graph/breadth-first-search.html">CP-Algorithms — BFS</a></li>
+            </ul>
+            <h3>Practică</h3>
+            <ul class="resource-list">
+                <li>💻 <strong>LeetCode</strong> — Graph problems (easy → medium)</li>
+                <li>💻 <strong>HackerRank</strong> — Graph Theory section</li>
+            </ul>
+        </div>
+
+        <!-- Slide 37: Questions -->
+        <div class="slide title-slide">
+            <div class="week-badge">ÎNTREBĂRI?</div>
+            <h1>Mulțumesc pentru atenție!</h1>
+            <p class="subtitle">Săptămâna 13: Algoritmi pe Grafuri — Dijkstra, Bellman-Ford</p>
+            <p class="course-info" style="margin-top: 3rem;">
+                📧 Întrebări? Consultați forumul cursului sau orele de consultații.
+            </p>
+            <p class="course-info">
+                📝 Nu uitați: Tema de laborator are deadline la sfârșitul săptămânii 13!
+            </p>
+        </div>
+
+    </div>
+
+    <!-- Navigation Controls -->
+    <div class="nav-controls">
+        <button class="nav-btn" onclick="goToSlide(0)" title="Prima (Home)">⏮</button>
+        <button class="nav-btn" onclick="prevSlide()" title="Înapoi (←)">◀</button>
+        <button class="nav-btn" onclick="nextSlide()" title="Înainte (→)">▶</button>
+        <button class="nav-btn" onclick="goToSlide(totalSlides-1)" title="Ultima (End)">⏭</button>
+    </div>
+
+    <!-- Slide Counter -->
+    <div class="slide-counter">
+        <span id="currentSlide">1</span> / <span id="totalSlides">37</span>
+    </div>
+
+    <script>
+        // Initialize highlight.js
+        hljs.highlightAll();
+
+        // Slide navigation
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(index) {
+            if (index < 0) index = 0;
+            if (index >= totalSlides) index = totalSlides - 1;
+            
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[index].classList.add('active');
+            currentSlideIndex = index;
+            
+            document.getElementById('currentSlide').textContent = index + 1;
+            updateProgressBar();
+        }
+
+        function nextSlide() {
+            showSlide(currentSlideIndex + 1);
+        }
+
+        function prevSlide() {
+            showSlide(currentSlideIndex - 1);
+        }
+
+        function goToSlide(index) {
+            showSlide(index);
+        }
+
+        function updateProgressBar() {
+            const progress = ((currentSlideIndex + 1) / totalSlides) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'ArrowRight':
+                case ' ':
+                case 'PageDown':
+                    e.preventDefault();
+                    nextSlide();
+                    break;
+                case 'ArrowLeft':
+                case 'PageUp':
+                    e.preventDefault();
+                    prevSlide();
+                    break;
+                case 'Home':
+                    e.preventDefault();
+                    goToSlide(0);
+                    break;
+                case 'End':
+                    e.preventDefault();
+                    goToSlide(totalSlides - 1);
+                    break;
+            }
+        });
+
+        // Touch support for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    nextSlide();
+                } else {
+                    prevSlide();
+                }
+            }
+        }
+
+        // Initialize
+        updateProgressBar();
+    </script>
+</body>
+</html>

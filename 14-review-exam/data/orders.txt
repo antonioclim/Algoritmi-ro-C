@@ -1,0 +1,31 @@
+# Format: ORDER_ID CLIENT_NAME PRIORITY PRODUCT_CODE QUANTITY
+# Comenzile sunt grupate după ORDER_ID
+
+# Comanda 1001 - Ion Popescu (prioritate normală)
+1001 Ion_Popescu 5 P001 1
+1001 Ion_Popescu 5 P002 2
+1001 Ion_Popescu 5 P016 1
+
+# Comanda 1002 - Maria Ionescu (urgentă)
+1002 Maria_Ionescu 9 P004 2
+1002 Maria_Ionescu 9 P005 3
+
+# Comanda 1003 - Andrei Georgescu (prioritate scăzută)
+1003 Andrei_Georgescu 3 P003 1
+1003 Andrei_Georgescu 3 P007 1
+
+# Comanda 1004 - Elena Vasilescu (foarte urgentă)
+1004 Elena_Vasilescu 10 P006 4
+1004 Elena_Vasilescu 10 P008 2
+
+# Comanda 1005 - Mihai Dumitrescu (prioritate medie)
+1005 Mihai_Dumitrescu 6 P011 1
+1005 Mihai_Dumitrescu 6 P012 1
+1005 Mihai_Dumitrescu 6 P013 1
+1005 Mihai_Dumitrescu 6 P014 1
+
+# Comanda 1006 - Ana Constantinescu (urgentă)
+1006 Ana_Constantinescu 8 P009 2
+1006 Ana_Constantinescu 8 P010 1
+1006 Ana_Constantinescu 8 P017 3
+1006 Ana_Constantinescu 8 P018 5

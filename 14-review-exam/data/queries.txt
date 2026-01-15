@@ -1,0 +1,26 @@
+# Fișier de interogări pentru testare
+# Format: COMMAND PARAM1 [PARAM2]
+
+# Căutări produse
+FIND_PRODUCT P001
+FIND_PRODUCT P005
+FIND_PRODUCT P099
+
+# Căutări comenzi
+FIND_ORDER 1001
+FIND_ORDER 1003
+FIND_ORDER 9999
+
+# Grade de separare în rețea
+SEPARATION Alice Diana
+SEPARATION Bob Helen
+SEPARATION Alice Ivan
+
+# Comenzi după prioritate
+LIST_URGENT
+LIST_BY_TOTAL
+
+# Statistici
+NETWORK_STATS
+TOP_INFLUENCERS 5
+LIST_COMMUNITIES

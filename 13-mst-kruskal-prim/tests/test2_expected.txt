@@ -1,0 +1,9 @@
+Notă: Graful conține muchii cu ponderi negative.
+
+Nu există ciclu negativ.
+
+Distanța de la 0 la 0: 0
+Distanța de la 0 la 1: 6, Drum: 0 -> 1
+Distanța de la 0 la 2: 7, Drum: 0 -> 2
+Distanța de la 0 la 3: 4, Drum: 0 -> 2 -> 3
+Distanța de la 0 la 4: 2, Drum: 0 -> 1 -> 4

@@ -1,0 +1,2409 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Săptămâna 14: Recapitulare Avansată și Optimizare | ATP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/c.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-yellow: #d29922;
+            --accent-red: #f85149;
+            --accent-purple: #a371f7;
+            --border-color: #30363d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            transition: width 0.3s ease;
+            z-index: 1000;
+        }
+
+        /* Slide Container */
+        .slides-container {
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 60px 80px;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 2.8em;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: 2.2em;
+            margin-bottom: 25px;
+            color: var(--accent-blue);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            font-size: 1.6em;
+            margin: 20px 0 15px;
+            color: var(--accent-green);
+        }
+
+        h4 {
+            font-size: 1.3em;
+            margin: 15px 0 10px;
+            color: var(--accent-yellow);
+        }
+
+        p {
+            font-size: 1.2em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            color: var(--text-secondary);
+        }
+
+        ul, ol {
+            margin: 15px 0 15px 30px;
+            font-size: 1.15em;
+        }
+
+        li {
+            margin: 12px 0;
+            line-height: 1.6;
+        }
+
+        /* Code Blocks */
+        .code-block {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            margin: 20px 0;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .code-header {
+            background: var(--bg-tertiary);
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .code-header span {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+
+        .lang-badge {
+            background: var(--accent-blue);
+            color: var(--bg-primary);
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        pre {
+            margin: 0;
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.95em;
+        }
+
+        /* Special Boxes */
+        .info-box {
+            background: var(--bg-secondary);
+            border-left: 4px solid var(--accent-blue);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .warning-box {
+            background: rgba(210, 153, 34, 0.1);
+            border-left: 4px solid var(--accent-yellow);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .error-box {
+            background: rgba(248, 81, 73, 0.1);
+            border-left: 4px solid var(--accent-red);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .success-box {
+            background: rgba(63, 185, 80, 0.1);
+            border-left: 4px solid var(--accent-green);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 1em;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        th {
+            background: var(--bg-tertiary);
+            color: var(--accent-blue);
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: var(--bg-secondary);
+        }
+
+        tr:hover {
+            background: var(--bg-tertiary);
+        }
+
+        /* Two Column Layout */
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .column {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Three Column Layout */
+        .three-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 10px 0;
+        }
+
+        .card-title {
+            color: var(--accent-blue);
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Grid Layout */
+        .grid-2x2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .grid-3x2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        /* Navigation */
+        .nav-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            background: var(--accent-blue);
+            color: var(--bg-primary);
+        }
+
+        /* Slide Counter */
+        .slide-counter {
+            position: fixed;
+            bottom: 25px;
+            left: 30px;
+            color: var(--text-secondary);
+            font-size: 1em;
+            z-index: 100;
+        }
+
+        /* Title Slide */
+        .title-slide {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            height: 100%;
+        }
+
+        .title-slide h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+        }
+
+        .title-slide .subtitle {
+            font-size: 1.8em;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        .title-slide .meta {
+            font-size: 1.2em;
+            color: var(--accent-purple);
+        }
+
+        /* Diagram Styles */
+        .diagram {
+            background: var(--bg-secondary);
+            padding: 30px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+            white-space: pre;
+            overflow-x: auto;
+            line-height: 1.4;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Quote Box */
+        .quote-box {
+            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+            border: 1px solid var(--accent-purple);
+            border-radius: 8px;
+            padding: 30px;
+            margin: 20px 0;
+            font-style: italic;
+            font-size: 1.3em;
+            text-align: center;
+            color: var(--text-primary);
+        }
+
+        .quote-author {
+            margin-top: 15px;
+            font-style: normal;
+            font-size: 0.8em;
+            color: var(--accent-purple);
+        }
+
+        /* Highlight */
+        .highlight {
+            color: var(--accent-yellow);
+            font-weight: 600;
+        }
+
+        .highlight-blue {
+            color: var(--accent-blue);
+            font-weight: 600;
+        }
+
+        .highlight-green {
+            color: var(--accent-green);
+            font-weight: 600;
+        }
+
+        .highlight-red {
+            color: var(--accent-red);
+            font-weight: 600;
+        }
+
+        /* Complexity Badge */
+        .complexity {
+            display: inline-block;
+            background: var(--bg-tertiary);
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+            margin: 2px;
+        }
+
+        .complexity.good {
+            background: rgba(63, 185, 80, 0.2);
+            color: var(--accent-green);
+        }
+
+        .complexity.medium {
+            background: rgba(210, 153, 34, 0.2);
+            color: var(--accent-yellow);
+        }
+
+        .complexity.bad {
+            background: rgba(248, 81, 73, 0.2);
+            color: var(--accent-red);
+        }
+
+        /* Icon Styles */
+        .icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        /* End Slide */
+        .end-slide {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            height: 100%;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .slide {
+                padding: 40px 50px;
+            }
+            h1 { font-size: 2.2em; }
+            h2 { font-size: 1.8em; }
+            .two-columns, .three-columns {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+            border-left: 3px solid var(--accent-blue);
+            margin: 20px 0;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 25px;
+            padding-left: 20px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -36px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+        }
+
+        .timeline-date {
+            color: var(--accent-purple);
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        /* Keyboard hint */
+        .keyboard-hint {
+            position: fixed;
+            bottom: 70px;
+            right: 30px;
+            color: var(--text-secondary);
+            font-size: 0.85em;
+            z-index: 100;
+        }
+
+        kbd {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 3px 8px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progress"></div>
+    
+    <div class="slides-container" id="slides">
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <div class="title-slide">
+                <h1>🎓 Săptămâna 14</h1>
+                <div class="subtitle">Recapitulare Avansată și Optimizare</div>
+                <div class="meta">Algoritmi și Tehnici de Programare</div>
+                <div class="meta" style="margin-top: 20px; color: var(--text-secondary);">
+                    Academia de Studii Economice București<br>
+                    Facultatea CSIE
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Learning Objectives -->
+        <div class="slide">
+            <h2>🎯 Obiective de Învățare</h2>
+            <div class="grid-2x2">
+                <div class="card">
+                    <div class="card-title">📖 Să recunoască (Remember)</div>
+                    <p>Identificarea structurii de date potrivite și enumerarea complexităților temporale</p>
+                </div>
+                <div class="card">
+                    <div class="card-title">💡 Să înțeleagă (Understand)</div>
+                    <p>Explicarea relațiilor și compromisurilor între diferite structuri de date</p>
+                </div>
+                <div class="card">
+                    <div class="card-title">⚙️ Să aplice (Apply)</div>
+                    <p>Implementarea soluțiilor hibride cu multiple structuri de date</p>
+                </div>
+                <div class="card">
+                    <div class="card-title">🔍 Să analizeze (Analyse)</div>
+                    <p>Evaluarea performanței prin profiling și identificarea bottleneck-urilor</p>
+                </div>
+                <div class="card">
+                    <div class="card-title">⚖️ Să evalueze (Evaluate)</div>
+                    <p>Compararea abordărilor și justificarea alegerii optime</p>
+                </div>
+                <div class="card">
+                    <div class="card-title">🚀 Să creeze (Create)</div>
+                    <p>Proiectarea sistemelor software complete care integrează toate conceptele</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Historical Context -->
+        <div class="slide">
+            <h2>📜 Context Istoric</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-date">1957-1958</div>
+                    <p><span class="highlight-blue">FORTRAN</span> introduce array-urile; <span class="highlight-green">LISP</span> popularizează listele înlănțuite</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">1959-1962</div>
+                    <p><span class="highlight">Dijkstra</span> publică algoritmul drumurilor minime; <span class="highlight">AVL trees</span> sunt inventate</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">1960</div>
+                    <p><span class="highlight-blue">C.A.R. Hoare</span> inventează Quicksort - unul dintre cei mai folosiți algoritmi</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">1968</div>
+                    <p><span class="highlight-green">Donald Knuth</span> publică primul volum din "The Art of Computer Programming"</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">1972</div>
+                    <p><span class="highlight">Rudolf Bayer</span> creează B-trees - fundamentul bazelor de date moderne</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Key Figure - Donald Knuth -->
+        <div class="slide">
+            <h2>👤 Figura Cheie: Donald Ervin Knuth</h2>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Biografie</h3>
+                    <ul>
+                        <li><strong>Născut:</strong> 10 ianuarie 1938, Milwaukee, USA</li>
+                        <li><strong>Educație:</strong> PhD Stanford University, 1963</li>
+                        <li><strong>Poziție:</strong> Profesor Emerit, Stanford</li>
+                        <li><strong>Premiu Turing:</strong> 1974</li>
+                    </ul>
+                    <h3>Contribuții Majore</h3>
+                    <ul>
+                        <li>"The Art of Computer Programming" (1968-prezent)</li>
+                        <li>Sistemul TeX pentru tehnoredactare</li>
+                        <li>Analiza riguoasă a algoritmilor</li>
+                        <li>Literate programming</li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <div class="quote-box">
+                        "Premature optimization is the root of all evil."
+                        <div class="quote-author">— Donald Knuth, 1974</div>
+                    </div>
+                    <div class="info-box" style="margin-top: 20px;">
+                        <strong>Fun fact:</strong> Knuth oferă cecuri de $2.56 (un „dolar hexadecimal") pentru fiecare eroare găsită în cărțile sale.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Data Structures Taxonomy -->
+        <div class="slide">
+            <h2>📊 Taxonomia Structurilor de Date</h2>
+            <div class="diagram">
+                              STRUCTURI DE DATE
+                                    │
+            ┌───────────────────────┼───────────────────────┐
+            │                       │                       │
+        LINIARE                IERARHICE              NON-LINIARE
+            │                       │                       │
+    ┌───────┼───────┐       ┌───────┼───────┐       ┌───────┼───────┐
+    │       │       │       │       │       │       │       │       │
+  Array   List   Stack    Tree    Heap    Trie    Hash   Graph    Set
+              Queue                              Table
+            </div>
+            <div class="three-columns" style="margin-top: 20px;">
+                <div class="card">
+                    <div class="card-title" style="color: var(--accent-blue);">Liniare</div>
+                    <p>Elemente într-o secvență. Fiecare element are cel mult un succesor.</p>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="color: var(--accent-green);">Ierarhice</div>
+                    <p>Relații părinte-copil. Un element poate avea mai mulți succesori.</p>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="color: var(--accent-purple);">Non-liniare</div>
+                    <p>Relații complexe. Orice element poate fi conectat cu oricâte altele.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Complexity Overview -->
+        <div class="slide">
+            <h2>⏱️ Complexități Temporale - Sumar</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Structură</th>
+                        <th>Acces</th>
+                        <th>Căutare</th>
+                        <th>Inserare</th>
+                        <th>Ștergere</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Array</strong></td>
+                        <td><span class="complexity good">O(1)</span></td>
+                        <td><span class="complexity bad">O(n)</span></td>
+                        <td><span class="complexity bad">O(n)</span></td>
+                        <td><span class="complexity bad">O(n)</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Linked List</strong></td>
+                        <td><span class="complexity bad">O(n)</span></td>
+                        <td><span class="complexity bad">O(n)</span></td>
+                        <td><span class="complexity good">O(1)</span></td>
+                        <td><span class="complexity good">O(1)</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>BST (mediu)</strong></td>
+                        <td><span class="complexity medium">O(log n)</span></td>
+                        <td><span class="complexity medium">O(log n)</span></td>
+                        <td><span class="complexity medium">O(log n)</span></td>
+                        <td><span class="complexity medium">O(log n)</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Hash Table</strong></td>
+                        <td>N/A</td>
+                        <td><span class="complexity good">O(1)*</span></td>
+                        <td><span class="complexity good">O(1)*</span></td>
+                        <td><span class="complexity good">O(1)*</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Heap</strong></td>
+                        <td><span class="complexity good">O(1)**</span></td>
+                        <td><span class="complexity bad">O(n)</span></td>
+                        <td><span class="complexity medium">O(log n)</span></td>
+                        <td><span class="complexity medium">O(log n)</span></td>
+                    </tr>
+                </tbody>
+            </table>
+            <p style="font-size: 0.9em; margin-top: 10px;">
+                <em>* Caz mediu; worst case O(n)</em> &nbsp;&nbsp;
+                <em>** Doar pentru min/max</em>
+            </p>
+        </div>
+
+        <!-- Slide 7: Arrays Review -->
+        <div class="slide">
+            <h2>📦 Recapitulare: Arrays</h2>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Caracteristici</h3>
+                    <ul>
+                        <li>Memorie contiguă</li>
+                        <li>Acces direct prin index <span class="complexity good">O(1)</span></li>
+                        <li>Cache-friendly</li>
+                        <li>Dimensiune fixă (static) sau dinamică</li>
+                    </ul>
+                    <h3>Când să folosești</h3>
+                    <ul>
+                        <li>✅ Acces aleator frecvent</li>
+                        <li>✅ Dimensiune cunoscută</li>
+                        <li>❌ Inserări/ștergeri frecvente</li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Declarare și acces</span>
+                            <span class="lang-badge">C</span>
+                        </div>
+                        <pre><code class="language-c">// Array static
+int arr[100];
+arr[0] = 42;  // O(1)
+
+// Array dinamic
+int *darr = malloc(n * sizeof(int));
+darr[i] = value;  // O(1)
+
+// Căutare liniară
+for (int i = 0; i < n; i++)  // O(n)
+    if (arr[i] == target) return i;
+
+free(darr);</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Linked Lists Review -->
+        <div class="slide">
+            <h2>🔗 Recapitulare: Linked Lists</h2>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Tipuri</h3>
+                    <div class="diagram" style="font-size: 0.85em;">
+Singly:  [A]─►[B]─►[C]─►NULL
+
+Doubly:  NULL◄─[A]◄─►[B]◄─►[C]─►NULL
+
+Circular:    ┌──────────┐
+             ▼          │
+           [A]─►[B]─►[C]┘
+                    </div>
+                    <h3>Avantaje</h3>
+                    <ul>
+                        <li>Inserare/ștergere <span class="complexity good">O(1)</span> cu pointer</li>
+                        <li>Dimensiune dinamică</li>
+                        <li>Nu necesită realocare</li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Structura nodului</span>
+                            <span class="lang-badge">C</span>
+                        </div>
+                        <pre><code class="language-c">typedef struct Node {
+    int data;
+    struct Node *next;
+} Node;
+
+// Inserare la început O(1)
+Node *insert_front(Node *head, int val) {
+    Node *new = malloc(sizeof(Node));
+    new->data = val;
+    new->next = head;
+    return new;
+}
+
+// Căutare O(n)
+Node *find(Node *head, int val) {
+    while (head && head->data != val)
+        head = head->next;
+    return head;
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Stacks Review -->
+        <div class="slide">
+            <h2>📚 Recapitulare: Stacks (LIFO)</h2>
+            <div class="two-columns">
+                <div class="column">
+                    <div class="diagram">
+        ┌─────────────┐
+        │    TOP      │ ◄── push/pop
+        ├─────────────┤
+        │   element   │
+        ├─────────────┤
+        │   element   │
+        ├─────────────┤
+        │   BOTTOM    │
+        └─────────────┘
+                    </div>
+                    <h3>Operații</h3>
+                    <ul>
+                        <li><code>push()</code> - adaugă element <span class="complexity good">O(1)</span></li>
+                        <li><code>pop()</code> - elimină și returnează <span class="complexity good">O(1)</span></li>
+                        <li><code>peek()</code> - vizualizează vârful <span class="complexity good">O(1)</span></li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <h3>Aplicații</h3>
+                    <ul>
+                        <li>Evaluarea expresiilor (postfix/prefix)</li>
+                        <li>Verificarea parantezelor</li>
+                        <li>Undo/Redo în editoare</li>
+                        <li>Call stack în execuția programelor</li>
+                        <li>DFS pe grafuri</li>
+                    </ul>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Implementare cu array</span>
+                            <span class="lang-badge">C</span>
+                        </div>
+                        <pre><code class="language-c">typedef struct {
+    int data[MAX];
+    int top;
+} Stack;
+
+void push(Stack *s, int val) {
+    s->data[++s->top] = val;
+}
+
+int pop(Stack *s) {
+    return s->data[s->top--];
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Queues Review -->
+        <div class="slide">
+            <h2>🚶 Recapitulare: Queues (FIFO)</h2>
+            <div class="two-columns">
+                <div class="column">
+                    <div class="diagram">
+  enqueue ──►┌────┬────┬────┬────┐──► dequeue
+             │ D  │ C  │ B  │ A  │
+             └────┴────┴────┴────┘
+             REAR              FRONT
+                    </div>
+                    <h3>Variante</h3>
+                    <ul>
+                        <li><strong>Circular Queue</strong> - folosește array circular</li>
+                        <li><strong>Deque</strong> - double-ended queue</li>
+                        <li><strong>Priority Queue</strong> - bazat pe heap</li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <h3>Aplicații</h3>
+                    <ul>
+                        <li>BFS pe grafuri</li>
+                        <li>Scheduling procese (OS)</li>
+                        <li>Buffer pentru I/O</li>
+                        <li>Message queues</li>
+                    </ul>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Circular Queue</span>
+                            <span class="lang-badge">C</span>
+                        </div>
+                        <pre><code class="language-c">typedef struct {
+    int data[MAX];
+    int front, rear, size;
+} Queue;
+
+void enqueue(Queue *q, int val) {
+    q->rear = (q->rear + 1) % MAX;
+    q->data[q->rear] = val;
+    q->size++;
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Binary Trees Review -->
+        <div class="slide">
+            <h2>🌳 Recapitulare: Binary Trees</h2>
+            <div class="two-columns">
+                <div class="column">
+                    <div class="diagram">
+            ┌─────┐
+            │  8  │ ◄── rădăcină
+            └──┬──┘
+         ┌─────┴─────┐
+      ┌──┴──┐     ┌──┴──┐
+      │  3  │     │ 10  │
+      └──┬──┘     └──┬──┘
+      ┌──┴──┐        └──┐
+   ┌──┴─┐ ┌─┴──┐    ┌──┴──┐
+   │ 1  │ │ 6  │    │ 14  │
+   └────┘ └────┘    └─────┘
+                    </div>
+                    <h3>Terminologie</h3>
+                    <ul>
+                        <li><strong>Rădăcină</strong> - nodul fără părinte</li>
+                        <li><strong>Frunză</strong> - nod fără copii</li>
+                        <li><strong>Înălțime</strong> - distanța max la frunză</li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <h3>Traversări</h3>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Preorder, Inorder, Postorder</span>
+                            <span class="lang-badge">C</span>
+                        </div>
+                        <pre><code class="language-c">// Preorder: Rădăcină - Stânga - Dreapta
+void preorder(Node *n) {
+    if (!n) return;
+    printf("%d ", n->data);
+    preorder(n->left);
+    preorder(n->right);
+}
+
+// Inorder: Stânga - Rădăcină - Dreapta
+// (dă elementele sortate în BST)
+
+// Postorder: Stânga - Dreapta - Rădăcină
+// (util pentru ștergere arbore)</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: BST Review -->
+        <div class="slide">
+            <h2>🔍 Recapitulare: Binary Search Trees</h2>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Proprietatea BST</h3>
+                    <div class="info-box">
+                        Pentru orice nod N:<br>
+                        • Toate valorile din subarborele stâng &lt; N<br>
+                        • Toate valorile din subarborele drept &gt; N
+                    </div>
+                    <h3>Complexități</h3>
+                    <table style="font-size: 0.9em;">
+                        <tr>
+                            <th>Operație</th>
+                            <th>Mediu</th>
+                            <th>Worst</th>
+                        </tr>
+                        <tr>
+                            <td>Search</td>
+                            <td><span class="complexity good">O(log n)</span></td>
+                            <td><span class="complexity bad">O(n)</span></td>
+                        </tr>
+                        <tr>
+                            <td>Insert</td>
+                            <td><span class="complexity good">O(log n)</span></td>
+                            <td><span class="complexity bad">O(n)</span></td>
+                        </tr>
+                        <tr>
+                            <td>Delete</td>
+                            <td><span class="complexity good">O(log n)</span></td>
+                            <td><span class="complexity bad">O(n)</span></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="column">
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Căutare în BST</span>
+                            <span class="lang-badge">C</span>
+                        </div>
+                        <pre><code class="language-c">Node *search(Node *root, int key) {
+    // Caz de bază
+    if (!root || root->data == key)
+        return root;
+    
+    // Cheia e mai mică - caută stânga
+    if (key < root->data)
+        return search(root->left, key);
+    
+    // Cheia e mai mare - caută dreapta
+    return search(root->right, key);
+}</code></pre>
+                    </div>
+                    <div class="warning-box">
+                        <strong>⚠️ Dezechilibru:</strong> Inserarea elementelor sortate degenerează BST într-o listă (h = n-1)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: AVL Trees Review -->
+        <div class="slide">
+            <h2>⚖️ Recapitulare: AVL Trees</h2>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Factor de Echilibru</h3>
+                    <div class="info-box">
+                        <code>BF(node) = height(left) - height(right)</code><br><br>
+                        Arbore AVL valid: <strong>BF ∈ {-1, 0, 1}</strong> pentru toate nodurile
+                    </div>
+                    <h3>Rotații</h3>
+                    <div class="diagram" style="font-size: 0.8em;">
+  Rotație Dreaptă (LL):     Rotație Stânga (RR):
+       y                         x
+      / \                       / \
+     x   C   ──►   A           A   y
+    / \           / \             / \
+   A   B         x   B           B   C
+                / \
+               A   B
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Rotație dreapta</span>
+                            <span class="lang-badge">C</span>
+                        </div>
+                        <pre><code class="language-c">Node *rotate_right(Node *y) {
+    Node *x = y->left;
+    Node *T2 = x->right;
+    
+    // Rotație
+    x->right = y;
+    y->left = T2;
+    
+    // Actualizare înălțimi
+    y->height = max(height(y->left), 
+                    height(y->right)) + 1;
+    x->height = max(height(x->left), 
+                    height(x->right)) + 1;
+    
+    return x;  // Noua rădăcină
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 14: Heaps Review -->
+        <div class="slide">
+            <h2>🏔️ Recapitulare: Heaps</h2>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Proprietăți</h3>
+                    <div class="info-box">
+                        <strong>Max-Heap:</strong> Părintele ≥ Copiii<br>
+                        <strong>Min-Heap:</strong> Părintele ≤ Copiii<br><br>
+                        Arbore binar complet (toate nivelurile pline, ultimul umplut de la stânga)
+                    </div>
+                    <h3>Reprezentare în Array</h3>
+                    <div class="diagram" style="font-size: 0.85em;">
+Index:    0    1    2    3    4    5    6
+Array: [ 90 | 80 | 70 | 40 | 30 | 50 | 20 ]
+
+Părinte(i) = (i-1)/2
+Stânga(i)  = 2*i + 1
+Dreapta(i) = 2*i + 2
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Heapify (restaurare heap)</span>
+                            <span class="lang-badge">C</span>
+                        </div>
+                        <pre><code class="language-c">void heapify(int arr[], int n, int i) {
+    int largest = i;
+    int left = 2*i + 1;
+    int right = 2*i + 2;
+    
+    if (left < n && arr[left] > arr[largest])
+        largest = left;
+    if (right < n && arr[right] > arr[largest])
+        largest = right;
+    
+    if (largest != i) {
+        swap(&arr[i], &arr[largest]);
+        heapify(arr, n, largest);
+    }
+}</code></pre>
+                    </div>
+                    <h3>Aplicații</h3>
+                    <ul>
+                        <li>Priority Queue</li>
+                        <li>Heap Sort <span class="complexity medium">O(n log n)</span></li>
+                        <li>K-th largest element</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 15: Hash Tables Review -->
+        <div class="slide">
+            <h2>#️⃣ Recapitulare: Hash Tables</h2>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Principiu</h3>
+                    <div class="diagram" style="font-size: 0.85em;">
+Key ──► hash(key) ──► index ──► bucket
+
+Exemplu: hash("apple") % 10 = 7
+
+  Index    Bucket
+  ┌───┐    ┌──────────┐
+  │ 0 │───►│   NULL   │
+  ├───┤    ├──────────┤
+  │ 1 │───►│ "banana" │
+  ├───┤    ├──────────┤
+  │...│    │   ...    │
+  ├───┤    ├──────────┤
+  │ 7 │───►│ "apple"  │───►│"apricot"│
+  └───┘    └──────────┘    └─────────┘
+                             (chaining)
+                    </div>
+                </div>
+                <div class="column">
+                    <h3>Rezolvarea Coliziunilor</h3>
+                    <div class="card">
+                        <div class="card-title" style="color: var(--accent-green);">1. Chaining</div>
+                        <p>Liste înlănțuite la fiecare bucket</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title" style="color: var(--accent-blue);">2. Open Addressing</div>
+                        <p>Linear probing, Quadratic probing, Double hashing</p>
+                    </div>
+                    <h3>Load Factor</h3>
+                    <div class="info-box">
+                        <code>λ = n / m</code><br>
+                        n = elemente, m = buckets<br>
+                        Recomandare: λ ≤ 0.7 pentru performanță optimă
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 16: Graphs Review -->
+        <div class="slide">
+            <h2>🕸️ Recapitulare: Grafuri</h2>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Reprezentări</h3>
+                    <div class="diagram" style="font-size: 0.8em;">
+Graf:      0───1          Matrice Adiacență:
+           │ ╲ │            0  1  2  3
+           │  ╲│          0 [0, 1, 1, 0]
+           2───3          1 [1, 0, 1, 1]
+                          2 [1, 1, 0, 1]
+                          3 [0, 1, 1, 0]
+
+                          Liste Adiacență:
+                          0: [1, 2]
+                          1: [0, 2, 3]
+                          2: [0, 1, 3]
+                          3: [1, 2]
+                    </div>
+                    <table style="font-size: 0.85em; margin-top: 15px;">
+                        <tr>
+                            <th></th>
+                            <th>Matrice</th>
+                            <th>Liste</th>
+                        </tr>
+                        <tr>
+                            <td>Spațiu</td>
+                            <td>O(V²)</td>
+                            <td>O(V+E)</td>
+                        </tr>
+                        <tr>
+                            <td>Edge check</td>
+                            <td>O(1)</td>
+                            <td>O(V)</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="column">
+                    <h3>Tipuri de Grafuri</h3>
+                    <ul>
+                        <li><strong>Directed / Undirected</strong></li>
+                        <li><strong>Weighted / Unweighted</strong></li>
+                        <li><strong>Cyclic / Acyclic</strong></li>
+                        <li><strong>Connected / Disconnected</strong></li>
+                    </ul>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Listă de adiacență</span>
+                            <span class="lang-badge">C</span>
+                        </div>
+                        <pre><code class="language-c">typedef struct AdjNode {
+    int vertex;
+    int weight;
+    struct AdjNode *next;
+} AdjNode;
+
+typedef struct Graph {
+    int V;
+    AdjNode **adj;  // Array de liste
+} Graph;</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 17: BFS Review -->
+        <div class="slide">
+            <h2>🌊 Recapitulare: BFS (Breadth-First Search)</h2>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Principiu</h3>
+                    <p>Explorează <strong>nivel cu nivel</strong>, folosind o <strong>coadă</strong>.</p>
+                    <div class="diagram">
+Ordinea vizitării:
+
+        1 ◄── Start
+       /|\
+      2 3 4     Nivel 1
+     /| |
+    5 6 7       Nivel 2
+
+Vizitat: 1 → 2 → 3 → 4 → 5 → 6 → 7
+                    </div>
+                    <h3>Aplicații</h3>
+                    <ul>
+                        <li>Shortest path (grafuri neponderate)</li>
+                        <li>Level order traversal</li>
+                        <li>Finding connected components</li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Algoritm BFS</span>
+                            <span class="lang-badge">C</span>
+                        </div>
+                        <pre><code class="language-c">void BFS(Graph *g, int start) {
+    bool *visited = calloc(g->V, sizeof(bool));
+    Queue *q = create_queue();
+    
+    visited[start] = true;
+    enqueue(q, start);
+    
+    while (!is_empty(q)) {
+        int v = dequeue(q);
+        printf("%d ", v);
+        
+        // Vizitează toți vecinii nevizitați
+        AdjNode *node = g->adj[v];
+        while (node) {
+            if (!visited[node->vertex]) {
+                visited[node->vertex] = true;
+                enqueue(q, node->vertex);
+            }
+            node = node->next;
+        }
+    }
+}</code></pre>
+                    </div>
+                    <p><strong>Complexitate:</strong> <span class="complexity medium">O(V + E)</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 18: DFS Review -->
+        <div class="slide">
+            <h2>🏊 Recapitulare: DFS (Depth-First Search)</h2>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Principiu</h3>
+                    <p>Explorează <strong>cât mai adânc</strong>, folosind <strong>stivă</strong> (sau recursivitate).</p>
+                    <div class="diagram">
+Ordinea vizitării:
+
+        1 ◄── Start
+       /|\
+      2 3 4
+     /|
+    5 6
+
+Vizitat: 1 → 2 → 5 → 6 → 3 → 4
+(merge în adâncime pe ramura stângă)
+                    </div>
+                    <h3>Aplicații</h3>
+                    <ul>
+                        <li>Detectare cicluri</li>
+                        <li>Sortare topologică</li>
+                        <li>Componente tare conexe</li>
+                        <li>Maze solving</li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Algoritm DFS (recursiv)</span>
+                            <span class="lang-badge">C</span>
+                        </div>
+                        <pre><code class="language-c">void DFS_util(Graph *g, int v, bool *visited) {
+    visited[v] = true;
+    printf("%d ", v);
+    
+    AdjNode *node = g->adj[v];
+    while (node) {
+        if (!visited[node->vertex])
+            DFS_util(g, node->vertex, visited);
+        node = node->next;
+    }
+}
+
+void DFS(Graph *g, int start) {
+    bool *visited = calloc(g->V, sizeof(bool));
+    DFS_util(g, start, visited);
+    free(visited);
+}</code></pre>
+                    </div>
+                    <p><strong>Complexitate:</strong> <span class="complexity medium">O(V + E)</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 19: Dijkstra Review -->
+        <div class="slide">
+            <h2>🛤️ Recapitulare: Algoritmul lui Dijkstra</h2>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Problema</h3>
+                    <div class="info-box">
+                        Găsește <strong>drumul minim</strong> de la un nod sursă la toate celelalte noduri într-un graf <strong>ponderat</strong> cu muchii <strong>non-negative</strong>.
+                    </div>
+                    <h3>Algoritm</h3>
+                    <ol>
+                        <li>Inițializează dist[source] = 0, dist[others] = ∞</li>
+                        <li>Folosește min-heap pentru a extrage nodul cu distanța minimă</li>
+                        <li>Pentru fiecare vecin, relaxează muchia</li>
+                        <li>Repetă până când toate nodurile sunt procesate</li>
+                    </ol>
+                    <p><strong>Complexitate:</strong> <span class="complexity medium">O((V+E) log V)</span> cu heap</p>
+                </div>
+                <div class="column">
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Relaxare muchie</span>
+                            <span class="lang-badge">C</span>
+                        </div>
+                        <pre><code class="language-c">// Relaxare: actualizează distanța dacă
+// am găsit un drum mai scurt
+void relax(int u, int v, int weight, 
+           int *dist, int *parent) {
+    if (dist[u] != INT_MAX && 
+        dist[u] + weight < dist[v]) {
+        dist[v] = dist[u] + weight;
+        parent[v] = u;
+    }
+}
+
+// În bucla principală:
+while (!heap_empty(pq)) {
+    int u = extract_min(pq);
+    for (each neighbor v of u) {
+        relax(u, v, weight(u,v), dist, parent);
+        decrease_key(pq, v, dist[v]);
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 20: Function Pointers Review -->
+        <div class="slide">
+            <h2>🎯 Recapitulare: Function Pointers</h2>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Declarație</h3>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Sintaxa function pointers</span>
+                            <span class="lang-badge">C</span>
+                        </div>
+                        <pre><code class="language-c">// Pointer la funcție care primește
+// doi int și returnează int
+int (*operation)(int, int);
+
+// Typedef pentru claritate
+typedef int (*BinaryOp)(int, int);
+
+// Utilizare
+int add(int a, int b) { return a + b; }
+int mul(int a, int b) { return a * b; }
+
+BinaryOp op = add;
+printf("%d\n", op(5, 3));  // 8
+
+op = mul;
+printf("%d\n", op(5, 3));  // 15</code></pre>
+                    </div>
+                </div>
+                <div class="column">
+                    <h3>qsort - Exemplu Clasic</h3>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Callback pentru qsort</span>
+                            <span class="lang-badge">C</span>
+                        </div>
+                        <pre><code class="language-c">int compare_int(const void *a, 
+                const void *b) {
+    return (*(int*)a - *(int*)b);
+}
+
+int compare_desc(const void *a, 
+                 const void *b) {
+    return (*(int*)b - *(int*)a);
+}
+
+int main() {
+    int arr[] = {64, 34, 25, 12, 22};
+    int n = sizeof(arr)/sizeof(arr[0]);
+    
+    qsort(arr, n, sizeof(int), compare_int);
+    // arr = {12, 22, 25, 34, 64}
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 21: File I/O Review -->
+        <div class="slide">
+            <h2>📁 Recapitulare: Operații cu Fișiere</h2>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Fișiere Text</h3>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Citire/scriere text</span>
+                            <span class="lang-badge">C</span>
+                        </div>
+                        <pre><code class="language-c">FILE *f = fopen("data.txt", "r");
+if (!f) {
+    perror("Eroare la deschidere");
+    return 1;
+}
+
+char line[256];
+while (fgets(line, sizeof(line), f)) {
+    printf("%s", line);
+}
+
+fclose(f);
+
+// Scriere
+FILE *out = fopen("out.txt", "w");
+fprintf(out, "Valoare: %d\n", 42);
+fclose(out);</code></pre>
+                    </div>
+                </div>
+                <div class="column">
+                    <h3>Fișiere Binare</h3>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Citire/scriere binară</span>
+                            <span class="lang-badge">C</span>
+                        </div>
+                        <pre><code class="language-c">typedef struct {
+    char name[50];
+    int age;
+    float salary;
+} Employee;
+
+// Scriere
+FILE *f = fopen("emp.dat", "wb");
+Employee e = {"Ion", 30, 5000.0};
+fwrite(&e, sizeof(Employee), 1, f);
+fclose(f);
+
+// Citire
+f = fopen("emp.dat", "rb");
+Employee e2;
+fread(&e2, sizeof(Employee), 1, f);
+fclose(f);</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 22: Memory Management -->
+        <div class="slide">
+            <h2>🧠 Recapitulare: Managementul Memoriei</h2>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Zone de Memorie</h3>
+                    <div class="diagram">
+┌─────────────────────────────┐ Adrese mari
+│           STACK             │ ↓ crește
+│   (variabile locale,        │
+│    parametri funcții)       │
+├─────────────────────────────┤
+│             ↓               │
+│          (liber)            │
+│             ↑               │
+├─────────────────────────────┤
+│           HEAP              │ ↑ crește
+│   (alocare dinamică:        │
+│    malloc, calloc, realloc) │
+├─────────────────────────────┤
+│           BSS               │
+│   (variabile globale        │
+│    neinițializate)          │
+├─────────────────────────────┤
+│           DATA              │
+│   (variabile globale        │
+│    inițializate)            │
+├─────────────────────────────┤
+│           TEXT              │
+│   (codul programului)       │
+└─────────────────────────────┘ Adrese mici
+                    </div>
+                </div>
+                <div class="column">
+                    <h3>Funcții de Alocare</h3>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>malloc, calloc, realloc, free</span>
+                            <span class="lang-badge">C</span>
+                        </div>
+                        <pre><code class="language-c">// malloc - memorie neinițializată
+int *p = malloc(n * sizeof(int));
+
+// calloc - memorie zero-inițializată
+int *p = calloc(n, sizeof(int));
+
+// realloc - redimensionare
+p = realloc(p, new_n * sizeof(int));
+
+// ÎNTOTDEAUNA eliberează memoria!
+free(p);
+p = NULL;  // Evită dangling pointers</code></pre>
+                    </div>
+                    <div class="error-box">
+                        <strong>🚨 Memory Leaks:</strong><br>
+                        Fiecare <code>malloc/calloc</code> trebuie să aibă un <code>free</code> corespunzător!
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 23: Common Mistakes -->
+        <div class="slide">
+            <h2>⚠️ Greșeli Comune și Cum să le Eviți</h2>
+            <div class="grid-2x2">
+                <div class="error-box">
+                    <h4>1. Buffer Overflow</h4>
+                    <pre style="background: transparent; padding: 10px 0;"><code class="language-c">// GREȘIT
+char buf[10];
+strcpy(buf, "String foarte lung");
+
+// CORECT
+strncpy(buf, str, sizeof(buf) - 1);
+buf[sizeof(buf) - 1] = '\0';</code></pre>
+                </div>
+                <div class="error-box">
+                    <h4>2. Memory Leak</h4>
+                    <pre style="background: transparent; padding: 10px 0;"><code class="language-c">// GREȘIT
+void func() {
+    int *p = malloc(100);
+    return;  // p se pierde!
+}
+
+// CORECT - eliberează înainte de return
+free(p);</code></pre>
+                </div>
+                <div class="error-box">
+                    <h4>3. Use After Free</h4>
+                    <pre style="background: transparent; padding: 10px 0;"><code class="language-c">// GREȘIT
+free(p);
+printf("%d", *p);  // Comportament nedefinit!
+
+// CORECT
+free(p);
+p = NULL;</code></pre>
+                </div>
+                <div class="error-box">
+                    <h4>4. NULL Pointer Dereference</h4>
+                    <pre style="background: transparent; padding: 10px 0;"><code class="language-c">// GREȘIT
+Node *n = find(list, key);
+printf("%d", n->data);  // Ce dacă n e NULL?
+
+// CORECT
+if (n != NULL)
+    printf("%d", n->data);</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 24: Valgrind Usage -->
+        <div class="slide">
+            <h2>🔬 Debugging: Valgrind</h2>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Ce detectează Valgrind?</h3>
+                    <ul>
+                        <li>Memory leaks</li>
+                        <li>Acces la memorie nealocată</li>
+                        <li>Use after free</li>
+                        <li>Double free</li>
+                        <li>Buffer overflows</li>
+                        <li>Variabile neinițializate</li>
+                    </ul>
+                    <h3>Comenzi Esențiale</h3>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Utilizare Valgrind</span>
+                            <span class="lang-badge">Bash</span>
+                        </div>
+                        <pre><code class="language-bash"># Verificare memory leaks
+valgrind --leak-check=full ./program
+
+# Cu track-origins pentru neinițializate
+valgrind --track-origins=yes ./program
+
+# Salvare output
+valgrind --log-file=valgrind.log ./program</code></pre>
+                    </div>
+                </div>
+                <div class="column">
+                    <h3>Interpretarea Output-ului</h3>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Exemplu output Valgrind</span>
+                            <span class="lang-badge">Output</span>
+                        </div>
+                        <pre><code>==12345== HEAP SUMMARY:
+==12345==   in use at exit: 100 bytes in 1 blocks
+==12345==   total heap usage: 5 allocs, 4 frees
+==12345== 
+==12345== 100 bytes in 1 blocks are definitely lost
+==12345==    at 0x4C2BBEF: malloc (vg_replace_malloc.c)
+==12345==    by 0x40054E: create_node (program.c:15)
+==12345==    by 0x400589: main (program.c:25)
+==12345== 
+==12345== LEAK SUMMARY:
+==12345==    definitely lost: 100 bytes
+==12345==    possibly lost: 0 bytes</code></pre>
+                    </div>
+                    <div class="success-box">
+                        <strong>✅ Obiectiv:</strong><br>
+                        "All heap blocks were freed -- no leaks are possible"
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 25: GDB Debugging -->
+        <div class="slide">
+            <h2>🐛 Debugging: GDB</h2>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Comenzi Esențiale</h3>
+                    <table style="font-size: 0.9em;">
+                        <tr><th>Comandă</th><th>Descriere</th></tr>
+                        <tr><td><code>break main</code></td><td>Breakpoint la funcția main</td></tr>
+                        <tr><td><code>break file.c:25</code></td><td>Breakpoint la linia 25</td></tr>
+                        <tr><td><code>run</code></td><td>Pornește execuția</td></tr>
+                        <tr><td><code>next</code></td><td>Execută linia curentă</td></tr>
+                        <tr><td><code>step</code></td><td>Intră în funcție</td></tr>
+                        <tr><td><code>continue</code></td><td>Continuă până la breakpoint</td></tr>
+                        <tr><td><code>print var</code></td><td>Afișează valoarea variabilei</td></tr>
+                        <tr><td><code>backtrace</code></td><td>Afișează call stack</td></tr>
+                        <tr><td><code>quit</code></td><td>Ieșire din GDB</td></tr>
+                    </table>
+                </div>
+                <div class="column">
+                    <h3>Sesiune Tipică</h3>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Exemplu debugging</span>
+                            <span class="lang-badge">GDB</span>
+                        </div>
+                        <pre><code class="language-bash"># Compilare cu simboluri debug
+gcc -g -o program program.c
+
+# Pornire GDB
+gdb ./program
+
+(gdb) break main
+(gdb) run
+(gdb) next
+(gdb) print array[0]
+$1 = 42
+(gdb) print *node
+$2 = {data = 10, next = 0x55555576a2a0}
+(gdb) backtrace
+#0  insert (list=0x7fff..., val=42) at list.c:45
+#1  main () at program.c:78
+(gdb) continue</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 26: Optimization Techniques -->
+        <div class="slide">
+            <h2>🚀 Tehnici de Optimizare</h2>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>1. Cache Locality</h3>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Acces cache-friendly</span>
+                            <span class="lang-badge">C</span>
+                        </div>
+                        <pre><code class="language-c">// LENT - acces pe coloane (cache misses)
+for (int j = 0; j < N; j++)
+    for (int i = 0; i < N; i++)
+        sum += matrix[i][j];
+
+// RAPID - acces pe linii (cache hits)
+for (int i = 0; i < N; i++)
+    for (int j = 0; j < N; j++)
+        sum += matrix[i][j];</code></pre>
+                    </div>
+                    <h3>2. Loop Unrolling</h3>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Derularea buclelor</span>
+                            <span class="lang-badge">C</span>
+                        </div>
+                        <pre><code class="language-c">// Reduc overhead-ul buclei
+for (int i = 0; i < n; i += 4) {
+    sum += arr[i] + arr[i+1] + 
+           arr[i+2] + arr[i+3];
+}</code></pre>
+                    </div>
+                </div>
+                <div class="column">
+                    <h3>3. Evitarea Recalculărilor</h3>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Memoization</span>
+                            <span class="lang-badge">C</span>
+                        </div>
+                        <pre><code class="language-c">// LENT - recalculare strlen în buclă
+for (int i = 0; i < strlen(s); i++)
+    process(s[i]);
+
+// RAPID - calculare o singură dată
+int len = strlen(s);
+for (int i = 0; i < len; i++)
+    process(s[i]);</code></pre>
+                    </div>
+                    <h3>4. Branch Prediction</h3>
+                    <div class="info-box">
+                        <strong>Sortează datele</strong> înainte de procesare condițională când e posibil. CPU-ul prezice mai bine branch-urile predictibile.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 27: Choosing Data Structures -->
+        <div class="slide">
+            <h2>🎯 Ghid de Selecție a Structurilor</h2>
+            <div class="diagram" style="font-size: 0.9em; line-height: 1.6;">
+                                    START
+                                      │
+                    ┌─────────────────┴─────────────────┐
+                    │   Acces aleator rapid necesar?    │
+                    └─────────────────┬─────────────────┘
+                           DA         │         NU
+                            │         │          │
+                     ┌──────┴──────┐  │   ┌──────┴──────┐
+                     │ Hash Table │  │   │ Datele      │
+                     │ sau Array  │  │   │ trebuie     │
+                     └────────────┘  │   │ sortate?    │
+                                     │   └──────┬──────┘
+                                     │      DA  │  NU
+                                     │       │  │   │
+                              ┌──────┴──────┐│  │┌──────┴──────┐
+                              │ BST / AVL   ││  ││ Inserări    │
+                              │ Tree        ││  ││ frecvente?  │
+                              └─────────────┘│  │└──────┬──────┘
+                                             │  │   DA  │  NU
+                                             │  │    │  │   │
+                                      ┌──────┴──┴────┴──┴───┴──────┐
+                                      │    Linked List    Array    │
+                                      └────────────────────────────┘
+            </div>
+            <div class="success-box" style="margin-top: 20px;">
+                <strong>Principiu cheie:</strong> Nu există structura de date „perfectă". Alegerea depinde de operațiile predominante și de cerințele specifice ale aplicației.
+            </div>
+        </div>
+
+        <!-- Slide 28: Space-Time Tradeoffs -->
+        <div class="slide">
+            <h2>⚖️ Compromisuri Spațiu-Timp</h2>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Exemplu 1: Fibonacci</h3>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Recursiv vs Dynamic Programming</span>
+                            <span class="lang-badge">C</span>
+                        </div>
+                        <pre><code class="language-c">// Recursiv: O(2^n) timp, O(n) spațiu
+int fib_rec(int n) {
+    if (n <= 1) return n;
+    return fib_rec(n-1) + fib_rec(n-2);
+}
+
+// DP: O(n) timp, O(n) spațiu
+int fib_dp(int n) {
+    int *dp = malloc((n+1) * sizeof(int));
+    dp[0] = 0; dp[1] = 1;
+    for (int i = 2; i <= n; i++)
+        dp[i] = dp[i-1] + dp[i-2];
+    return dp[n];
+}
+
+// Optimizat: O(n) timp, O(1) spațiu
+int fib_opt(int n) {
+    int a = 0, b = 1, c;
+    for (int i = 2; i <= n; i++) {
+        c = a + b; a = b; b = c;
+    }
+    return b;
+}</code></pre>
+                    </div>
+                </div>
+                <div class="column">
+                    <h3>Exemplu 2: Lookup Table</h3>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Precomputare vs Calcul</span>
+                            <span class="lang-badge">C</span>
+                        </div>
+                        <pre><code class="language-c">// Calcul la fiecare apel
+int square(int x) { return x * x; }
+
+// Lookup table (precomputed)
+int squares[1001];  // Folosește memorie
+void init_squares() {
+    for (int i = 0; i <= 1000; i++)
+        squares[i] = i * i;
+}
+// Acces: O(1) - squares[x]</code></pre>
+                    </div>
+                    <h3>Principii Generale</h3>
+                    <table style="font-size: 0.9em;">
+                        <tr>
+                            <th>Tehnică</th>
+                            <th>Timp</th>
+                            <th>Spațiu</th>
+                        </tr>
+                        <tr>
+                            <td>Memoization</td>
+                            <td>↓ Reduce</td>
+                            <td>↑ Crește</td>
+                        </tr>
+                        <tr>
+                            <td>Compression</td>
+                            <td>↑ Crește</td>
+                            <td>↓ Reduce</td>
+                        </tr>
+                        <tr>
+                            <td>Caching</td>
+                            <td>↓ Reduce</td>
+                            <td>↑ Crește</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 29: Interview Patterns -->
+        <div class="slide">
+            <h2>💼 Pattern-uri pentru Interviuri</h2>
+            <div class="grid-2x2">
+                <div class="card">
+                    <div class="card-title">🔄 Two Pointers</div>
+                    <p>Array sortat, găsirea perechilor, palindroame</p>
+                    <pre style="font-size: 0.85em;"><code class="language-c">int left = 0, right = n-1;
+while (left < right) {
+    // procesare
+}</code></pre>
+                </div>
+                <div class="card">
+                    <div class="card-title">🪟 Sliding Window</div>
+                    <p>Subarray-uri contigue, substring-uri</p>
+                    <pre style="font-size: 0.85em;"><code class="language-c">for (int i = 0; i < n; i++) {
+    // adaugă element
+    while (conditie_invalida)
+        // elimină de la început
+}</code></pre>
+                </div>
+                <div class="card">
+                    <div class="card-title">🔍 Binary Search</div>
+                    <p>Date sortate, găsirea valorilor</p>
+                    <pre style="font-size: 0.85em;"><code class="language-c">while (left <= right) {
+    int mid = left + (right - left) / 2;
+    if (arr[mid] == target) return mid;
+    // ajustare left/right
+}</code></pre>
+                </div>
+                <div class="card">
+                    <div class="card-title">🔀 Divide & Conquer</div>
+                    <p>Merge sort, Quick sort, arbori</p>
+                    <pre style="font-size: 0.85em;"><code class="language-c">int solve(int l, int r) {
+    if (l >= r) return base_case;
+    int mid = (l + r) / 2;
+    return combine(solve(l,mid), solve(mid+1,r));
+}</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 30: System Design Basics -->
+        <div class="slide">
+            <h2>🏗️ Design de Sisteme - Elemente de Bază</h2>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>LRU Cache (Least Recently Used)</h3>
+                    <div class="diagram" style="font-size: 0.85em;">
+Hash Table + Doubly Linked List
+
+Hash Table (O(1) lookup):
+┌────────────────────────────┐
+│ key1 → node1               │
+│ key2 → node2               │
+│ key3 → node3               │
+└────────────────────────────┘
+         │
+         ▼
+Doubly Linked List (ordine acces):
+HEAD ◄──► node1 ◄──► node2 ◄──► node3 ◄──► TAIL
+(recent)                         (least recent)
+                    </div>
+                    <p style="font-size: 0.95em;">
+                        <strong>get(key):</strong> O(1) - mută nodul la HEAD<br>
+                        <strong>put(key, val):</strong> O(1) - adaugă la HEAD, elimină TAIL dacă plin
+                    </p>
+                </div>
+                <div class="column">
+                    <h3>Trie (Prefix Tree)</h3>
+                    <div class="diagram" style="font-size: 0.85em;">
+Autocomplete: "ca", "cat", "car", "card"
+
+           (root)
+             │
+            [c]
+             │
+            [a]──────┐
+           / \       │
+         [t] [r]   isEnd=true ("ca")
+          │   │
+     isEnd [d]
+     ("cat")│
+         isEnd ("card")
+                    </div>
+                    <p style="font-size: 0.95em;">
+                        <strong>Insert/Search:</strong> O(L) - L = lungime cuvânt<br>
+                        <strong>Prefix search:</strong> O(P + N) - P = prefix, N = rezultate
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 31: Integrated Project Example -->
+        <div class="slide">
+            <h2>🔧 Exemplu: Proiect Integrat</h2>
+            <h3>Sistem de Management al Studenților</h3>
+            <div class="diagram" style="font-size: 0.85em;">
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        STUDENT MANAGEMENT SYSTEM                         │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  ┌──────────────────┐     ┌──────────────────┐     ┌──────────────────┐ │
+│  │   Hash Table     │     │      BST         │     │   Priority Queue │ │
+│  │  (ID → Student)  │     │ (Sorted by Name) │     │  (by GPA desc)   │ │
+│  └────────┬─────────┘     └────────┬─────────┘     └────────┬─────────┘ │
+│           │                        │                         │          │
+│           └────────────────────────┼─────────────────────────┘          │
+│                                    │                                     │
+│                              ┌─────┴─────┐                               │
+│                              │  Student  │                               │
+│                              │  struct   │                               │
+│                              └───────────┘                               │
+│                                                                          │
+│  Operații:                                                               │
+│  • căutare_id(id)     → Hash Table O(1)                                 │
+│  • lista_sortata()    → BST Inorder O(n)                                │
+│  • top_k_studenti(k)  → Heap Extract K × O(log n)                       │
+│  • export_fisier()    → Serializare binară                              │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+            </div>
+        </div>
+
+        <!-- Slide 32: Best Practices Summary -->
+        <div class="slide">
+            <h2>✅ Best Practices - Sumar</h2>
+            <div class="three-columns">
+                <div class="success-box">
+                    <h4>✅ DO (Fă)</h4>
+                    <ul style="font-size: 0.95em;">
+                        <li>Verifică NULL înainte de dereferențiere</li>
+                        <li>Eliberează memoria alocată</li>
+                        <li>Folosește <code>const</code> pentru parametri nemodificați</li>
+                        <li>Compilează cu <code>-Wall -Wextra</code></li>
+                        <li>Testează cu Valgrind</li>
+                        <li>Documentează funcțiile</li>
+                        <li>Alege structura potrivită problemei</li>
+                    </ul>
+                </div>
+                <div class="error-box">
+                    <h4>❌ DON'T (Nu fă)</h4>
+                    <ul style="font-size: 0.95em;">
+                        <li>Nu ignora valorile returnate</li>
+                        <li>Nu folosi magic numbers</li>
+                        <li>Nu presupune dimensiuni fixe</li>
+                        <li>Nu amesteca tipuri (size_t vs int)</li>
+                        <li>Nu optimiza prematur</li>
+                        <li>Nu copia cod fără înțelegere</li>
+                        <li>Nu ignora warnings</li>
+                    </ul>
+                </div>
+                <div class="info-box">
+                    <h4>💡 REMEMBER</h4>
+                    <ul style="font-size: 0.95em;">
+                        <li>Claritatea > cleverness</li>
+                        <li>Testează edge cases</li>
+                        <li>Profilează înainte de optimizare</li>
+                        <li>Documentează compromisurile</li>
+                        <li>Code review ajută</li>
+                        <li>Învață din greșeli</li>
+                        <li>Practică constant</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 33: Complexity Cheat Sheet -->
+        <div class="slide">
+            <h2>📋 Cheat Sheet - Complexități</h2>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Structuri de Date</h3>
+                    <table style="font-size: 0.85em;">
+                        <tr><th>Structură</th><th>Acces</th><th>Search</th><th>Insert</th><th>Delete</th></tr>
+                        <tr><td>Array</td><td class="complexity good">O(1)</td><td class="complexity bad">O(n)</td><td class="complexity bad">O(n)</td><td class="complexity bad">O(n)</td></tr>
+                        <tr><td>Linked List</td><td class="complexity bad">O(n)</td><td class="complexity bad">O(n)</td><td class="complexity good">O(1)</td><td class="complexity good">O(1)</td></tr>
+                        <tr><td>Stack/Queue</td><td class="complexity bad">O(n)</td><td class="complexity bad">O(n)</td><td class="complexity good">O(1)</td><td class="complexity good">O(1)</td></tr>
+                        <tr><td>BST</td><td class="complexity medium">O(log n)</td><td class="complexity medium">O(log n)</td><td class="complexity medium">O(log n)</td><td class="complexity medium">O(log n)</td></tr>
+                        <tr><td>Hash Table</td><td>-</td><td class="complexity good">O(1)</td><td class="complexity good">O(1)</td><td class="complexity good">O(1)</td></tr>
+                    </table>
+                </div>
+                <div class="column">
+                    <h3>Algoritmi de Sortare</h3>
+                    <table style="font-size: 0.85em;">
+                        <tr><th>Algoritm</th><th>Best</th><th>Avg</th><th>Worst</th><th>Space</th></tr>
+                        <tr><td>Bubble</td><td class="complexity bad">O(n²)</td><td class="complexity bad">O(n²)</td><td class="complexity bad">O(n²)</td><td class="complexity good">O(1)</td></tr>
+                        <tr><td>Merge</td><td class="complexity medium">O(n log n)</td><td class="complexity medium">O(n log n)</td><td class="complexity medium">O(n log n)</td><td class="complexity bad">O(n)</td></tr>
+                        <tr><td>Quick</td><td class="complexity medium">O(n log n)</td><td class="complexity medium">O(n log n)</td><td class="complexity bad">O(n²)</td><td class="complexity medium">O(log n)</td></tr>
+                        <tr><td>Heap</td><td class="complexity medium">O(n log n)</td><td class="complexity medium">O(n log n)</td><td class="complexity medium">O(n log n)</td><td class="complexity good">O(1)</td></tr>
+                    </table>
+                    <h3>Grafuri</h3>
+                    <table style="font-size: 0.85em;">
+                        <tr><th>Algoritm</th><th>Complexitate</th></tr>
+                        <tr><td>BFS/DFS</td><td class="complexity medium">O(V + E)</td></tr>
+                        <tr><td>Dijkstra (heap)</td><td class="complexity medium">O((V+E) log V)</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 34: Laboratory Preview -->
+        <div class="slide">
+            <h2>🔬 Previzualizare Laborator</h2>
+            <div class="two-columns">
+                <div class="card">
+                    <div class="card-title">📦 Exercițiu 1: Sistem de Comenzi</div>
+                    <p><strong>Obiectiv:</strong> Integrarea multiplelor structuri de date</p>
+                    <ul>
+                        <li>Hash table pentru căutare după ID</li>
+                        <li>BST pentru ordonare cronologică</li>
+                        <li>Priority queue pentru urgențe</li>
+                        <li>Serializare în fișiere binare</li>
+                    </ul>
+                    <p><strong>TODO-uri:</strong> 12</p>
+                    <p><strong>Dificultate:</strong> <span class="complexity medium">Medie-Avansată</span></p>
+                </div>
+                <div class="card">
+                    <div class="card-title">🌐 Exercițiu 2: Rețea Socială</div>
+                    <p><strong>Obiectiv:</strong> Algoritmi pe grafuri</p>
+                    <ul>
+                        <li>Reprezentare cu liste de adiacență</li>
+                        <li>BFS pentru grad de separare</li>
+                        <li>DFS pentru detectare comunități</li>
+                        <li>Dijkstra pentru „influență"</li>
+                    </ul>
+                    <p><strong>TODO-uri:</strong> 15</p>
+                    <p><strong>Dificultate:</strong> <span class="complexity bad">Avansată</span></p>
+                </div>
+            </div>
+            <div class="info-box" style="margin-top: 20px;">
+                <strong>💡 Sfat:</strong> Începeți cu structurile de date de bază și adăugați funcționalități incrementat. Testați fiecare componentă separat înainte de integrare.
+            </div>
+        </div>
+
+        <!-- Slide 35: Key Takeaways -->
+        <div class="slide">
+            <h2>🎓 Concluzii Cheie</h2>
+            <div class="grid-3x2">
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 2em; margin-bottom: 10px;">📊</div>
+                    <h4>Alegerea Corectă</h4>
+                    <p>Nu există structură „perfectă" - alegerea depinde de operațiile predominante</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 2em; margin-bottom: 10px;">⚖️</div>
+                    <h4>Compromisuri</h4>
+                    <p>Înțelege trade-off-urile timp-spațiu pentru fiecare decizie</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 2em; margin-bottom: 10px;">🔍</div>
+                    <h4>Analiza Complexității</h4>
+                    <p>Evaluează Big-O pentru cazul mediu și worst-case</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 2em; margin-bottom: 10px;">🧠</div>
+                    <h4>Memory Management</h4>
+                    <p>Fiecare malloc necesită free - folosește Valgrind!</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 2em; margin-bottom: 10px;">🛠️</div>
+                    <h4>Debugging</h4>
+                    <p>GDB și Valgrind sunt prietenii tăi - învață să le folosești</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 2em; margin-bottom: 10px;">🔗</div>
+                    <h4>Integrare</h4>
+                    <p>Sistemele reale combină multiple structuri - practică integrarea</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 36: Resources -->
+        <div class="slide">
+            <h2>📚 Resurse pentru Studiu</h2>
+            <div class="three-columns">
+                <div class="column">
+                    <h3>📖 Cărți</h3>
+                    <ul style="font-size: 0.95em;">
+                        <li><strong>Knuth</strong> - "TAOCP"</li>
+                        <li><strong>CLRS</strong> - "Introduction to Algorithms"</li>
+                        <li><strong>Sedgewick</strong> - "Algorithms in C"</li>
+                        <li><strong>Skiena</strong> - "Algorithm Design Manual"</li>
+                        <li><strong>Bentley</strong> - "Programming Pearls"</li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <h3>🌐 Online</h3>
+                    <ul style="font-size: 0.95em;">
+                        <li><a href="https://visualgo.net" style="color: var(--accent-blue);">Visualgo.net</a></li>
+                        <li><a href="https://www.bigocheatsheet.com" style="color: var(--accent-blue);">Big-O Cheat Sheet</a></li>
+                        <li><a href="https://www.geeksforgeeks.org" style="color: var(--accent-blue);">GeeksforGeeks</a></li>
+                        <li>MIT OCW 6.006</li>
+                        <li>Stanford CS106B</li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <h3>💻 Practică</h3>
+                    <ul style="font-size: 0.95em;">
+                        <li><a href="https://leetcode.com" style="color: var(--accent-blue);">LeetCode</a></li>
+                        <li><a href="https://hackerrank.com" style="color: var(--accent-blue);">HackerRank</a></li>
+                        <li><a href="https://codeforces.com" style="color: var(--accent-blue);">Codeforces</a></li>
+                        <li>Project Euler</li>
+                        <li>Codewars</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 37: Exam Preparation -->
+        <div class="slide">
+            <h2>📝 Pregătire pentru Examenul Final</h2>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Structura Examenului</h3>
+                    <div class="card">
+                        <div class="card-title" style="color: var(--accent-blue);">Partea I: Teorie (40%)</div>
+                        <ul>
+                            <li>Complexități temporale/spațiale</li>
+                            <li>Comparații între structuri</li>
+                            <li>Trade-offs și justificări</li>
+                            <li>Întrebări cu răspuns scurt</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <div class="card-title" style="color: var(--accent-green);">Partea II: Implementare (30%)</div>
+                        <ul>
+                            <li>Implementare structură de la zero</li>
+                            <li>Completare cod cu TODO</li>
+                            <li>Corectare buguri</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <div class="card-title" style="color: var(--accent-purple);">Partea III: Problemă (30%)</div>
+                        <ul>
+                            <li>Problemă complexă</li>
+                            <li>Alegerea structurilor potrivite</li>
+                            <li>Analiza soluției</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="column">
+                    <h3>Sfaturi pentru Succes</h3>
+                    <div class="success-box">
+                        <ol>
+                            <li><strong>Repetă toate laboratoarele</strong> - refă exercițiile fără să te uiți la soluții</li>
+                            <li><strong>Practică pe hârtie</strong> - desenează structuri, urmărește algoritmi pas cu pas</li>
+                            <li><strong>Învață complexitățile</strong> - trebuie să le știi instant</li>
+                            <li><strong>Rezolvă probleme bonus</strong> - pregătire excelentă pentru partea III</li>
+                            <li><strong>Formează grupuri de studiu</strong> - explică conceptele altora</li>
+                        </ol>
+                    </div>
+                    <div class="warning-box">
+                        <strong>⚠️ Nu memora codul!</strong><br>
+                        Înțelege logica și vei putea implementa orice variantă.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 38: Self-Assessment -->
+        <div class="slide">
+            <h2>✅ Auto-Evaluare Finală</h2>
+            <p>Verifică că poți răspunde „DA" la toate întrebările:</p>
+            <div class="two-columns">
+                <div class="column">
+                    <h4>Structuri de Date</h4>
+                    <ul>
+                        <li>☐ Pot implementa linked list de la zero?</li>
+                        <li>☐ Înțeleg diferența stack vs queue?</li>
+                        <li>☐ Pot implementa BST cu insert/delete/search?</li>
+                        <li>☐ Știu ce sunt rotațiile în AVL?</li>
+                        <li>☐ Înțeleg heap și heapify?</li>
+                        <li>☐ Pot implementa hash table cu chaining?</li>
+                        <li>☐ Știu ambele reprezentări de grafuri?</li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <h4>Algoritmi și Concepte</h4>
+                    <ul>
+                        <li>☐ Pot analiza complexitatea unui algoritm?</li>
+                        <li>☐ Înțeleg BFS și DFS?</li>
+                        <li>☐ Pot explica Dijkstra?</li>
+                        <li>☐ Știu să folosesc function pointers?</li>
+                        <li>☐ Pot lucra cu fișiere text și binare?</li>
+                        <li>☐ Știu să folosesc Valgrind și GDB?</li>
+                        <li>☐ Pot alege structura optimă pentru o problemă?</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="info-box" style="margin-top: 20px;">
+                <strong>Obiectiv:</strong> Toate căsuțele bifate = pregătit pentru examen! 🎯
+            </div>
+        </div>
+
+        <!-- Slide 39: Thank You -->
+        <div class="slide">
+            <div class="end-slide">
+                <h1 style="font-size: 3em;">🎉 Felicitări!</h1>
+                <p style="font-size: 1.5em; color: var(--text-secondary); margin: 30px 0;">
+                    Ați parcurs cu succes toate cele 14 săptămâni ale cursului<br>
+                    <span class="highlight-blue">Algoritmi și Tehnici de Programare</span>
+                </p>
+                <div class="quote-box" style="max-width: 700px; margin: 30px auto;">
+                    "The only way to learn a new programming language is by writing programs in it."
+                    <div class="quote-author">— Dennis Ritchie, creatorul limbajului C</div>
+                </div>
+                <p style="font-size: 1.2em; color: var(--accent-green); margin-top: 30px;">
+                    Succes la examen! 🍀
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 40: Questions -->
+        <div class="slide">
+            <div class="end-slide">
+                <h1 style="font-size: 3.5em;">❓</h1>
+                <h2 style="color: var(--text-primary); margin: 20px 0;">Întrebări?</h2>
+                <p style="font-size: 1.3em; color: var(--text-secondary);">
+                    Săptămâna viitoare: <span class="highlight">Examenul Final</span>
+                </p>
+                <div style="margin-top: 50px; padding: 30px; background: var(--bg-secondary); border-radius: 12px; display: inline-block;">
+                    <p style="font-size: 1.1em; margin: 0;">
+                        📧 Contact: <span style="color: var(--accent-blue);">atp@csie.ase.ro</span><br>
+                        🌐 Materiale: <span style="color: var(--accent-blue);">moodle.csie.ase.ro</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="slide-counter">
+        <span id="current">1</span> / <span id="total">40</span>
+    </div>
+
+    <div class="keyboard-hint">
+        <kbd>←</kbd> <kbd>→</kbd> pentru navigare
+    </div>
+
+    <div class="nav-controls">
+        <button class="nav-btn" onclick="prevSlide()">◀ Înapoi</button>
+        <button class="nav-btn" onclick="nextSlide()">Înainte ▶</button>
+    </div>
+
+    <script>
+        // Initialize highlight.js
+        hljs.highlightAll();
+
+        // Slide navigation
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const progressBar = document.getElementById('progress');
+        const currentCounter = document.getElementById('current');
+        const totalCounter = document.getElementById('total');
+
+        totalCounter.textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            
+            // Update progress bar
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            progressBar.style.width = progress + '%';
+            
+            // Update counter
+            currentCounter.textContent = currentSlide + 1;
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            switch(e.key) {
+                case 'ArrowRight':
+                case ' ':
+                    e.preventDefault();
+                    nextSlide();
+                    break;
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    prevSlide();
+                    break;
+                case 'Home':
+                    e.preventDefault();
+                    showSlide(0);
+                    break;
+                case 'End':
+                    e.preventDefault();
+                    showSlide(totalSlides - 1);
+                    break;
+            }
+        });
+
+        // Touch support for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', function(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const threshold = 50;
+            if (touchEndX < touchStartX - threshold) {
+                nextSlide();
+            }
+            if (touchEndX > touchStartX + threshold) {
+                prevSlide();
+            }
+        }
+    </script>
+</body>
+</html>

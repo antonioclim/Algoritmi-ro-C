@@ -1,0 +1,3 @@
+P001 TestLaptop 5000.00 5
+P002 TestMouse 100.00 20
+P003 TestKeyboard 300.00 10

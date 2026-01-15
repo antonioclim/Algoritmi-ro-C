@@ -1,0 +1,4 @@
+DFS Recursiv de la nodul 0: 0 1 2 3
+DFS Iterativ de la nodul 0: 0 1 2 3
+Graf orientat
+Contine ciclu: DA

@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparație: Pseudocod → C → Python | Grafuri</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-yellow: #d29922;
+            --accent-red: #f85149;
+            --accent-purple: #a371f7;
+            --border-color: #30363d;
+            --pseudo-color: #ff7b72;
+            --c-color: #58a6ff;
+            --python-color: #3fb950;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--pseudo-color), var(--c-color), var(--python-color));
+            z-index: 1000;
+            transition: width 0.3s ease;
+        }
+
+        .slides-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 50px 60px;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            display: block;
+            opacity: 1;
+        }
+
+        h1 {
+            font-size: 2.4rem;
+            color: var(--accent-blue);
+            margin-bottom: 1.2rem;
+            border-bottom: 3px solid var(--accent-purple);
+            padding-bottom: 0.4rem;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            color: var(--accent-green);
+            margin-bottom: 1rem;
+        }
+
+        p, li {
+            font-size: 1.15rem;
+            margin-bottom: 0.7rem;
+        }
+
+        .title-slide {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .title-slide h1 {
+            font-size: 3rem;
+            border: none;
+        }
+
+        .title-slide .subtitle {
+            font-size: 1.8rem;
+            color: var(--accent-purple);
+            margin-bottom: 2rem;
+        }
+
+        /* Three Column Layout */
+        .three-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+            margin: 1rem 0;
+            height: calc(100% - 100px);
+        }
+
+        .column {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 1rem;
+            border: 2px solid var(--border-color);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .column.pseudocod {
+            border-color: var(--pseudo-color);
+        }
+
+        .column.c-lang {
+            border-color: var(--c-color);
+        }
+
+        .column.python {
+            border-color: var(--python-color);
+        }
+
+        .column h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.8rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+
+        .column.pseudocod h3 { color: var(--pseudo-color); }
+        .column.c-lang h3 { color: var(--c-color); }
+        .column.python h3 { color: var(--python-color); }
+
+        .column pre {
+            flex: 1;
+            margin: 0;
+            overflow-x: auto;
+        }
+
+        .column code {
+            font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        /* Pseudocode styling */
+        .pseudocode {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            color: var(--text-primary);
+        }
+
+        .pseudocode .keyword {
+            color: var(--pseudo-color);
+            font-weight: bold;
+        }
+
+        .pseudocode .comment {
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 1rem;
+        }
+
+        th, td {
+            padding: 0.7rem 1rem;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--bg-tertiary);
+        }
+
+        th.pseudo { color: var(--pseudo-color); }
+        th.c { color: var(--c-color); }
+        th.python { color: var(--python-color); }
+
+        /* Info boxes */
+        .info-box {
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid;
+        }
+
+        .info-box.insight {
+            background: rgba(163, 113, 247, 0.1);
+            border-color: var(--accent-purple);
+        }
+
+        .info-box-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Navigation */
+        .nav-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: var(--accent-blue);
+            color: var(--bg-primary);
+        }
+
+        .slide-counter {
+            position: fixed;
+            bottom: 25px;
+            left: 30px;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            z-index: 100;
+        }
+
+        .complexity {
+            display: inline-block;
+            background: var(--accent-purple);
+            color: white;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+
+        .lang-badges {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 1.5rem 0;
+        }
+
+        .lang-badge {
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .lang-badge.pseudo { background: var(--pseudo-color); color: #0d1117; }
+        .lang-badge.c { background: var(--c-color); color: #0d1117; }
+        .lang-badge.python { background: var(--python-color); color: #0d1117; }
+
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide.active > * {
+            animation: fadeInUp 0.4s ease forwards;
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    
+    <div class="slides-container" id="slidesContainer">
+        
+        <!-- Slide 1: Title -->
+        <div class="slide title-slide active">
+            <h1>Comparație Multi-Limbaj</h1>
+            <p class="subtitle">Grafuri: Pseudocod → C → Python</p>
+            <div class="lang-badges">
+                <span class="lang-badge pseudo">📝 Pseudocod</span>
+                <span class="lang-badge c">⚙️ C</span>
+                <span class="lang-badge python">🐍 Python</span>
+            </div>
+            <p style="color: var(--text-secondary); margin-top: 2rem;">
+                Algoritmi și Tehnici de Programare — Săptămâna 12
+            </p>
+        </div>
+
+        <!-- Slide 2: Why Compare -->
+        <div class="slide">
+            <h1>🤔 De Ce Comparăm Limbaje?</h1>
+            <div class="two-columns">
+                <div class="column" style="border-color: var(--accent-blue);">
+                    <h3 style="color: var(--accent-blue);">Beneficii Didactice</h3>
+                    <ul>
+                        <li><strong>Abstractizare:</strong> Pseudocodul clarifică algoritmul fără detalii de sintaxă</li>
+                        <li><strong>Implementare:</strong> C arată detaliile de memorie și performanță</li>
+                        <li><strong>Productivitate:</strong> Python demonstrează expresivitatea modernă</li>
+                        <li><strong>Transfer:</strong> Înțelegerea conceptelor, nu doar a sintaxei</li>
+                    </ul>
+                </div>
+                <div class="column" style="border-color: var(--accent-green);">
+                    <h3 style="color: var(--accent-green);">În Practică</h3>
+                    <ul>
+                        <li><strong>Prototipare:</strong> Python pentru idei rapide</li>
+                        <li><strong>Producție:</strong> C/C++ pentru performanță critică</li>
+                        <li><strong>Documentare:</strong> Pseudocod pentru comunicare</li>
+                        <li><strong>Interviuri:</strong> Trebuie să știi ambele abordări</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="info-box insight">
+                <div class="info-box-title">💡 Insight</div>
+                Un programator complet trebuie să poată gândi la nivel înalt (algoritm) și la nivel jos (memorie).
+            </div>
+        </div>
+
+        <!-- Slide 3: Graph Structure -->
+        <div class="slide">
+            <h1>📊 Structura Grafului</h1>
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <h3>📝 Pseudocod</h3>
+                    <div class="pseudocode"><span class="keyword">STRUCTURE</span> Graph:
+    V: număr de noduri
+    adj: listă de liste
+         <span class="comment">// adj[i] = vecinii lui i</span>
+    visited: array boolean
+
+<span class="keyword">FUNCTION</span> CreateGraph(n):
+    graph.V = n
+    graph.adj = array de n liste goale
+    graph.visited = array de n false
+    <span class="keyword">RETURN</span> graph</div>
+                </div>
+                <div class="column c-lang">
+                    <h3>⚙️ C</h3>
+                    <pre><code class="language-c">typedef struct Node {
+    int vertex;
+    struct Node* next;
+} Node;
+
+typedef struct Graph {
+    int numVertices;
+    Node** adjLists;
+    int* visited;
+} Graph;
+
+Graph* createGraph(int n) {
+    Graph* g = malloc(sizeof(Graph));
+    g->numVertices = n;
+    g->adjLists = malloc(n * sizeof(Node*));
+    g->visited = calloc(n, sizeof(int));
+    
+    for (int i = 0; i < n; i++)
+        g->adjLists[i] = NULL;
+    
+    return g;
+}</code></pre>
+                </div>
+                <div class="column python">
+                    <h3>🐍 Python</h3>
+                    <pre><code class="language-python">from collections import defaultdict
+
+class Graph:
+    def __init__(self, num_vertices):
+        self.V = num_vertices
+        # defaultdict returnează [] 
+        # pentru chei inexistente
+        self.adj = defaultdict(list)
+        self.visited = [False] * num_vertices
+    
+    # Alternativ cu dicționar simplu:
+    # self.adj = {i: [] for i in range(n)}
+    
+# Creare graf
+g = Graph(5)</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Add Edge -->
+        <div class="slide">
+            <h1>➕ Adăugare Muchie</h1>
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <h3>📝 Pseudocod</h3>
+                    <div class="pseudocode"><span class="keyword">FUNCTION</span> AddEdge(graph, u, v):
+    <span class="comment">// Graf neorientat</span>
+    <span class="comment">// Adaugă v la lista lui u</span>
+    graph.adj[u].append(v)
+    
+    <span class="comment">// Adaugă u la lista lui v</span>
+    graph.adj[v].append(u)
+<span class="keyword">END FUNCTION</span>
+
+<span class="comment">// Pentru graf orientat:</span>
+<span class="comment">// doar prima linie</span></div>
+                </div>
+                <div class="column c-lang">
+                    <h3>⚙️ C</h3>
+                    <pre><code class="language-c">Node* createNode(int v) {
+    Node* newNode = malloc(sizeof(Node));
+    newNode->vertex = v;
+    newNode->next = NULL;
+    return newNode;
+}
+
+void addEdge(Graph* g, int u, int v) {
+    // Adaugă v la lista lui u
+    Node* newNode = createNode(v);
+    newNode->next = g->adjLists[u];
+    g->adjLists[u] = newNode;
+    
+    // Adaugă u la lista lui v
+    // (graf neorientat)
+    newNode = createNode(u);
+    newNode->next = g->adjLists[v];
+    g->adjLists[v] = newNode;
+}</code></pre>
+                </div>
+                <div class="column python">
+                    <h3>🐍 Python</h3>
+                    <pre><code class="language-python">def add_edge(self, u, v):
+    """Adaugă muchie neorientată."""
+    self.adj[u].append(v)
+    self.adj[v].append(u)
+
+def add_directed_edge(self, u, v):
+    """Adaugă arc orientat u -> v."""
+    self.adj[u].append(v)
+
+# Utilizare
+g = Graph(5)
+g.add_edge(0, 1)  # 0 -- 1
+g.add_edge(0, 2)  # 0 -- 2
+g.add_edge(1, 2)  # 1 -- 2</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: BFS Algorithm -->
+        <div class="slide">
+            <h1>🌊 BFS — Breadth-First Search</h1>
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <h3>📝 Pseudocod</h3>
+                    <div class="pseudocode"><span class="keyword">FUNCTION</span> BFS(graph, start):
+    queue = coadă goală
+    visited[start] = true
+    queue.enqueue(start)
+    
+    <span class="keyword">WHILE</span> queue nu e goală:
+        u = queue.dequeue()
+        <span class="keyword">PRINT</span> u
+        
+        <span class="keyword">FOR EACH</span> v în adj[u]:
+            <span class="keyword">IF NOT</span> visited[v]:
+                visited[v] = true
+                queue.enqueue(v)
+<span class="keyword">END FUNCTION</span></div>
+                </div>
+                <div class="column c-lang">
+                    <h3>⚙️ C</h3>
+                    <pre><code class="language-c">void bfs(Graph* g, int start) {
+    int queue[1000];
+    int front = 0, rear = 0;
+    
+    g->visited[start] = 1;
+    queue[rear++] = start;
+    
+    while (front < rear) {
+        int u = queue[front++];
+        printf("%d ", u);
+        
+        Node* temp = g->adjLists[u];
+        while (temp) {
+            int v = temp->vertex;
+            if (!g->visited[v]) {
+                g->visited[v] = 1;
+                queue[rear++] = v;
+            }
+            temp = temp->next;
+        }
+    }
+}</code></pre>
+                </div>
+                <div class="column python">
+                    <h3>🐍 Python</h3>
+                    <pre><code class="language-python">from collections import deque
+
+def bfs(self, start):
+    queue = deque([start])
+    self.visited[start] = True
+    result = []
+    
+    while queue:
+        u = queue.popleft()
+        result.append(u)
+        
+        for v in self.adj[u]:
+            if not self.visited[v]:
+                self.visited[v] = True
+                queue.append(v)
+    
+    return result
+
+# Utilizare
+print(g.bfs(0))  # [0, 1, 2, ...]</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: DFS Recursive -->
+        <div class="slide">
+            <h1>🌲 DFS — Recursiv</h1>
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <h3>📝 Pseudocod</h3>
+                    <div class="pseudocode"><span class="keyword">FUNCTION</span> DFS(graph, u):
+    visited[u] = true
+    <span class="keyword">PRINT</span> u
+    
+    <span class="keyword">FOR EACH</span> v în adj[u]:
+        <span class="keyword">IF NOT</span> visited[v]:
+            DFS(graph, v)
+<span class="keyword">END FUNCTION</span>
+
+<span class="comment">// Apel inițial:</span>
+<span class="comment">// DFS(graph, start_node)</span>
+
+<span class="comment">// Complexitate: O(V + E)</span></div>
+                </div>
+                <div class="column c-lang">
+                    <h3>⚙️ C</h3>
+                    <pre><code class="language-c">void dfs(Graph* g, int u) {
+    g->visited[u] = 1;
+    printf("%d ", u);
+    
+    Node* temp = g->adjLists[u];
+    while (temp) {
+        int v = temp->vertex;
+        if (!g->visited[v]) {
+            dfs(g, v);  // Apel recursiv
+        }
+        temp = temp->next;
+    }
+}
+
+// Wrapper pentru a reseta visited
+void dfsStart(Graph* g, int start) {
+    for (int i = 0; i < g->numVertices; i++)
+        g->visited[i] = 0;
+    dfs(g, start);
+}</code></pre>
+                </div>
+                <div class="column python">
+                    <h3>🐍 Python</h3>
+                    <pre><code class="language-python">def dfs_recursive(self, u, result=None):
+    if result is None:
+        result = []
+    
+    self.visited[u] = True
+    result.append(u)
+    
+    for v in self.adj[u]:
+        if not self.visited[v]:
+            self.dfs_recursive(v, result)
+    
+    return result
+
+# Utilizare
+g.reset_visited()
+print(g.dfs_recursive(0))
+
+# Python permite și sys.setrecursionlimit()
+# pentru grafuri mari</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: DFS Iterative -->
+        <div class="slide">
+            <h1>🌲 DFS — Iterativ (cu Stivă)</h1>
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <h3>📝 Pseudocod</h3>
+                    <div class="pseudocode"><span class="keyword">FUNCTION</span> DFS_Iterative(graph, start):
+    stack = stivă goală
+    stack.push(start)
+    
+    <span class="keyword">WHILE</span> stack nu e goală:
+        u = stack.pop()
+        
+        <span class="keyword">IF NOT</span> visited[u]:
+            visited[u] = true
+            <span class="keyword">PRINT</span> u
+            
+            <span class="keyword">FOR EACH</span> v în adj[u]:
+                <span class="keyword">IF NOT</span> visited[v]:
+                    stack.push(v)
+<span class="keyword">END FUNCTION</span></div>
+                </div>
+                <div class="column c-lang">
+                    <h3>⚙️ C</h3>
+                    <pre><code class="language-c">void dfsIterative(Graph* g, int start) {
+    int stack[1000];
+    int top = -1;
+    
+    stack[++top] = start;
+    
+    while (top >= 0) {
+        int u = stack[top--];  // Pop
+        
+        if (g->visited[u])
+            continue;
+        
+        g->visited[u] = 1;
+        printf("%d ", u);
+        
+        Node* temp = g->adjLists[u];
+        while (temp) {
+            if (!g->visited[temp->vertex])
+                stack[++top] = temp->vertex;
+            temp = temp->next;
+        }
+    }
+}</code></pre>
+                </div>
+                <div class="column python">
+                    <h3>🐍 Python</h3>
+                    <pre><code class="language-python">def dfs_iterative(self, start):
+    stack = [start]
+    result = []
+    
+    while stack:
+        u = stack.pop()
+        
+        if self.visited[u]:
+            continue
+        
+        self.visited[u] = True
+        result.append(u)
+        
+        # Adaugă vecinii în ordine inversă
+        # pentru a păstra ordinea
+        for v in reversed(self.adj[u]):
+            if not self.visited[v]:
+                stack.append(v)
+    
+    return result</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Connected Components -->
+        <div class="slide">
+            <h1>🔗 Componente Conexe</h1>
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <h3>📝 Pseudocod</h3>
+                    <div class="pseudocode"><span class="keyword">FUNCTION</span> CountComponents(graph):
+    count = 0
+    
+    <span class="keyword">FOR</span> v = 0 <span class="keyword">TO</span> V-1:
+        <span class="keyword">IF NOT</span> visited[v]:
+            count = count + 1
+            BFS(graph, v)
+            <span class="comment">// sau DFS(graph, v)</span>
+    
+    <span class="keyword">RETURN</span> count
+<span class="keyword">END FUNCTION</span>
+
+<span class="comment">// Fiecare BFS/DFS marchează</span>
+<span class="comment">// toată componenta ca vizitată</span></div>
+                </div>
+                <div class="column c-lang">
+                    <h3>⚙️ C</h3>
+                    <pre><code class="language-c">int countComponents(Graph* g) {
+    int count = 0;
+    
+    // Reset visited
+    for (int i = 0; i < g->numVertices; i++)
+        g->visited[i] = 0;
+    
+    for (int v = 0; v < g->numVertices; v++) {
+        if (!g->visited[v]) {
+            count++;
+            printf("Componenta %d: ", count);
+            bfs(g, v);  // sau dfs
+            printf("\n");
+        }
+    }
+    
+    return count;
+}</code></pre>
+                </div>
+                <div class="column python">
+                    <h3>🐍 Python</h3>
+                    <pre><code class="language-python">def count_components(self):
+    count = 0
+    components = []
+    self.visited = [False] * self.V
+    
+    for v in range(self.V):
+        if not self.visited[v]:
+            count += 1
+            component = self.bfs(v)
+            components.append(component)
+    
+    return count, components
+
+# Utilizare
+n, comps = g.count_components()
+print(f"{n} componente: {comps}")</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: BFS with Distance -->
+        <div class="slide">
+            <h1>📏 BFS cu Distanțe</h1>
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <h3>📝 Pseudocod</h3>
+                    <div class="pseudocode"><span class="keyword">FUNCTION</span> BFS_Distance(g, start):
+    dist[0..V-1] = INFINITY
+    parent[0..V-1] = -1
+    dist[start] = 0
+    
+    queue.enqueue(start)
+    
+    <span class="keyword">WHILE</span> queue nu e goală:
+        u = queue.dequeue()
+        
+        <span class="keyword">FOR EACH</span> v în adj[u]:
+            <span class="keyword">IF</span> dist[v] = INFINITY:
+                dist[v] = dist[u] + 1
+                parent[v] = u
+                queue.enqueue(v)
+    
+    <span class="keyword">RETURN</span> dist, parent
+<span class="keyword">END FUNCTION</span></div>
+                </div>
+                <div class="column c-lang">
+                    <h3>⚙️ C</h3>
+                    <pre><code class="language-c">void bfsDistance(Graph* g, int start, 
+                 int* dist, int* parent) {
+    int queue[1000];
+    int front = 0, rear = 0;
+    
+    for (int i = 0; i < g->numVertices; i++) {
+        dist[i] = -1;
+        parent[i] = -1;
+    }
+    
+    dist[start] = 0;
+    queue[rear++] = start;
+    
+    while (front < rear) {
+        int u = queue[front++];
+        
+        Node* t = g->adjLists[u];
+        while (t) {
+            int v = t->vertex;
+            if (dist[v] == -1) {
+                dist[v] = dist[u] + 1;
+                parent[v] = u;
+                queue[rear++] = v;
+            }
+            t = t->next;
+        }
+    }
+}</code></pre>
+                </div>
+                <div class="column python">
+                    <h3>🐍 Python</h3>
+                    <pre><code class="language-python">def bfs_distance(self, start):
+    dist = {i: float('inf') 
+            for i in range(self.V)}
+    parent = {i: None 
+              for i in range(self.V)}
+    
+    dist[start] = 0
+    queue = deque([start])
+    
+    while queue:
+        u = queue.popleft()
+        
+        for v in self.adj[u]:
+            if dist[v] == float('inf'):
+                dist[v] = dist[u] + 1
+                parent[v] = u
+                queue.append(v)
+    
+    return dist, parent</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Path Reconstruction -->
+        <div class="slide">
+            <h1>🛤️ Reconstrucția Drumului</h1>
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <h3>📝 Pseudocod</h3>
+                    <div class="pseudocode"><span class="keyword">FUNCTION</span> GetPath(parent, dest):
+    <span class="comment">// Reconstruiește drumul de la</span>
+    <span class="comment">// sursă la destinație</span>
+    
+    path = listă goală
+    current = dest
+    
+    <span class="keyword">WHILE</span> current ≠ -1:
+        path.prepend(current)
+        current = parent[current]
+    
+    <span class="keyword">RETURN</span> path
+<span class="keyword">END FUNCTION</span>
+
+<span class="comment">// Folosește parent[] din BFS</span></div>
+                </div>
+                <div class="column c-lang">
+                    <h3>⚙️ C</h3>
+                    <pre><code class="language-c">void printPath(int* parent, int dest) {
+    if (parent[dest] == -1 && dest != -1) {
+        // dest este sursa
+        printf("%d", dest);
+        return;
+    }
+    
+    // Recursiv până la sursă
+    if (parent[dest] != -1) {
+        printPath(parent, parent[dest]);
+        printf(" -> %d", dest);
+    }
+}
+
+// Alternativ, iterativ cu stivă:
+void printPathIterative(int* parent, 
+                        int dest) {
+    int path[100], len = 0;
+    for (int v = dest; v != -1; v = parent[v])
+        path[len++] = v;
+    
+    for (int i = len - 1; i >= 0; i--)
+        printf("%d%s", path[i], 
+               i > 0 ? " -> " : "\n");
+}</code></pre>
+                </div>
+                <div class="column python">
+                    <h3>🐍 Python</h3>
+                    <pre><code class="language-python">def get_path(self, parent, dest):
+    """Reconstruiește drumul."""
+    path = []
+    current = dest
+    
+    while current is not None:
+        path.append(current)
+        current = parent[current]
+    
+    return path[::-1]  # Inversează
+
+# Utilizare
+dist, parent = g.bfs_distance(0)
+path = g.get_path(parent, 4)
+print(f"Drum: {' -> '.join(map(str, path))}")
+print(f"Distanța: {dist[4]}")
+
+# Output: Drum: 0 -> 1 -> 3 -> 4
+#         Distanța: 3</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Comparison Table -->
+        <div class="slide">
+            <h1>📊 Tabel Comparativ</h1>
+            <table>
+                <tr>
+                    <th>Aspect</th>
+                    <th class="pseudo">📝 Pseudocod</th>
+                    <th class="c">⚙️ C</th>
+                    <th class="python">🐍 Python</th>
+                </tr>
+                <tr>
+                    <td><strong>Linii de cod</strong></td>
+                    <td>~15</td>
+                    <td>~50-70</td>
+                    <td>~20-25</td>
+                </tr>
+                <tr>
+                    <td><strong>Managment memorie</strong></td>
+                    <td>Abstras</td>
+                    <td>Manual (malloc/free)</td>
+                    <td>Automatic (GC)</td>
+                </tr>
+                <tr>
+                    <td><strong>Structuri built-in</strong></td>
+                    <td>Conceptuale</td>
+                    <td>Trebuie implementate</td>
+                    <td>list, dict, deque</td>
+                </tr>
+                <tr>
+                    <td><strong>Performanță</strong></td>
+                    <td>N/A</td>
+                    <td><span class="complexity">Optimă</span></td>
+                    <td>~10-100× mai lentă</td>
+                </tr>
+                <tr>
+                    <td><strong>Erori comune</strong></td>
+                    <td>Logice</td>
+                    <td>Memory leaks, segfault</td>
+                    <td>Index errors</td>
+                </tr>
+                <tr>
+                    <td><strong>Debugging</strong></td>
+                    <td>Pe hârtie</td>
+                    <td>GDB, Valgrind</td>
+                    <td>print(), pdb</td>
+                </tr>
+                <tr>
+                    <td><strong>Utilizare</strong></td>
+                    <td>Documentație, învățare</td>
+                    <td>Sisteme, embedded</td>
+                    <td>Prototipare, ML</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Slide 12: When to Use Each -->
+        <div class="slide">
+            <h1>🎯 Când Folosim Fiecare?</h1>
+            <div class="three-columns" style="height: auto;">
+                <div class="column pseudocod">
+                    <h3>📝 Pseudocod</h3>
+                    <ul>
+                        <li>Învățarea algoritmilor</li>
+                        <li>Documentare tehnică</li>
+                        <li>Comunicare în echipă</li>
+                        <li>Interviuri whiteboard</li>
+                        <li>Publicații academice</li>
+                        <li>Planificarea soluției</li>
+                    </ul>
+                    <p style="margin-top: 1rem; font-style: italic; color: var(--text-secondary);">
+                        „Gândește mai întâi, codează apoi."
+                    </p>
+                </div>
+                <div class="column c-lang">
+                    <h3>⚙️ C</h3>
+                    <ul>
+                        <li>Performanță critică</li>
+                        <li>Sisteme embedded</li>
+                        <li>Sisteme de operare</li>
+                        <li>Game engines</li>
+                        <li>Biblioteci de bază</li>
+                        <li>Când fiecare byte contează</li>
+                    </ul>
+                    <p style="margin-top: 1rem; font-style: italic; color: var(--text-secondary);">
+                        „Control total, responsabilitate totală."
+                    </p>
+                </div>
+                <div class="column python">
+                    <h3>🐍 Python</h3>
+                    <ul>
+                        <li>Prototipare rapidă</li>
+                        <li>Data Science / ML</li>
+                        <li>Scripting și automatizare</li>
+                        <li>Backend web</li>
+                        <li>Testare și validare</li>
+                        <li>Când timpul e mai prețios decât CPU</li>
+                    </ul>
+                    <p style="margin-top: 1rem; font-style: italic; color: var(--text-secondary);">
+                        „Life is short, use Python."
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Key Insights -->
+        <div class="slide">
+            <h1>💡 Concluzii Cheie</h1>
+            <div class="info-box insight">
+                <div class="info-box-title">1. Algoritmul rămâne același</div>
+                BFS este BFS indiferent de limbaj. Diferă doar sintaxa și detaliile de implementare.
+            </div>
+            <div class="info-box insight">
+                <div class="info-box-title">2. C oferă control, Python oferă confort</div>
+                În C gestionezi memoria manual — mai multă muncă, dar performanță optimă. Python abstractizează totul — cod mai scurt, dar overhead.
+            </div>
+            <div class="info-box insight">
+                <div class="info-box-title">3. Pseudocodul este lingua franca</div>
+                Toți programatorii, indiferent de limbajul preferat, pot citi și înțelege pseudocod.
+            </div>
+            <div class="info-box insight">
+                <div class="info-box-title">4. Un bun programator știe mai multe limbaje</div>
+                Înțelegerea profundă vine din compararea abordărilor diferite ale aceleiași probleme.
+            </div>
+        </div>
+
+        <!-- Slide 14: Conclusion -->
+        <div class="slide title-slide">
+            <h1>Rezumat</h1>
+            <p class="subtitle">Grafuri în 3 limbaje</p>
+            <div class="lang-badges" style="margin: 2rem 0;">
+                <span class="lang-badge pseudo">Pseudocod = Concept</span>
+                <span class="lang-badge c">C = Performanță</span>
+                <span class="lang-badge python">Python = Productivitate</span>
+            </div>
+            <p style="font-size: 1.3rem; color: var(--text-secondary); max-width: 600px;">
+                Stăpânirea unui algoritm înseamnă să-l poți exprima în orice limbaj și să înțelegi compromisurile fiecărei implementări.
+            </p>
+            <p style="margin-top: 2rem; color: var(--text-secondary);">
+                Săptămâna 12 — Algoritmi și Tehnici de Programare
+            </p>
+        </div>
+
+    </div>
+
+    <!-- Navigation Controls -->
+    <div class="nav-controls">
+        <button class="nav-btn" onclick="goToSlide(0)">⏮</button>
+        <button class="nav-btn" onclick="prevSlide()">◀</button>
+        <button class="nav-btn" onclick="nextSlide()">▶</button>
+        <button class="nav-btn" onclick="goToSlide(totalSlides-1)">⏭</button>
+    </div>
+
+    <div class="slide-counter">
+        <span id="currentSlide">1</span> / <span id="totalSlides">14</span>
+    </div>
+
+    <script>
+        hljs.highlightAll();
+
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(index) {
+            if (index < 0) index = 0;
+            if (index >= totalSlides) index = totalSlides - 1;
+            
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[index].classList.add('active');
+            currentSlideIndex = index;
+            
+            document.getElementById('currentSlide').textContent = index + 1;
+            const progress = ((index + 1) / totalSlides) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function nextSlide() { showSlide(currentSlideIndex + 1); }
+        function prevSlide() { showSlide(currentSlideIndex - 1); }
+        function goToSlide(index) { showSlide(index); }
+
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'ArrowRight': case ' ': e.preventDefault(); nextSlide(); break;
+                case 'ArrowLeft': e.preventDefault(); prevSlide(); break;
+                case 'Home': e.preventDefault(); goToSlide(0); break;
+                case 'End': e.preventDefault(); goToSlide(totalSlides - 1); break;
+            }
+        });
+
+        let touchStartX = 0;
+        document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
+        document.addEventListener('touchend', e => {
+            const diff = touchStartX - e.changedTouches[0].screenX;
+            if (Math.abs(diff) > 50) diff > 0 ? nextSlide() : prevSlide();
+        });
+    </script>
+</body>
+</html>

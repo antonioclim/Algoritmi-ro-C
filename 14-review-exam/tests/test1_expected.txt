@@ -1,0 +1,34 @@
+╔═══════════════════════════════════════════════════════════════╗
+║     SĂPTĂMÂNA 14: SISTEM DE GESTIUNE COMENZI                  ║
+║     Exercițiul 1 - Integrare Structuri de Date                ║
+╚═══════════════════════════════════════════════════════════════╝
+
+╔═══════════════════════════════════════════════════════════════╗
+║  PARTEA 1: INIȚIALIZARE PRODUSE                               ║
+╚═══════════════════════════════════════════════════════════════╝
+
+✓ Încărcate 3 produse din fișier
+
+Test căutare produs P001:
+  Găsit: TestLaptop - 5000.00 RON (stoc: 5)
+
+╔═══════════════════════════════════════════════════════════════╗
+║  PARTEA 2: CREARE COMENZI                                     ║
+╚═══════════════════════════════════════════════════════════════╝
+
+Adăugare produse la comenzi...
+✓ Create și inserate 4 comenzi în BST
+
+╔═══════════════════════════════════════════════════════════════╗
+║  PARTEA 3: TOATE COMENZILE (INORDER)                          ║
+╚═══════════════════════════════════════════════════════════════╝
+
+[Comenzile vor fi afișate ordonate după ID]
+
+╔═══════════════════════════════════════════════════════════════╗
+║  CURĂȚARE MEMORIE                                             ║
+╚═══════════════════════════════════════════════════════════════╝
+
+Eliberare memorie...
+✓ Toată memoria a fost eliberată.
+✓ Rulați cu Valgrind pentru verificare!

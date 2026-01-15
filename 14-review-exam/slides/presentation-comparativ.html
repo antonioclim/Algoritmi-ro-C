@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparație: Pseudocod | C | Python | ATP Săptămâna 14</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-yellow: #d29922;
+            --accent-red: #f85149;
+            --accent-purple: #a371f7;
+            --border-color: #30363d;
+            --pseudocode-bg: #1a1f35;
+            --c-lang-bg: #1a2f1a;
+            --python-bg: #2f2a1a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-purple), var(--accent-blue), var(--accent-green));
+            transition: width 0.3s ease;
+            z-index: 1000;
+        }
+
+        .slides-container {
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 50px 60px;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            display: block;
+            opacity: 1;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 25px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: var(--accent-blue);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        h3 {
+            font-size: 1.3em;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        p {
+            font-size: 1.1em;
+            line-height: 1.7;
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+        }
+
+        .three-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin: 15px 0;
+            height: calc(100% - 120px);
+        }
+
+        .column {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .column-header {
+            padding: 12px 15px;
+            font-weight: 600;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pseudocod .column-header {
+            background: var(--pseudocode-bg);
+            color: var(--accent-purple);
+            border-bottom: 2px solid var(--accent-purple);
+        }
+
+        .c-lang .column-header {
+            background: var(--c-lang-bg);
+            color: var(--accent-green);
+            border-bottom: 2px solid var(--accent-green);
+        }
+
+        .python .column-header {
+            background: var(--python-bg);
+            color: var(--accent-yellow);
+            border-bottom: 2px solid var(--accent-yellow);
+        }
+
+        .column-content {
+            padding: 15px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        pre {
+            margin: 0;
+            padding: 10px;
+            background: var(--bg-tertiary);
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 0.85em;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+        }
+
+        .nav-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            background: var(--accent-blue);
+            color: var(--bg-primary);
+        }
+
+        .slide-counter {
+            position: fixed;
+            bottom: 25px;
+            left: 30px;
+            color: var(--text-secondary);
+            font-size: 1em;
+            z-index: 100;
+        }
+
+        .title-slide {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            height: 100%;
+        }
+
+        .title-slide h1 {
+            font-size: 3em;
+        }
+
+        .info-box {
+            background: var(--bg-secondary);
+            border-left: 4px solid var(--accent-blue);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.95em;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            text-align: left;
+        }
+
+        th {
+            background: var(--bg-tertiary);
+            color: var(--accent-blue);
+        }
+
+        tr:nth-child(even) {
+            background: var(--bg-secondary);
+        }
+
+        .highlight-purple { color: var(--accent-purple); }
+        .highlight-green { color: var(--accent-green); }
+        .highlight-yellow { color: var(--accent-yellow); }
+
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .end-slide {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            height: 100%;
+        }
+
+        kbd {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-family: monospace;
+            font-size: 0.85em;
+        }
+
+        .keyboard-hint {
+            position: fixed;
+            bottom: 60px;
+            right: 30px;
+            color: var(--text-secondary);
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progress"></div>
+    
+    <div class="slides-container" id="slides">
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <div class="title-slide">
+                <h1>🔄 Comparație Multi-Limbaj</h1>
+                <p style="font-size: 1.5em; color: var(--text-secondary); margin: 20px 0;">
+                    <span class="highlight-purple">📝 Pseudocod</span> |
+                    <span class="highlight-green">⚙️ C</span> |
+                    <span class="highlight-yellow">🐍 Python</span>
+                </p>
+                <p style="font-size: 1.2em; margin-top: 30px;">
+                    Săptămâna 14: Recapitulare Avansată<br>
+                    <span style="color: var(--text-secondary);">Algoritmi și Tehnici de Programare</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 2: Why Compare -->
+        <div class="slide">
+            <h2>❓ De ce comparăm limbajele?</h2>
+            <div class="two-columns">
+                <div class="card">
+                    <h3>🎯 Obiective</h3>
+                    <ul>
+                        <li>Înțelegerea <strong>conceptelor fundamentale</strong> independent de sintaxă</li>
+                        <li>Aprecierea <strong>trade-off-urilor</strong> între limbaje</li>
+                        <li>Pregătire pentru <strong>diverse contexte profesionale</strong></li>
+                        <li>Dezvoltarea <strong>gândirii algoritmice</strong> abstracte</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>📊 Caracteristici Cheie</h3>
+                    <table>
+                        <tr>
+                            <th>Aspect</th>
+                            <th>C</th>
+                            <th>Python</th>
+                        </tr>
+                        <tr>
+                            <td>Tipizare</td>
+                            <td>Statică</td>
+                            <td>Dinamică</td>
+                        </tr>
+                        <tr>
+                            <td>Memorie</td>
+                            <td>Manuală</td>
+                            <td>Automată (GC)</td>
+                        </tr>
+                        <tr>
+                            <td>Performanță</td>
+                            <td>Foarte rapidă</td>
+                            <td>Mai lentă</td>
+                        </tr>
+                        <tr>
+                            <td>Dezvoltare</td>
+                            <td>Mai lentă</td>
+                            <td>Foarte rapidă</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Linked List -->
+        <div class="slide">
+            <h2>🔗 Linked List - Inserare la Început</h2>
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <div class="column-header">📝 Pseudocod</div>
+                    <div class="column-content">
+                        <pre><code>FUNCȚIE InsertFront(cap, valoare):
+    // Creează nod nou
+    nod_nou ← NodNou()
+    nod_nou.data ← valoare
+    
+    // Conectează la cap existent
+    nod_nou.next ← cap
+    
+    // Returnează noul cap
+    RETURNEAZĂ nod_nou
+SFÂRȘIT FUNCȚIE
+
+
+FUNCȚIE AfișeazăLista(cap):
+    curent ← cap
+    CÂT TIMP curent ≠ NULL:
+        AFIȘEAZĂ curent.data
+        curent ← curent.next
+    SFÂRȘIT CÂT TIMP
+SFÂRȘIT FUNCȚIE</code></pre>
+                    </div>
+                </div>
+                <div class="column c-lang">
+                    <div class="column-header">⚙️ C</div>
+                    <div class="column-content">
+                        <pre><code class="language-c">typedef struct Node {
+    int data;
+    struct Node *next;
+} Node;
+
+Node *insert_front(Node *head, int val) {
+    // Alocă memorie explicit
+    Node *new_node = malloc(sizeof(Node));
+    if (!new_node) return head;
+    
+    new_node->data = val;
+    new_node->next = head;
+    
+    return new_node;
+}
+
+void print_list(Node *head) {
+    Node *curr = head;
+    while (curr != NULL) {
+        printf("%d -> ", curr->data);
+        curr = curr->next;
+    }
+    printf("NULL\n");
+}
+
+// Nu uita: free() pentru fiecare nod!</code></pre>
+                    </div>
+                </div>
+                <div class="column python">
+                    <div class="column-header">🐍 Python</div>
+                    <div class="column-content">
+                        <pre><code class="language-python">class Node:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+
+class LinkedList:
+    def __init__(self):
+        self.head = None
+    
+    def insert_front(self, val):
+        # Python gestionează memoria
+        new_node = Node(val)
+        new_node.next = self.head
+        self.head = new_node
+    
+    def print_list(self):
+        curr = self.head
+        while curr:
+            print(f"{curr.data} -> ", end="")
+            curr = curr.next
+        print("None")
+
+# Utilizare simplă:
+lst = LinkedList()
+lst.insert_front(10)
+lst.insert_front(20)</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Binary Search -->
+        <div class="slide">
+            <h2>🔍 Căutare Binară</h2>
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <div class="column-header">📝 Pseudocod</div>
+                    <div class="column-content">
+                        <pre><code>FUNCȚIE CăutareBinară(arr, n, țintă):
+    stânga ← 0
+    dreapta ← n - 1
+    
+    CÂT TIMP stânga ≤ dreapta:
+        mijloc ← stânga + (dreapta - stânga) / 2
+        
+        DACĂ arr[mijloc] = țintă:
+            RETURNEAZĂ mijloc
+        ALTFEL DACĂ arr[mijloc] < țintă:
+            stânga ← mijloc + 1
+        ALTFEL:
+            dreapta ← mijloc - 1
+        SFÂRȘIT DACĂ
+    SFÂRȘIT CÂT TIMP
+    
+    RETURNEAZĂ -1  // Nu a fost găsit
+SFÂRȘIT FUNCȚIE
+
+// Complexitate: O(log n)</code></pre>
+                    </div>
+                </div>
+                <div class="column c-lang">
+                    <div class="column-header">⚙️ C</div>
+                    <div class="column-content">
+                        <pre><code class="language-c">int binary_search(int arr[], int n, int target) {
+    int left = 0;
+    int right = n - 1;
+    
+    while (left <= right) {
+        // Evită overflow pentru n mare
+        int mid = left + (right - left) / 2;
+        
+        if (arr[mid] == target) {
+            return mid;
+        } else if (arr[mid] < target) {
+            left = mid + 1;
+        } else {
+            right = mid - 1;
+        }
+    }
+    
+    return -1;  // Nu a fost găsit
+}
+
+// Sau folosește bsearch din stdlib.h:
+int cmp(const void *a, const void *b) {
+    return (*(int*)a - *(int*)b);
+}
+int *result = bsearch(&key, arr, n, 
+                      sizeof(int), cmp);</code></pre>
+                    </div>
+                </div>
+                <div class="column python">
+                    <div class="column-header">🐍 Python</div>
+                    <div class="column-content">
+                        <pre><code class="language-python">def binary_search(arr, target):
+    left, right = 0, len(arr) - 1
+    
+    while left <= right:
+        mid = left + (right - left) // 2
+        
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    
+    return -1
+
+# Sau folosește modulul bisect:
+import bisect
+
+arr = [1, 3, 5, 7, 9, 11]
+# Găsește poziția de inserare
+pos = bisect.bisect_left(arr, 7)
+
+# Verifică dacă elementul există
+if pos < len(arr) and arr[pos] == 7:
+    print(f"Găsit la index {pos}")
+else:
+    print("Nu a fost găsit")</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Stack Implementation -->
+        <div class="slide">
+            <h2>📚 Stack (LIFO)</h2>
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <div class="column-header">📝 Pseudocod</div>
+                    <div class="column-content">
+                        <pre><code>STRUCTURĂ Stack:
+    data[MAX_SIZE]
+    top ← -1
+SFÂRȘIT STRUCTURĂ
+
+FUNCȚIE Push(S, valoare):
+    DACĂ S.top ≥ MAX_SIZE - 1:
+        EROARE "Stack plin!"
+    ALTFEL:
+        S.top ← S.top + 1
+        S.data[S.top] ← valoare
+    SFÂRȘIT DACĂ
+SFÂRȘIT FUNCȚIE
+
+FUNCȚIE Pop(S):
+    DACĂ S.top < 0:
+        EROARE "Stack gol!"
+    ALTFEL:
+        val ← S.data[S.top]
+        S.top ← S.top - 1
+        RETURNEAZĂ val
+    SFÂRȘIT DACĂ
+SFÂRȘIT FUNCȚIE
+
+FUNCȚIE Peek(S):
+    RETURNEAZĂ S.data[S.top]
+SFÂRȘIT FUNCȚIE</code></pre>
+                    </div>
+                </div>
+                <div class="column c-lang">
+                    <div class="column-header">⚙️ C</div>
+                    <div class="column-content">
+                        <pre><code class="language-c">#define MAX_SIZE 100
+
+typedef struct {
+    int data[MAX_SIZE];
+    int top;
+} Stack;
+
+void init(Stack *s) {
+    s->top = -1;
+}
+
+int is_empty(Stack *s) {
+    return s->top == -1;
+}
+
+int is_full(Stack *s) {
+    return s->top == MAX_SIZE - 1;
+}
+
+void push(Stack *s, int val) {
+    if (is_full(s)) {
+        fprintf(stderr, "Stack overflow!\n");
+        return;
+    }
+    s->data[++s->top] = val;
+}
+
+int pop(Stack *s) {
+    if (is_empty(s)) {
+        fprintf(stderr, "Stack underflow!\n");
+        return -1;
+    }
+    return s->data[s->top--];
+}
+
+int peek(Stack *s) {
+    return s->data[s->top];
+}</code></pre>
+                    </div>
+                </div>
+                <div class="column python">
+                    <div class="column-header">🐍 Python</div>
+                    <div class="column-content">
+                        <pre><code class="language-python"># Varianta simplă - folosește list
+stack = []
+stack.append(10)  # push
+stack.append(20)
+val = stack.pop() # pop -> 20
+top = stack[-1]   # peek -> 10
+
+# Varianta clasă
+class Stack:
+    def __init__(self):
+        self.items = []
+    
+    def is_empty(self):
+        return len(self.items) == 0
+    
+    def push(self, item):
+        self.items.append(item)
+    
+    def pop(self):
+        if self.is_empty():
+            raise IndexError("Stack gol")
+        return self.items.pop()
+    
+    def peek(self):
+        if self.is_empty():
+            raise IndexError("Stack gol")
+        return self.items[-1]
+    
+    def size(self):
+        return len(self.items)
+
+# collections.deque e mai eficient:
+from collections import deque
+stack = deque()</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Hash Table -->
+        <div class="slide">
+            <h2>#️⃣ Hash Table</h2>
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <div class="column-header">📝 Pseudocod</div>
+                    <div class="column-content">
+                        <pre><code>STRUCTURĂ HashTable:
+    buckets[SIZE]  // Array de liste
+SFÂRȘIT STRUCTURĂ
+
+FUNCȚIE Hash(cheie):
+    h ← 0
+    PENTRU FIECARE caracter c ÎN cheie:
+        h ← (h * 31 + cod(c)) MOD SIZE
+    SFÂRȘIT PENTRU
+    RETURNEAZĂ h
+SFÂRȘIT FUNCȚIE
+
+FUNCȚIE Insert(HT, cheie, val):
+    index ← Hash(cheie)
+    // Adaugă la lista de la index
+    AdaugăÎnListă(HT.buckets[index], 
+                   cheie, val)
+SFÂRȘIT FUNCȚIE
+
+FUNCȚIE Search(HT, cheie):
+    index ← Hash(cheie)
+    RETURNEAZĂ CautăÎnListă(
+        HT.buckets[index], cheie)
+SFÂRȘIT FUNCȚIE</code></pre>
+                    </div>
+                </div>
+                <div class="column c-lang">
+                    <div class="column-header">⚙️ C</div>
+                    <div class="column-content">
+                        <pre><code class="language-c">#define SIZE 101
+
+typedef struct Entry {
+    char *key;
+    int value;
+    struct Entry *next;
+} Entry;
+
+typedef struct {
+    Entry *buckets[SIZE];
+} HashTable;
+
+unsigned int hash(const char *key) {
+    unsigned int h = 0;
+    while (*key) {
+        h = h * 31 + *key++;
+    }
+    return h % SIZE;
+}
+
+void insert(HashTable *ht, char *key, int val) {
+    unsigned int idx = hash(key);
+    Entry *e = malloc(sizeof(Entry));
+    e->key = strdup(key);
+    e->value = val;
+    e->next = ht->buckets[idx];
+    ht->buckets[idx] = e;
+}
+
+int *search(HashTable *ht, char *key) {
+    unsigned int idx = hash(key);
+    Entry *e = ht->buckets[idx];
+    while (e) {
+        if (strcmp(e->key, key) == 0)
+            return &e->value;
+        e = e->next;
+    }
+    return NULL;
+}</code></pre>
+                    </div>
+                </div>
+                <div class="column python">
+                    <div class="column-header">🐍 Python</div>
+                    <div class="column-content">
+                        <pre><code class="language-python"># Python are dict built-in!
+hash_table = {}
+hash_table["apple"] = 5
+hash_table["banana"] = 3
+
+# Căutare
+val = hash_table.get("apple")  # 5
+val = hash_table.get("grape", 0)  # 0 (default)
+
+# Iterare
+for key, value in hash_table.items():
+    print(f"{key}: {value}")
+
+# Implementare manuală (educațional)
+class HashTable:
+    def __init__(self, size=101):
+        self.size = size
+        self.buckets = [[] for _ in range(size)]
+    
+    def _hash(self, key):
+        return hash(key) % self.size
+    
+    def insert(self, key, value):
+        idx = self._hash(key)
+        for i, (k, v) in enumerate(self.buckets[idx]):
+            if k == key:
+                self.buckets[idx][i] = (key, value)
+                return
+        self.buckets[idx].append((key, value))
+    
+    def search(self, key):
+        idx = self._hash(key)
+        for k, v in self.buckets[idx]:
+            if k == key:
+                return v
+        return None</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: BFS -->
+        <div class="slide">
+            <h2>🌊 BFS (Breadth-First Search)</h2>
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <div class="column-header">📝 Pseudocod</div>
+                    <div class="column-content">
+                        <pre><code>FUNCȚIE BFS(Graf, start):
+    vizitat[start] ← ADEVĂRAT
+    coadă ← CoadăNouă()
+    Enqueue(coadă, start)
+    
+    CÂT TIMP coadă NU E GOALĂ:
+        v ← Dequeue(coadă)
+        PROCESEAZĂ(v)
+        
+        PENTRU FIECARE vecin u AL LUI v:
+            DACĂ NU vizitat[u]:
+                vizitat[u] ← ADEVĂRAT
+                Enqueue(coadă, u)
+            SFÂRȘIT DACĂ
+        SFÂRȘIT PENTRU
+    SFÂRȘIT CÂT TIMP
+SFÂRȘIT FUNCȚIE
+
+// Complexitate: O(V + E)
+// V = noduri, E = muchii</code></pre>
+                    </div>
+                </div>
+                <div class="column c-lang">
+                    <div class="column-header">⚙️ C</div>
+                    <div class="column-content">
+                        <pre><code class="language-c">void bfs(Graph *g, int start) {
+    bool *visited = calloc(g->V, sizeof(bool));
+    
+    // Creează coadă
+    int *queue = malloc(g->V * sizeof(int));
+    int front = 0, rear = 0;
+    
+    visited[start] = true;
+    queue[rear++] = start;
+    
+    while (front < rear) {
+        int v = queue[front++];
+        printf("%d ", v);
+        
+        // Parcurge vecinii
+        AdjNode *node = g->adj[v];
+        while (node) {
+            if (!visited[node->vertex]) {
+                visited[node->vertex] = true;
+                queue[rear++] = node->vertex;
+            }
+            node = node->next;
+        }
+    }
+    
+    free(visited);
+    free(queue);
+}</code></pre>
+                    </div>
+                </div>
+                <div class="column python">
+                    <div class="column-header">🐍 Python</div>
+                    <div class="column-content">
+                        <pre><code class="language-python">from collections import deque
+
+def bfs(graph, start):
+    visited = set()
+    queue = deque([start])
+    visited.add(start)
+    result = []
+    
+    while queue:
+        v = queue.popleft()
+        result.append(v)
+        
+        for neighbor in graph[v]:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
+    
+    return result
+
+# Graf ca dict de liste
+graph = {
+    0: [1, 2],
+    1: [0, 3, 4],
+    2: [0, 4],
+    3: [1],
+    4: [1, 2]
+}
+
+print(bfs(graph, 0))  # [0, 1, 2, 3, 4]
+
+# Sau cu networkx:
+# import networkx as nx
+# G = nx.Graph(graph)
+# list(nx.bfs_edges(G, 0))</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Sorting -->
+        <div class="slide">
+            <h2>🔀 Sortare (QuickSort)</h2>
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <div class="column-header">📝 Pseudocod</div>
+                    <div class="column-content">
+                        <pre><code>FUNCȚIE QuickSort(arr, low, high):
+    DACĂ low < high:
+        // Partiționează și obține pivot
+        pi ← Partition(arr, low, high)
+        
+        // Sortează recursiv
+        QuickSort(arr, low, pi - 1)
+        QuickSort(arr, pi + 1, high)
+    SFÂRȘIT DACĂ
+SFÂRȘIT FUNCȚIE
+
+FUNCȚIE Partition(arr, low, high):
+    pivot ← arr[high]
+    i ← low - 1
+    
+    PENTRU j ← low PÂNĂ LA high - 1:
+        DACĂ arr[j] < pivot:
+            i ← i + 1
+            Schimbă(arr[i], arr[j])
+        SFÂRȘIT DACĂ
+    SFÂRȘIT PENTRU
+    
+    Schimbă(arr[i+1], arr[high])
+    RETURNEAZĂ i + 1
+SFÂRȘIT FUNCȚIE</code></pre>
+                    </div>
+                </div>
+                <div class="column c-lang">
+                    <div class="column-header">⚙️ C</div>
+                    <div class="column-content">
+                        <pre><code class="language-c">void swap(int *a, int *b) {
+    int t = *a; *a = *b; *b = t;
+}
+
+int partition(int arr[], int low, int high) {
+    int pivot = arr[high];
+    int i = low - 1;
+    
+    for (int j = low; j < high; j++) {
+        if (arr[j] < pivot) {
+            i++;
+            swap(&arr[i], &arr[j]);
+        }
+    }
+    swap(&arr[i + 1], &arr[high]);
+    return i + 1;
+}
+
+void quicksort(int arr[], int low, int high) {
+    if (low < high) {
+        int pi = partition(arr, low, high);
+        quicksort(arr, low, pi - 1);
+        quicksort(arr, pi + 1, high);
+    }
+}
+
+// Sau folosește qsort din stdlib.h:
+int cmp(const void *a, const void *b) {
+    return (*(int*)a - *(int*)b);
+}
+qsort(arr, n, sizeof(int), cmp);</code></pre>
+                    </div>
+                </div>
+                <div class="column python">
+                    <div class="column-header">🐍 Python</div>
+                    <div class="column-content">
+                        <pre><code class="language-python">def quicksort(arr):
+    if len(arr) <= 1:
+        return arr
+    
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    
+    return quicksort(left) + middle + quicksort(right)
+
+# Varianta in-place
+def quicksort_inplace(arr, low, high):
+    if low < high:
+        pi = partition(arr, low, high)
+        quicksort_inplace(arr, low, pi - 1)
+        quicksort_inplace(arr, pi + 1, high)
+
+# Python built-in (Timsort - O(n log n))
+arr = [64, 34, 25, 12, 22]
+arr.sort()              # In-place
+sorted_arr = sorted(arr) # Returnează nouă listă
+
+# Cu cheie custom
+students = [("Ana", 85), ("Bob", 75)]
+students.sort(key=lambda x: x[1], reverse=True)</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Higher-Order Functions -->
+        <div class="slide">
+            <h2>🎯 Higher-Order Functions</h2>
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <div class="column-header">📝 Pseudocod</div>
+                    <div class="column-content">
+                        <pre><code>// Map - aplică funcție pe fiecare element
+FUNCȚIE Map(colecție, funcție):
+    rezultat ← ColecțieNouă()
+    PENTRU FIECARE elem ÎN colecție:
+        Adaugă(rezultat, funcție(elem))
+    SFÂRȘIT PENTRU
+    RETURNEAZĂ rezultat
+SFÂRȘIT FUNCȚIE
+
+// Filter - păstrează elementele care satisfac condiția
+FUNCȚIE Filter(colecție, predicat):
+    rezultat ← ColecțieNouă()
+    PENTRU FIECARE elem ÎN colecție:
+        DACĂ predicat(elem):
+            Adaugă(rezultat, elem)
+        SFÂRȘIT DACĂ
+    SFÂRȘIT PENTRU
+    RETURNEAZĂ rezultat
+SFÂRȘIT FUNCȚIE
+
+// Reduce - combină elementele într-o singură valoare
+FUNCȚIE Reduce(colecție, funcție, inițial):
+    acc ← inițial
+    PENTRU FIECARE elem ÎN colecție:
+        acc ← funcție(acc, elem)
+    SFÂRȘIT PENTRU
+    RETURNEAZĂ acc
+SFÂRȘIT FUNCȚIE</code></pre>
+                    </div>
+                </div>
+                <div class="column c-lang">
+                    <div class="column-header">⚙️ C</div>
+                    <div class="column-content">
+                        <pre><code class="language-c">// C nu are built-in, dar putem simula
+
+// Function pointer pentru transformare
+typedef int (*MapFunc)(int);
+
+void map(int arr[], int n, MapFunc f) {
+    for (int i = 0; i < n; i++) {
+        arr[i] = f(arr[i]);
+    }
+}
+
+int square(int x) { return x * x; }
+int doubled(int x) { return x * 2; }
+
+// Filter cu predicat
+typedef int (*Predicate)(int);
+
+int filter(int arr[], int n, int out[], 
+           Predicate p) {
+    int count = 0;
+    for (int i = 0; i < n; i++) {
+        if (p(arr[i])) {
+            out[count++] = arr[i];
+        }
+    }
+    return count;
+}
+
+int is_even(int x) { return x % 2 == 0; }
+
+// Utilizare:
+int arr[] = {1, 2, 3, 4, 5};
+map(arr, 5, square);  // [1, 4, 9, 16, 25]</code></pre>
+                    </div>
+                </div>
+                <div class="column python">
+                    <div class="column-header">🐍 Python</div>
+                    <div class="column-content">
+                        <pre><code class="language-python"># Python are suport nativ excelent!
+
+nums = [1, 2, 3, 4, 5]
+
+# Map
+squared = list(map(lambda x: x**2, nums))
+# sau: squared = [x**2 for x in nums]
+
+# Filter  
+evens = list(filter(lambda x: x % 2 == 0, nums))
+# sau: evens = [x for x in nums if x % 2 == 0]
+
+# Reduce
+from functools import reduce
+total = reduce(lambda acc, x: acc + x, nums, 0)
+# sau: total = sum(nums)
+
+# Combinații elegante
+result = [x**2 for x in nums if x % 2 == 0]
+# -> [4, 16]
+
+# Funcții ca parametri
+def apply_twice(func, x):
+    return func(func(x))
+
+def add_three(x):
+    return x + 3
+
+print(apply_twice(add_three, 5))  # 11
+
+# Lambda functions
+double = lambda x: x * 2
+print(double(5))  # 10</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Comparison Table -->
+        <div class="slide">
+            <h2>📊 Tabel Comparativ Final</h2>
+            <table style="font-size: 0.9em;">
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th class="highlight-purple">Pseudocod</th>
+                        <th class="highlight-green">C</th>
+                        <th class="highlight-yellow">Python</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Scop</strong></td>
+                        <td>Design algoritmi</td>
+                        <td>Performanță maximă</td>
+                        <td>Productivitate</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tipizare</strong></td>
+                        <td>Flexibilă</td>
+                        <td>Statică, strictă</td>
+                        <td>Dinamică</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Memorie</strong></td>
+                        <td>Abstractă</td>
+                        <td>Manuală (malloc/free)</td>
+                        <td>Automată (GC)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Structuri date</strong></td>
+                        <td>Conceptuale</td>
+                        <td>Implementare manuală</td>
+                        <td>Built-in (list, dict, set)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Pointeri</strong></td>
+                        <td>Referințe</td>
+                        <td>Explicite și puternice</td>
+                        <td>Ascunse (referințe)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Erori</strong></td>
+                        <td>Logice</td>
+                        <td>Runtime crashes, UB</td>
+                        <td>Exceptions clare</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Viteză execuție</strong></td>
+                        <td>N/A</td>
+                        <td>⚡ Foarte rapidă</td>
+                        <td>🐢 Mai lentă (~50-100x)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Viteză dezvoltare</strong></td>
+                        <td>⚡ Rapidă</td>
+                        <td>🐢 Lentă</td>
+                        <td>⚡ Foarte rapidă</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Utilizare</strong></td>
+                        <td>Documentație, teaching</td>
+                        <td>OS, embedded, games</td>
+                        <td>ML, web, scripting</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Slide 11: When to Use What -->
+        <div class="slide">
+            <h2>🎯 Când să Folosești Ce?</h2>
+            <div class="two-columns">
+                <div class="card">
+                    <h3 class="highlight-green">⚙️ Alege C când:</h3>
+                    <ul>
+                        <li>✅ Performanța este critică (gaming, HPC)</li>
+                        <li>✅ Lucrezi aproape de hardware (embedded, drivers)</li>
+                        <li>✅ Memoria trebuie controlată precis</li>
+                        <li>✅ Dezvolți sisteme de operare sau compilatoare</li>
+                        <li>✅ Trebuie să optimizezi la nivel de instrucțiuni</li>
+                        <li>✅ Proiectul necesită portabilitate maximă</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3 class="highlight-yellow">🐍 Alege Python când:</h3>
+                    <ul>
+                        <li>✅ Viteza de dezvoltare e prioritară</li>
+                        <li>✅ Faci prototipare rapidă</li>
+                        <li>✅ Lucrezi în ML/AI/Data Science</li>
+                        <li>✅ Dezvolți aplicații web (Django, Flask)</li>
+                        <li>✅ Automatizezi task-uri (scripting)</li>
+                        <li>✅ Echipa preferă cod citibil</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="info-box" style="margin-top: 20px;">
+                <strong>💡 Sfat profesional:</strong> Multe proiecte reale combină ambele: Python pentru logică de business și prototipare, C/C++ pentru componentele critice de performanță (folosind ctypes, Cython sau pybind11).
+            </div>
+        </div>
+
+        <!-- Slide 12: Key Insights -->
+        <div class="slide">
+            <h2>💡 Concluzii Cheie</h2>
+            <div class="three-columns">
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 2.5em; margin-bottom: 15px;">📝</div>
+                    <h4 class="highlight-purple">Pseudocod</h4>
+                    <p style="font-size: 0.95em;">Gândește în <strong>concepte</strong>, nu în sintaxă. Pseudocodul te ajută să proiectezi algoritmul înainte de implementare.</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 2.5em; margin-bottom: 15px;">⚙️</div>
+                    <h4 class="highlight-green">C</h4>
+                    <p style="font-size: 0.95em;">Oferă <strong>control total</strong> dar cu responsabilitate totală. Înțelegerea C te face un programator mai bun în orice limbaj.</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 2.5em; margin-bottom: 15px;">🐍</div>
+                    <h4 class="highlight-yellow">Python</h4>
+                    <p style="font-size: 0.95em;">Maximizează <strong>productivitatea</strong>. Excelent pentru învățare și prototipare rapidă.</p>
+                </div>
+            </div>
+            <div class="info-box" style="margin-top: 30px; text-align: center;">
+                <strong>🎓 Mesajul Principal:</strong><br>
+                Algoritmii sunt <strong>universali</strong> - sintaxa diferă, dar logica rămâne aceeași.<br>
+                Învață să gândești algoritmic și vei putea programa în orice limbaj!
+            </div>
+        </div>
+
+        <!-- Slide 13: End -->
+        <div class="slide">
+            <div class="end-slide">
+                <h1>🎉 Recapitulare Completă!</h1>
+                <p style="font-size: 1.3em; color: var(--text-secondary); margin: 30px 0;">
+                    Ați văzut aceleași concepte în trei forme diferite:<br>
+                    <span class="highlight-purple">Abstract</span> →
+                    <span class="highlight-green">Low-level</span> →
+                    <span class="highlight-yellow">High-level</span>
+                </p>
+                <div style="margin-top: 40px; padding: 30px; background: var(--bg-secondary); border-radius: 12px; display: inline-block;">
+                    <p style="font-size: 1.1em; margin: 0; color: var(--text-primary);">
+                        "A good programmer is someone who always looks both ways before crossing a one-way street."
+                    </p>
+                    <p style="font-size: 0.9em; color: var(--accent-purple); margin-top: 10px;">
+                        — Doug Linder
+                    </p>
+                </div>
+                <p style="margin-top: 40px; font-size: 1.2em; color: var(--accent-green);">
+                    Succes la examen! 🍀
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="slide-counter">
+        <span id="current">1</span> / <span id="total">13</span>
+    </div>
+
+    <div class="keyboard-hint">
+        <kbd>←</kbd> <kbd>→</kbd> navigare
+    </div>
+
+    <div class="nav-controls">
+        <button class="nav-btn" onclick="prevSlide()">◀ Înapoi</button>
+        <button class="nav-btn" onclick="nextSlide()">Înainte ▶</button>
+    </div>
+
+    <script>
+        hljs.highlightAll();
+
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const progressBar = document.getElementById('progress');
+        const currentCounter = document.getElementById('current');
+        const totalCounter = document.getElementById('total');
+
+        totalCounter.textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            progressBar.style.width = ((currentSlide + 1) / totalSlides * 100) + '%';
+            currentCounter.textContent = currentSlide + 1;
+        }
+
+        function nextSlide() { showSlide(currentSlide + 1); }
+        function prevSlide() { showSlide(currentSlide - 1); }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+            if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+            if (e.key === 'Home') { e.preventDefault(); showSlide(0); }
+            if (e.key === 'End') { e.preventDefault(); showSlide(totalSlides - 1); }
+        });
+
+        let touchStartX = 0;
+        document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
+        document.addEventListener('touchend', e => {
+            const diff = e.changedTouches[0].screenX - touchStartX;
+            if (diff < -50) nextSlide();
+            if (diff > 50) prevSlide();
+        });
+    </script>
+</body>
+</html>
