@@ -1,0 +1,10 @@
+9
+Curs_ATP 08:00 10:00
+Laborator_BD 09:30 11:30
+Seminar_Stats 10:30 12:00
+Pranz 12:00 13:00
+Sport_Sala 11:00 14:00
+Curs_POO 13:30 15:30
+Workshop_AI 14:00 16:00
+Tutoriat_Math 16:00 17:30
+Voluntariat 15:30 18:00

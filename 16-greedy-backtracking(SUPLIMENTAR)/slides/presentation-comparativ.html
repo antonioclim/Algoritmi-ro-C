@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Săptămâna 16: Comparativ Pseudocod/C/Python | ATP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-yellow: #d29922;
+            --accent-red: #f85149;
+            --accent-purple: #a371f7;
+            --border-color: #30363d;
+            --pseudocode-bg: #1a2332;
+            --c-bg: #1a1f29;
+            --python-bg: #1f2a1a;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-green), var(--accent-purple), var(--accent-yellow));
+            transition: width 0.3s ease;
+            z-index: 1000;
+        }
+
+        .slide {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 50px 60px;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            opacity: 1;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, var(--accent-green), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            color: var(--accent-green);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        h2.backtracking {
+            color: var(--accent-purple);
+        }
+
+        .three-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            flex: 1;
+            margin: 15px 0;
+        }
+
+        .code-panel {
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .code-panel.pseudocode { background: var(--pseudocode-bg); }
+        .code-panel.c-lang { background: var(--c-bg); }
+        .code-panel.python { background: var(--python-bg); }
+
+        .panel-header {
+            padding: 10px 15px;
+            font-weight: 600;
+            font-size: 0.95em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pseudocode .panel-header { background: #2a3a52; color: var(--accent-blue); }
+        .c-lang .panel-header { background: #2a2f39; color: var(--accent-yellow); }
+        .python .panel-header { background: #2f3a2a; color: var(--accent-green); }
+
+        .lang-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+            font-weight: 700;
+        }
+
+        .pseudocode .lang-icon { background: var(--accent-blue); color: var(--bg-primary); }
+        .c-lang .lang-icon { background: var(--accent-yellow); color: var(--bg-primary); }
+        .python .lang-icon { background: var(--accent-green); color: var(--bg-primary); }
+
+        .panel-content {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        pre {
+            font-size: 0.78em;
+            line-height: 1.45;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+        }
+
+        .title-slide {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .title-slide h1 { font-size: 3em; margin-bottom: 30px; }
+        .title-slide .subtitle { font-size: 1.5em; color: var(--text-secondary); margin-bottom: 20px; }
+
+        .note-box {
+            background: var(--bg-secondary);
+            border-left: 4px solid var(--accent-purple);
+            padding: 12px 15px;
+            margin: 10px 0;
+            font-size: 0.95em;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .note-box.greedy {
+            border-left-color: var(--accent-green);
+        }
+
+        .note-box.backtracking {
+            border-left-color: var(--accent-purple);
+        }
+
+        .note-box.warning {
+            border-left-color: var(--accent-yellow);
+        }
+
+        #controls {
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .control-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .control-btn:hover {
+            background: var(--accent-green);
+            color: var(--bg-primary);
+        }
+
+        #slide-counter {
+            position: fixed;
+            bottom: 20px;
+            left: 30px;
+            color: var(--text-secondary);
+            z-index: 100;
+        }
+
+        .keyboard-hints {
+            position: fixed;
+            bottom: 55px;
+            left: 30px;
+            font-size: 0.8em;
+            color: var(--text-secondary);
+        }
+
+        .keyboard-hints kbd {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+
+        .paradigm-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .paradigm-badge.greedy {
+            background: rgba(63, 185, 80, 0.2);
+            color: var(--accent-green);
+            border: 1px solid var(--accent-green);
+        }
+
+        .paradigm-badge.backtracking {
+            background: rgba(163, 113, 247, 0.2);
+            color: var(--accent-purple);
+            border: 1px solid var(--accent-purple);
+        }
+    </style>
+</head>
+<body>
+    <div id="progress-bar"></div>
+
+    <div id="presentation">
+        <!-- Slide 1: Titlu -->
+        <div class="slide title-slide active" data-slide="1">
+            <h1>Paradigme Algoritmice</h1>
+            <p class="subtitle">Greedy & Backtracking: Pseudocod | C | Python</p>
+            <p style="color: var(--text-secondary);">Săptămâna 16 • ATP • ASE București</p>
+        </div>
+
+        <!-- Slide 2: Activity Selection - Greedy -->
+        <div class="slide" data-slide="2">
+            <h2>Activity Selection <span class="paradigm-badge greedy">GREEDY</span></h2>
+            <div class="three-column">
+                <div class="code-panel pseudocode">
+                    <div class="panel-header"><span class="lang-icon">📝</span>Pseudocod</div>
+                    <div class="panel-content">
+<pre>ACTIVITY-SELECTION(activities):
+    // Sortăm după timpul de terminare
+    SORT activities BY finish_time ASC
+    
+    selected ← [activities[0]]
+    last_finish ← activities[0].finish
+    
+    FOR i ← 1 TO n-1:
+        IF activities[i].start ≥ last_finish:
+            // Activitatea compatibilă
+            ADD activities[i] TO selected
+            last_finish ← activities[i].finish
+    
+    RETURN selected
+
+// Complexitate: O(n log n) - sortare
+// Spațiu: O(n) pentru rezultat</pre>
+                    </div>
+                </div>
+                <div class="code-panel c-lang">
+                    <div class="panel-header"><span class="lang-icon">C</span>Limbaj C</div>
+                    <div class="panel-content">
+<pre><code class="language-c">typedef struct {
+    int start, finish;
+    char name[32];
+} Activity;
+
+int cmp_finish(const void *a, const void *b) {
+    return ((Activity*)a)->finish - 
+           ((Activity*)b)->finish;
+}
+
+int activity_selection(Activity acts[], int n,
+                       Activity result[]) {
+    qsort(acts, n, sizeof(Activity), cmp_finish);
+    
+    result[0] = acts[0];
+    int count = 1;
+    int last_finish = acts[0].finish;
+    
+    for (int i = 1; i < n; i++) {
+        if (acts[i].start >= last_finish) {
+            result[count++] = acts[i];
+            last_finish = acts[i].finish;
+        }
+    }
+    return count;
+}</code></pre>
+                    </div>
+                </div>
+                <div class="code-panel python">
+                    <div class="panel-header"><span class="lang-icon">🐍</span>Python</div>
+                    <div class="panel-content">
+<pre><code class="language-python">from dataclasses import dataclass
+
+@dataclass
+class Activity:
+    start: int
+    finish: int
+    name: str = ""
+
+def activity_selection(activities):
+    # Sortare după finish time
+    sorted_acts = sorted(activities, 
+                         key=lambda a: a.finish)
+    
+    selected = [sorted_acts[0]]
+    last_finish = sorted_acts[0].finish
+    
+    for act in sorted_acts[1:]:
+        if act.start >= last_finish:
+            selected.append(act)
+            last_finish = act.finish
+    
+    return selected
+
+# Utilizare:
+# result = activity_selection(activities)</code></pre>
+                    </div>
+                </div>
+            </div>
+            <div class="note-box greedy">
+                <strong>Alegerea Greedy:</strong> Selectăm mereu activitatea cu cel mai devreme timp de terminare care nu se suprapune.
+            </div>
+        </div>
+
+        <!-- Slide 3: Fractional Knapsack - Greedy -->
+        <div class="slide" data-slide="3">
+            <h2>Fractional Knapsack <span class="paradigm-badge greedy">GREEDY</span></h2>
+            <div class="three-column">
+                <div class="code-panel pseudocode">
+                    <div class="panel-header"><span class="lang-icon">📝</span>Pseudocod</div>
+                    <div class="panel-content">
+<pre>FRACTIONAL-KNAPSACK(items, capacity):
+    // Calculăm raportul valoare/greutate
+    FOR each item:
+        item.ratio ← item.value / item.weight
+    
+    // Sortăm descrescător după ratio
+    SORT items BY ratio DESC
+    
+    total_value ← 0
+    remaining ← capacity
+    
+    FOR each item IN items:
+        IF item.weight ≤ remaining:
+            // Luăm tot obiectul
+            ADD item TO knapsack (fraction = 1.0)
+            total_value += item.value
+            remaining -= item.weight
+        ELSE IF remaining > 0:
+            // Luăm fracțiune
+            fraction ← remaining / item.weight
+            ADD item TO knapsack (fraction)
+            total_value += item.value * fraction
+            remaining ← 0
+    
+    RETURN total_value</pre>
+                    </div>
+                </div>
+                <div class="code-panel c-lang">
+                    <div class="panel-header"><span class="lang-icon">C</span>Limbaj C</div>
+                    <div class="panel-content">
+<pre><code class="language-c">typedef struct {
+    double weight, value, ratio;
+    char name[32];
+} Item;
+
+int cmp_ratio(const void *a, const void *b) {
+    double diff = ((Item*)b)->ratio - 
+                  ((Item*)a)->ratio;
+    return (diff > 0) - (diff < 0);
+}
+
+double fractional_knapsack(Item items[], int n, 
+                           double capacity) {
+    // Calculăm rapoartele
+    for (int i = 0; i < n; i++)
+        items[i].ratio = items[i].value / 
+                         items[i].weight;
+    
+    qsort(items, n, sizeof(Item), cmp_ratio);
+    
+    double total = 0.0, remaining = capacity;
+    
+    for (int i = 0; i < n && remaining > 0; i++) {
+        if (items[i].weight <= remaining) {
+            total += items[i].value;
+            remaining -= items[i].weight;
+        } else {
+            total += items[i].value * 
+                     (remaining / items[i].weight);
+            remaining = 0;
+        }
+    }
+    return total;
+}</code></pre>
+                    </div>
+                </div>
+                <div class="code-panel python">
+                    <div class="panel-header"><span class="lang-icon">🐍</span>Python</div>
+                    <div class="panel-content">
+<pre><code class="language-python">@dataclass
+class Item:
+    weight: float
+    value: float
+    name: str = ""
+    
+    @property
+    def ratio(self):
+        return self.value / self.weight
+
+def fractional_knapsack(items, capacity):
+    # Sortare după ratio descrescător
+    sorted_items = sorted(items, 
+                          key=lambda x: x.ratio,
+                          reverse=True)
+    
+    total_value = 0.0
+    remaining = capacity
+    selected = []
+    
+    for item in sorted_items:
+        if remaining <= 0:
+            break
+        if item.weight <= remaining:
+            # Luăm tot
+            selected.append((item, 1.0))
+            total_value += item.value
+            remaining -= item.weight
+        else:
+            # Fracțiune
+            frac = remaining / item.weight
+            selected.append((item, frac))
+            total_value += item.value * frac
+            remaining = 0
+    
+    return total_value, selected</code></pre>
+                    </div>
+                </div>
+            </div>
+            <div class="note-box greedy">
+                <strong>De ce funcționează?</strong> Putem lua fracțiuni → alegem mereu obiectul cu cel mai bun raport valoare/greutate.
+            </div>
+        </div>
+
+        <!-- Slide 4: N-Queens - Backtracking -->
+        <div class="slide" data-slide="4">
+            <h2 class="backtracking">N-Queens <span class="paradigm-badge backtracking">BACKTRACKING</span></h2>
+            <div class="three-column">
+                <div class="code-panel pseudocode">
+                    <div class="panel-header"><span class="lang-icon">📝</span>Pseudocod</div>
+                    <div class="panel-content">
+<pre>IS-SAFE(board, row, col):
+    // Verificăm coloana
+    FOR i ← 0 TO row-1:
+        IF board[i] = col:
+            RETURN FALSE
+    
+    // Verificăm diagonalele
+    FOR i ← 0 TO row-1:
+        IF |board[i] - col| = |i - row|:
+            RETURN FALSE
+    
+    RETURN TRUE
+
+SOLVE-QUEENS(board, row, n):
+    IF row = n:
+        // Soluție completă!
+        PRINT board
+        RETURN TRUE
+    
+    FOR col ← 0 TO n-1:
+        IF IS-SAFE(board, row, col):
+            board[row] ← col     // Plasăm
+            SOLVE-QUEENS(board, row+1, n)
+            board[row] ← -1      // Backtrack
+
+// Complexitate: O(N!) worst-case</pre>
+                    </div>
+                </div>
+                <div class="code-panel c-lang">
+                    <div class="panel-header"><span class="lang-icon">C</span>Limbaj C</div>
+                    <div class="panel-content">
+<pre><code class="language-c">int board[MAX_N];  // board[row] = coloana
+
+bool is_safe(int row, int col) {
+    for (int i = 0; i < row; i++) {
+        // Verifică coloana și diagonalele
+        if (board[i] == col || 
+            abs(board[i] - col) == abs(i - row))
+            return false;
+    }
+    return true;
+}
+
+void solve_queens(int row, int n, int *count) {
+    if (row == n) {
+        (*count)++;
+        print_board(n);
+        return;
+    }
+    
+    for (int col = 0; col < n; col++) {
+        if (is_safe(row, col)) {
+            board[row] = col;      // Place
+            solve_queens(row + 1, n, count);
+            board[row] = -1;       // Backtrack
+        }
+    }
+}
+
+// Apel: solve_queens(0, 8, &count);</code></pre>
+                    </div>
+                </div>
+                <div class="code-panel python">
+                    <div class="panel-header"><span class="lang-icon">🐍</span>Python</div>
+                    <div class="panel-content">
+<pre><code class="language-python">def is_safe(board, row, col):
+    for i in range(row):
+        # Coloană sau diagonală ocupată?
+        if board[i] == col or \
+           abs(board[i] - col) == abs(i - row):
+            return False
+    return True
+
+def solve_queens(board, row, n, solutions):
+    if row == n:
+        solutions.append(board[:])  # Copie
+        return
+    
+    for col in range(n):
+        if is_safe(board, row, col):
+            board[row] = col       # Plasăm
+            solve_queens(board, row+1, n, solutions)
+            board[row] = -1        # Backtrack
+
+# Utilizare:
+solutions = []
+board = [-1] * 8
+solve_queens(board, 0, 8, solutions)
+print(f"Soluții: {len(solutions)}")  # 92</code></pre>
+                    </div>
+                </div>
+            </div>
+            <div class="note-box backtracking">
+                <strong>Backtracking:</strong> Explorăm toate posibilitățile, dar abandonăm ramurile invalide (pruning) când detectăm conflict.
+            </div>
+        </div>
+
+        <!-- Slide 5: Sudoku Solver - Backtracking -->
+        <div class="slide" data-slide="5">
+            <h2 class="backtracking">Sudoku Solver <span class="paradigm-badge backtracking">BACKTRACKING</span></h2>
+            <div class="three-column">
+                <div class="code-panel pseudocode">
+                    <div class="panel-header"><span class="lang-icon">📝</span>Pseudocod</div>
+                    <div class="panel-content">
+<pre>IS-VALID(grid, row, col, num):
+    // Verificăm rândul
+    IF num IN grid[row][*]: RETURN FALSE
+    
+    // Verificăm coloana
+    IF num IN grid[*][col]: RETURN FALSE
+    
+    // Verificăm box-ul 3×3
+    box_row ← (row / 3) * 3
+    box_col ← (col / 3) * 3
+    IF num IN grid[box_row:box_row+3]
+              [box_col:box_col+3]:
+        RETURN FALSE
+    
+    RETURN TRUE
+
+SOLVE-SUDOKU(grid):
+    (row, col) ← FIND-EMPTY(grid)
+    IF no empty cell:
+        RETURN TRUE    // Rezolvat!
+    
+    FOR num ← 1 TO 9:
+        IF IS-VALID(grid, row, col, num):
+            grid[row][col] ← num
+            IF SOLVE-SUDOKU(grid):
+                RETURN TRUE
+            grid[row][col] ← 0   // Backtrack
+    
+    RETURN FALSE</pre>
+                    </div>
+                </div>
+                <div class="code-panel c-lang">
+                    <div class="panel-header"><span class="lang-icon">C</span>Limbaj C</div>
+                    <div class="panel-content">
+<pre><code class="language-c">bool is_valid(int grid[9][9], int row, 
+              int col, int num) {
+    // Verifică rând și coloană
+    for (int i = 0; i < 9; i++) {
+        if (grid[row][i] == num || 
+            grid[i][col] == num)
+            return false;
+    }
+    // Verifică box 3x3
+    int br = (row/3)*3, bc = (col/3)*3;
+    for (int i = 0; i < 3; i++)
+        for (int j = 0; j < 3; j++)
+            if (grid[br+i][bc+j] == num)
+                return false;
+    return true;
+}
+
+bool solve_sudoku(int grid[9][9]) {
+    int row, col;
+    if (!find_empty(grid, &row, &col))
+        return true;  // Rezolvat!
+    
+    for (int num = 1; num <= 9; num++) {
+        if (is_valid(grid, row, col, num)) {
+            grid[row][col] = num;
+            if (solve_sudoku(grid))
+                return true;
+            grid[row][col] = 0;  // Backtrack
+        }
+    }
+    return false;
+}</code></pre>
+                    </div>
+                </div>
+                <div class="code-panel python">
+                    <div class="panel-header"><span class="lang-icon">🐍</span>Python</div>
+                    <div class="panel-content">
+<pre><code class="language-python">def is_valid(grid, row, col, num):
+    # Verifică rând
+    if num in grid[row]:
+        return False
+    # Verifică coloană
+    if num in [grid[i][col] for i in range(9)]:
+        return False
+    # Verifică box 3x3
+    br, bc = (row//3)*3, (col//3)*3
+    for i in range(3):
+        for j in range(3):
+            if grid[br+i][bc+j] == num:
+                return False
+    return True
+
+def solve_sudoku(grid):
+    empty = find_empty(grid)
+    if not empty:
+        return True  # Rezolvat!
+    row, col = empty
+    
+    for num in range(1, 10):
+        if is_valid(grid, row, col, num):
+            grid[row][col] = num
+            if solve_sudoku(grid):
+                return True
+            grid[row][col] = 0  # Backtrack
+    return False</code></pre>
+                    </div>
+                </div>
+            </div>
+            <div class="note-box backtracking">
+                <strong>Optimizare MCV:</strong> Alegem celula cu cele mai puține opțiuni valide (Most Constrained Variable) pentru a reduce spațiul de căutare.
+            </div>
+        </div>
+
+        <!-- Slide 6: Permutations - Backtracking -->
+        <div class="slide" data-slide="6">
+            <h2 class="backtracking">Generare Permutări <span class="paradigm-badge backtracking">BACKTRACKING</span></h2>
+            <div class="three-column">
+                <div class="code-panel pseudocode">
+                    <div class="panel-header"><span class="lang-icon">📝</span>Pseudocod</div>
+                    <div class="panel-content">
+<pre>PERMUTATIONS(elements, current, used):
+    IF |current| = |elements|:
+        OUTPUT current
+        RETURN
+    
+    FOR i ← 0 TO |elements| - 1:
+        IF NOT used[i]:
+            // Alegem elementul i
+            used[i] ← TRUE
+            ADD elements[i] TO current
+            
+            // Recurență
+            PERMUTATIONS(elements, current, used)
+            
+            // Backtrack
+            REMOVE LAST FROM current
+            used[i] ← FALSE
+
+// Complexitate: O(n! × n)
+// Număr permutări: n!</pre>
+                    </div>
+                </div>
+                <div class="code-panel c-lang">
+                    <div class="panel-header"><span class="lang-icon">C</span>Limbaj C</div>
+                    <div class="panel-content">
+<pre><code class="language-c">void permutations(int arr[], int n, int current[],
+                  int depth, bool used[], 
+                  int *count) {
+    if (depth == n) {
+        // Afișăm permutarea
+        print_array(current, n);
+        (*count)++;
+        return;
+    }
+    
+    for (int i = 0; i < n; i++) {
+        if (!used[i]) {
+            used[i] = true;
+            current[depth] = arr[i];
+            
+            permutations(arr, n, current, 
+                        depth+1, used, count);
+            
+            used[i] = false;  // Backtrack
+        }
+    }
+}
+
+// Apel:
+// permutations(arr, n, result, 0, used, &count);</code></pre>
+                    </div>
+                </div>
+                <div class="code-panel python">
+                    <div class="panel-header"><span class="lang-icon">🐍</span>Python</div>
+                    <div class="panel-content">
+<pre><code class="language-python">def permutations(elements, current=[], used=None):
+    if used is None:
+        used = [False] * len(elements)
+    
+    if len(current) == len(elements):
+        yield current[:]  # Generator
+        return
+    
+    for i, elem in enumerate(elements):
+        if not used[i]:
+            used[i] = True
+            current.append(elem)
+            
+            yield from permutations(elements, 
+                                   current, used)
+            
+            current.pop()    # Backtrack
+            used[i] = False
+
+# Sau folosim biblioteca:
+from itertools import permutations as perm
+list(perm([1, 2, 3]))  # Built-in
+
+# Generator propriu:
+for p in permutations([1, 2, 3]):
+    print(p)</code></pre>
+                    </div>
+                </div>
+            </div>
+            <div class="note-box backtracking">
+                <strong>Python tip:</strong> <code>itertools.permutations()</code> este optimizat în C și mult mai rapid decât implementarea proprie.
+            </div>
+        </div>
+
+        <!-- Slide 7: Subset Sum - Backtracking -->
+        <div class="slide" data-slide="7">
+            <h2 class="backtracking">Subset Sum <span class="paradigm-badge backtracking">BACKTRACKING</span></h2>
+            <div class="three-column">
+                <div class="code-panel pseudocode">
+                    <div class="panel-header"><span class="lang-icon">📝</span>Pseudocod</div>
+                    <div class="panel-content">
+<pre>SUBSET-SUM(nums, target, index, current, sum):
+    // Găsit!
+    IF sum = target:
+        OUTPUT current
+        RETURN
+    
+    // Pruning: suma depășește target
+    IF sum > target OR index ≥ |nums|:
+        RETURN
+    
+    // Pruning: chiar cu toate rămase,
+    // nu putem atinge target
+    IF sum + SUM(nums[index..]) < target:
+        RETURN
+    
+    // Ramura 1: includem nums[index]
+    ADD nums[index] TO current
+    SUBSET-SUM(nums, target, index+1, 
+               current, sum + nums[index])
+    
+    // Backtrack
+    REMOVE LAST FROM current
+    
+    // Ramura 2: nu includem nums[index]
+    SUBSET-SUM(nums, target, index+1, 
+               current, sum)
+
+// Complexitate: O(2^n) worst-case</pre>
+                    </div>
+                </div>
+                <div class="code-panel c-lang">
+                    <div class="panel-header"><span class="lang-icon">C</span>Limbaj C</div>
+                    <div class="panel-content">
+<pre><code class="language-c">void subset_sum(int nums[], int n, int target,
+                int idx, int current[], int len,
+                int sum, int remaining) {
+    if (sum == target) {
+        print_subset(current, len);
+        return;
+    }
+    
+    // Pruning
+    if (sum > target || idx >= n) return;
+    if (sum + remaining < target) return;
+    
+    // Include nums[idx]
+    current[len] = nums[idx];
+    subset_sum(nums, n, target, idx + 1, 
+               current, len + 1,
+               sum + nums[idx], 
+               remaining - nums[idx]);
+    
+    // Exclude nums[idx]
+    subset_sum(nums, n, target, idx + 1,
+               current, len,
+               sum, remaining - nums[idx]);
+}
+
+// Precalculăm remaining = sum(nums)
+// subset_sum(nums, n, target, 0, 
+//            result, 0, 0, total);</code></pre>
+                    </div>
+                </div>
+                <div class="code-panel python">
+                    <div class="panel-header"><span class="lang-icon">🐍</span>Python</div>
+                    <div class="panel-content">
+<pre><code class="language-python">def subset_sum(nums, target):
+    results = []
+    remaining = sum(nums)
+    
+    def backtrack(idx, current, total, rem):
+        if total == target:
+            results.append(current[:])
+            return
+        
+        # Pruning
+        if total > target or idx >= len(nums):
+            return
+        if total + rem < target:
+            return
+        
+        # Include nums[idx]
+        current.append(nums[idx])
+        backtrack(idx + 1, current, 
+                  total + nums[idx],
+                  rem - nums[idx])
+        
+        # Backtrack & exclude
+        current.pop()
+        backtrack(idx + 1, current, total,
+                  rem - nums[idx])
+    
+    backtrack(0, [], 0, remaining)
+    return results
+
+# Exemplu:
+print(subset_sum([3, 5, 2, 7, 1], 8))
+# [[3, 5], [3, 2, 1, 7], [5, 2, 1], [7, 1]]</code></pre>
+                    </div>
+                </div>
+            </div>
+            <div class="note-box backtracking">
+                <strong>Pruning eficient:</strong> Sortăm descrescător și verificăm dacă suma rămasă poate atinge target-ul. Reduce dramatic spațiul de căutare.
+            </div>
+        </div>
+
+        <!-- Slide 8: Graph Coloring - Backtracking -->
+        <div class="slide" data-slide="8">
+            <h2 class="backtracking">Graph Coloring <span class="paradigm-badge backtracking">BACKTRACKING</span></h2>
+            <div class="three-column">
+                <div class="code-panel pseudocode">
+                    <div class="panel-header"><span class="lang-icon">📝</span>Pseudocod</div>
+                    <div class="panel-content">
+<pre>IS-SAFE-COLOR(graph, node, color, colors):
+    FOR each neighbor OF node:
+        IF colors[neighbor] = color:
+            RETURN FALSE
+    RETURN TRUE
+
+GRAPH-COLORING(graph, k, node, colors):
+    IF node = n:
+        // Colorare completă!
+        RETURN TRUE
+    
+    FOR color ← 1 TO k:
+        IF IS-SAFE-COLOR(graph, node, 
+                         color, colors):
+            colors[node] ← color
+            
+            IF GRAPH-COLORING(graph, k, 
+                              node+1, colors):
+                RETURN TRUE
+            
+            colors[node] ← 0  // Backtrack
+    
+    RETURN FALSE
+
+// Aplicații:
+// - Scheduling (cursuri, examene)
+// - Alocarea registrelor CPU
+// - Frecvențe radio</pre>
+                    </div>
+                </div>
+                <div class="code-panel c-lang">
+                    <div class="panel-header"><span class="lang-icon">C</span>Limbaj C</div>
+                    <div class="panel-content">
+<pre><code class="language-c">bool is_safe_color(int adj[][MAX], int n,
+                   int node, int color, 
+                   int colors[]) {
+    for (int i = 0; i < n; i++) {
+        if (adj[node][i] && colors[i] == color)
+            return false;
+    }
+    return true;
+}
+
+bool graph_coloring(int adj[][MAX], int n, int k,
+                    int node, int colors[]) {
+    if (node == n)
+        return true;  // Succes!
+    
+    for (int c = 1; c <= k; c++) {
+        if (is_safe_color(adj, n, node, 
+                          c, colors)) {
+            colors[node] = c;
+            
+            if (graph_coloring(adj, n, k, 
+                               node+1, colors))
+                return true;
+            
+            colors[node] = 0;  // Backtrack
+        }
+    }
+    return false;
+}
+
+// Apel: graph_coloring(adj, n, 3, 0, colors);</code></pre>
+                    </div>
+                </div>
+                <div class="code-panel python">
+                    <div class="panel-header"><span class="lang-icon">🐍</span>Python</div>
+                    <div class="panel-content">
+<pre><code class="language-python">def is_safe_color(graph, node, color, colors):
+    for neighbor in graph[node]:
+        if colors.get(neighbor) == color:
+            return False
+    return True
+
+def graph_coloring(graph, k, node=0, colors=None):
+    if colors is None:
+        colors = {}
+    
+    nodes = list(graph.keys())
+    if node == len(nodes):
+        return True  # Colorare completă
+    
+    current = nodes[node]
+    
+    for color in range(1, k + 1):
+        if is_safe_color(graph, current, 
+                         color, colors):
+            colors[current] = color
+            
+            if graph_coloring(graph, k, 
+                             node + 1, colors):
+                return True
+            
+            del colors[current]  # Backtrack
+    
+    return False
+
+# Graf ca dicționar de adiacență
+graph = {0: [1, 2], 1: [0, 2], 2: [0, 1, 3], 3: [2]}
+colors = {}
+graph_coloring(graph, 3, colors=colors)
+print(colors)  # {0: 1, 1: 2, 2: 3, 3: 1}</code></pre>
+                    </div>
+                </div>
+            </div>
+            <div class="note-box warning">
+                <strong>NP-Complete:</strong> Determinarea numărului cromatic minim este NP-hard. Backtracking funcționează pentru grafuri mici.
+            </div>
+        </div>
+
+        <!-- Slide 9: Greedy vs Backtracking Decision -->
+        <div class="slide" data-slide="9">
+            <h2>Când Greedy vs Backtracking?</h2>
+            <div class="three-column">
+                <div class="code-panel pseudocode">
+                    <div class="panel-header"><span class="lang-icon">📝</span>Arbore de Decizie</div>
+                    <div class="panel-content">
+<pre style="font-size: 0.85em; line-height: 1.6;">
+┌──────────────────────────────────────┐
+│   PROBLEMĂ DE OPTIMIZARE/CĂUTARE     │
+└──────────────────────────────────────┘
+                 │
+    ┌────────────┴────────────┐
+    │ Are proprietatea        │
+    │ alegerii greedy?        │
+    └────────────┬────────────┘
+         │               │
+        DA              NU
+         │               │
+    ┌────┴────┐   ┌──────┴──────┐
+    │ GREEDY  │   │ Subprobleme │
+    │ O(n·log)│   │ overlap?    │
+    └─────────┘   └──────┬──────┘
+                    │         │
+                   DA        NU
+                    │         │
+              ┌─────┴───┐ ┌───┴─────────┐
+              │   DP    │ │ BACKTRACKING│
+              │ O(n×W)  │ │   O(k^n)    │
+              └─────────┘ └─────────────┘
+
+Greedy: alegerea locală optimă
+        → soluție globală optimă
+
+Backtracking: explorare exhaustivă
+              cu pruning inteligent</pre>
+                    </div>
+                </div>
+                <div class="code-panel c-lang">
+                    <div class="panel-header"><span class="lang-icon">C</span>Pattern Greedy</div>
+                    <div class="panel-content">
+<pre><code class="language-c">/* TEMPLATE GREEDY */
+
+typedef struct {
+    /* date problema */
+    double score;  // criteriu sortare
+} Item;
+
+int compare(const void *a, const void *b) {
+    /* comparator pentru qsort */
+    return /* diferența scorurilor */;
+}
+
+Result greedy_solve(Item items[], int n) {
+    Result result = {0};
+    
+    // 1. Sortare după criteriu greedy
+    qsort(items, n, sizeof(Item), compare);
+    
+    // 2. Selectare element cu element
+    for (int i = 0; i < n; i++) {
+        if (is_feasible(result, items[i])) {
+            add_to_solution(&result, items[i]);
+        }
+    }
+    
+    return result;
+}
+
+/* Complexitate tipică: O(n log n)
+   din cauza sortării */</code></pre>
+                    </div>
+                </div>
+                <div class="code-panel python">
+                    <div class="panel-header"><span class="lang-icon">🐍</span>Pattern Backtracking</div>
+                    <div class="panel-content">
+<pre><code class="language-python">"""TEMPLATE BACKTRACKING"""
+
+def backtrack(state, choices, solutions):
+    # Condiție de oprire
+    if is_complete(state):
+        solutions.append(state.copy())
+        return
+    
+    # Pruning: abandonăm ramuri invalide
+    if not is_promising(state):
+        return
+    
+    # Explorăm toate alegerile
+    for choice in choices:
+        if is_valid(state, choice):
+            # Facem alegerea
+            apply(state, choice)
+            
+            # Recursie
+            backtrack(state, choices, solutions)
+            
+            # BACKTRACK: anulăm alegerea
+            undo(state, choice)
+
+# Complexitate: O(b^d) unde
+#   b = branching factor
+#   d = depth (adâncime maximă)
+# Pruning reduce dramatic în practică</code></pre>
+                    </div>
+                </div>
+            </div>
+            <div class="note-box">
+                <strong>Cheie:</strong> Greedy = rapid dar nu mereu optim | Backtracking = garantat dar lent | DP = optim când e aplicabil
+            </div>
+        </div>
+
+        <!-- Slide 10: Benchmark Comparison -->
+        <div class="slide" data-slide="10">
+            <h2>⏱️ Benchmark: Greedy vs Backtracking</h2>
+            <div class="three-column">
+                <div class="code-panel pseudocode">
+                    <div class="panel-header"><span class="lang-icon">📝</span>Comparație Teoretică</div>
+                    <div class="panel-content">
+<pre style="font-size: 0.95em; line-height: 1.7;">
+┌─────────────────────────────────────┐
+│        GREEDY                       │
+├─────────────────────────────────────┤
+│ Timp:   O(n log n) - O(n²)          │
+│ Spațiu: O(1) - O(n)                 │
+│ Optim:  DOAR cu dovadă matematică   │
+│ Mereu:  Returnează o soluție        │
+└─────────────────────────────────────┘
+
+┌─────────────────────────────────────┐
+│        BACKTRACKING                 │
+├─────────────────────────────────────┤
+│ Timp:   O(k^n) - exponențial        │
+│ Spațiu: O(n) - stiva de recursie    │
+│ Optim:  DA, explorează tot          │
+│ Mereu:  Găsește dacă există         │
+└─────────────────────────────────────┘
+
+CÂND GREEDY BATE BACKTRACKING:
+• Activity Selection: O(n log n) vs O(2^n)
+• Fractional Knapsack: O(n log n) vs O(2^n)
+• Huffman Coding: O(n log n) vs O(n!)
+
+CÂND BACKTRACKING E NECESAR:
+• N-Queens: nicio alternativă polinomială
+• Sudoku: constraint satisfaction
+• 0/1 Knapsack: când DP nu e fezabil</pre>
+                    </div>
+                </div>
+                <div class="code-panel c-lang">
+                    <div class="panel-header"><span class="lang-icon">C</span>Benchmark C</div>
+                    <div class="panel-content">
+<pre><code class="language-c">#include &lt;time.h&gt;
+
+void benchmark_algorithms(int n) {
+    clock_t start, end;
+    double greedy_time, backtrack_time;
+    
+    // Test Greedy (Activity Selection)
+    Activity *acts = generate_activities(n);
+    start = clock();
+    int count = activity_selection(acts, n, result);
+    end = clock();
+    greedy_time = (double)(end - start) / 
+                  CLOCKS_PER_SEC * 1000;
+    
+    // Test Backtracking (N-Queens)
+    // n = 8 pentru comparație echitabilă
+    start = clock();
+    int solutions = 0;
+    solve_queens(0, 8, &solutions);
+    end = clock();
+    backtrack_time = (double)(end - start) / 
+                     CLOCKS_PER_SEC * 1000;
+    
+    printf("Activity Selection (n=%d): %.2f ms\n", 
+           n, greedy_time);
+    printf("N-Queens (n=8): %.2f ms, %d soluții\n",
+           backtrack_time, solutions);
+}
+
+// Rezultat tipic (n=1000):
+// Greedy: 0.5 ms
+// Backtracking (n=8): 2.1 ms</code></pre>
+                    </div>
+                </div>
+                <div class="code-panel python">
+                    <div class="panel-header"><span class="lang-icon">🐍</span>Benchmark Python</div>
+                    <div class="panel-content">
+<pre><code class="language-python">import time
+import random
+
+def benchmark():
+    # Generăm date
+    n = 1000
+    activities = [
+        Activity(random.randint(0, 100),
+                 random.randint(0, 100) + 50)
+        for _ in range(n)
+    ]
+    
+    # Benchmark Greedy
+    start = time.perf_counter()
+    result = activity_selection(activities)
+    greedy_time = (time.perf_counter() - start) * 1000
+    
+    # Benchmark Backtracking
+    start = time.perf_counter()
+    solutions = []
+    solve_queens([-1]*8, 0, 8, solutions)
+    backtrack_time = (time.perf_counter() - start) * 1000
+    
+    print(f"Activity (n={n}): {greedy_time:.2f} ms")
+    print(f"N-Queens (n=8): {backtrack_time:.2f} ms")
+    print(f"Soluții: {len(solutions)}")
+
+# Rezultat tipic:
+# Activity Selection (n=1000): 1.2 ms
+# N-Queens (n=8): 15.3 ms
+# Python e ~10x mai lent decât C</code></pre>
+                    </div>
+                </div>
+            </div>
+            <div class="note-box warning">
+                <strong>Important:</strong> Complexitatea exponențială a backtracking devine prohibitivă rapid. N-Queens cu N=12: ~14.2 milioane soluții!
+            </div>
+        </div>
+
+        <!-- Slide 11: Summary -->
+        <div class="slide" data-slide="11">
+            <h2>📋 Rezumat Comparativ</h2>
+            <div class="three-column">
+                <div class="code-panel pseudocode">
+                    <div class="panel-header"><span class="lang-icon">📝</span>Avantaje Pseudocod</div>
+                    <div class="panel-content">
+<pre style="font-size: 1em; line-height: 1.8;">
+✓ Independent de limbaj
+✓ Focalizat pe logica algoritmului
+✓ Ușor de analizat complexitatea
+✓ Standard în literatură academică
+✓ Ideal pentru demonstrații
+
+Folosit pentru:
+• Înțelegerea paradigmei
+• Analiza corectitudinii
+• Demonstrații matematice
+• Planificarea implementării
+• Documentație algoritmi
+
+Paradigme în pseudocod:
+• GREEDY: sortare + selecție
+• BACKTRACK: recursie + undo
+</pre>
+                    </div>
+                </div>
+                <div class="code-panel c-lang">
+                    <div class="panel-header"><span class="lang-icon">C</span>Avantaje C</div>
+                    <div class="panel-content">
+<pre style="font-size: 1em; line-height: 1.8;">
+✓ Performanță maximă
+✓ Control fin al memoriei
+✓ Predicție timing precisă
+✓ Optimizări manuale posibile
+✓ Standard în competiții ACM
+
+Considerații specifice:
+• qsort() pentru sortare rapidă
+• Atenție la buffer overflows
+• Gestionare manuală stivă
+• Validare indici array
+• Memory leaks în recursie
+
+Paradigme în C:
+• GREEDY: qsort + for loop
+• BACKTRACK: funcție recursivă
+  cu parametri de stare
+</pre>
+                    </div>
+                </div>
+                <div class="code-panel python">
+                    <div class="panel-header"><span class="lang-icon">🐍</span>Avantaje Python</div>
+                    <div class="panel-content">
+<pre style="font-size: 1em; line-height: 1.8;">
+✓ Cod concis și expresiv
+✓ Prototipare rapidă
+✓ itertools pentru combinatorică
+✓ List comprehensions elegante
+✓ Ideal pentru interviuri
+
+Built-ins utile:
+• sorted() cu key=lambda
+• itertools.permutations
+• itertools.combinations
+• heapq pentru priority queue
+• functools.lru_cache (DP)
+
+Paradigme în Python:
+• GREEDY: sorted() + generator
+• BACKTRACK: recursie cu
+  yield from (generators)
+</pre>
+                    </div>
+                </div>
+            </div>
+            <div class="note-box" style="text-align: center; font-size: 1.1em;">
+                <strong>Workflow recomandat:</strong> Pseudocod (design) → C (performanță critică) → Python (prototip/verificare/interviuri)
+            </div>
+        </div>
+
+        <!-- Slide 12: Final -->
+        <div class="slide title-slide" data-slide="12">
+            <h1>Mulțumesc!</h1>
+            <p class="subtitle">Paradigme Algoritmice - Comparativ</p>
+            <p style="color: var(--text-secondary);">
+                <span class="paradigm-badge greedy">GREEDY</span>
+                <span class="paradigm-badge backtracking">BACKTRACKING</span>
+            </p>
+            <p style="color: var(--text-secondary); margin-top: 20px;">
+                Săptămâna 16 • ATP<br>
+                Academia de Studii Economice din București
+            </p>
+        </div>
+    </div>
+
+    <div id="slide-counter"></div>
+    <div class="keyboard-hints">
+        <kbd>←</kbd> <kbd>→</kbd> navigare
+    </div>
+    
+    <div id="controls">
+        <button class="control-btn" onclick="prevSlide()">◀</button>
+        <button class="control-btn" onclick="nextSlide()">▶</button>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = document.querySelectorAll('.slide').length;
+
+        function showSlide(n) {
+            if (n < 1) n = 1;
+            if (n > totalSlides) n = totalSlides;
+            
+            document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+            document.querySelector(`[data-slide="${n}"]`).classList.add('active');
+            currentSlide = n;
+            
+            document.getElementById('progress-bar').style.width = ((currentSlide / totalSlides) * 100) + '%';
+            document.getElementById('slide-counter').textContent = `${currentSlide} / ${totalSlides}`;
+        }
+
+        function nextSlide() { showSlide(currentSlide + 1); }
+        function prevSlide() { showSlide(currentSlide - 1); }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+            else if (e.key === 'ArrowLeft') prevSlide();
+            else if (e.key === 'Home') showSlide(1);
+            else if (e.key === 'End') showSlide(totalSlides);
+        });
+
+        // Touch support for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            if (touchEndX < touchStartX - 50) nextSlide();
+            if (touchEndX > touchStartX + 50) prevSlide();
+        });
+
+        showSlide(1);
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

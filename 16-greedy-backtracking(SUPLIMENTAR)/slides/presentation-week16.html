@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Săptămâna 16: Paradigme Algoritmice - Greedy și Backtracking | ATP - ASE București</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/c.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-yellow: #d29922;
+            --accent-red: #f85149;
+            --accent-purple: #a371f7;
+            --accent-orange: #f0883e;
+            --border-color: #30363d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow: hidden;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-green), var(--accent-purple));
+            transition: width 0.3s ease;
+            z-index: 1000;
+        }
+
+        /* Slide Container */
+        .slides-container {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 60px 80px;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 2.8em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--accent-blue);
+        }
+
+        h2 {
+            font-size: 2.2em;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--accent-blue);
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            font-size: 1.6em;
+            font-weight: 500;
+            margin: 20px 0 15px 0;
+            color: var(--accent-green);
+        }
+
+        p {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: var(--text-secondary);
+        }
+
+        ul, ol {
+            margin: 15px 0 15px 30px;
+            font-size: 1.15em;
+        }
+
+        li {
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+        }
+
+        li strong {
+            color: var(--text-primary);
+        }
+
+        /* Title Slide */
+        .title-slide {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        }
+
+        .title-slide h1 {
+            font-size: 3.5em;
+            margin-bottom: 10px;
+        }
+
+        .title-slide .subtitle {
+            font-size: 1.8em;
+            color: var(--accent-purple);
+            margin-bottom: 30px;
+        }
+
+        .title-slide .course-info {
+            font-size: 1.2em;
+            color: var(--text-secondary);
+        }
+
+        .title-slide .week-badge {
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-blue));
+            color: var(--bg-primary);
+            padding: 8px 25px;
+            border-radius: 25px;
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        /* Code Blocks */
+        pre {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        code {
+            font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
+            font-size: 0.95em;
+        }
+
+        .inline-code {
+            background: var(--bg-tertiary);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: var(--accent-yellow);
+        }
+
+        /* Grid Layout for Two Columns */
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 20px;
+        }
+
+        .column {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+        }
+
+        .column h3 {
+            margin-top: 0;
+        }
+
+        /* Info Boxes */
+        .info-box {
+            background: var(--bg-secondary);
+            border-left: 4px solid var(--accent-blue);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .warning-box {
+            background: rgba(208, 153, 34, 0.1);
+            border-left: 4px solid var(--accent-yellow);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .success-box {
+            background: rgba(63, 185, 80, 0.1);
+            border-left: 4px solid var(--accent-green);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .danger-box {
+            background: rgba(248, 81, 73, 0.1);
+            border-left: 4px solid var(--accent-red);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* Objectives List */
+        .objectives-list {
+            list-style: none;
+            margin: 0;
+        }
+
+        .objectives-list li {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            background: var(--bg-secondary);
+            padding: 15px 20px;
+            border-radius: 10px;
+            border-left: 4px solid var(--accent-green);
+        }
+
+        .obj-icon {
+            font-size: 1.5em;
+            margin-right: 15px;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        /* Diagram Container */
+        .diagram {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+            font-family: 'Cascadia Code', monospace;
+            white-space: pre;
+            overflow-x: auto;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--bg-tertiary);
+            color: var(--accent-blue);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: var(--bg-tertiary);
+        }
+
+        /* Complexity Badge */
+        .complexity {
+            display: inline-block;
+            background: var(--accent-purple);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        /* Algorithm Step */
+        .step {
+            display: flex;
+            align-items: flex-start;
+            margin: 15px 0;
+            padding: 15px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+        }
+
+        .step-number {
+            background: var(--accent-blue);
+            color: var(--bg-primary);
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        /* Navigation */
+        .nav-container {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: var(--accent-blue);
+            color: var(--bg-primary);
+            border-color: var(--accent-blue);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Slide Counter */
+        .slide-counter {
+            position: fixed;
+            bottom: 30px;
+            right: 40px;
+            background: var(--bg-secondary);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            z-index: 100;
+        }
+
+        /* Keyboard Hints */
+        .keyboard-hints {
+            position: fixed;
+            bottom: 30px;
+            left: 40px;
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            z-index: 100;
+        }
+
+        kbd {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-family: monospace;
+        }
+
+        /* Highlight animation */
+        .highlight {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* Comparison cards */
+        .comparison-card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 10px 0;
+        }
+
+        .comparison-card.greedy {
+            border-left: 4px solid var(--accent-green);
+        }
+
+        .comparison-card.backtracking {
+            border-left: 4px solid var(--accent-purple);
+        }
+
+        .comparison-card.dp {
+            border-left: 4px solid var(--accent-orange);
+        }
+
+        /* Tree visualization */
+        .tree-node {
+            display: inline-block;
+            background: var(--accent-blue);
+            color: var(--bg-primary);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    
+    <div class="slide-counter" id="slideCounter">1 / 25</div>
+    
+    <div class="slides-container" id="slidesContainer">
+        
+        <!-- Slide 1: Title -->
+        <div class="slide title-slide active">
+            <div class="week-badge">SĂPTĂMÂNA 16</div>
+            <h1>Paradigme Algoritmice</h1>
+            <p class="subtitle">Greedy și Backtracking</p>
+            <p class="course-info">
+                Algoritmi și Tehnici de Programare<br>
+                Academia de Studii Economice București - CSIE<br>
+                <span style="color: var(--accent-yellow);">Anul Universitar 2024-2025</span>
+            </p>
+        </div>
+
+        <!-- Slide 2: Learning Objectives -->
+        <div class="slide">
+            <h2>🎯 Obiective de Învățare</h2>
+            <ul class="objectives-list">
+                <li>
+                    <span class="obj-icon">🔍</span>
+                    <div>
+                        <strong>Recunoașteți</strong> caracteristicile problemelor rezolvabile cu Greedy vs. Backtracking
+                    </div>
+                </li>
+                <li>
+                    <span class="obj-icon">🧠</span>
+                    <div>
+                        <strong>Înțelegeți</strong> de ce Greedy nu garantează mereu soluția optimă și când funcționează
+                    </div>
+                </li>
+                <li>
+                    <span class="obj-icon">⚙️</span>
+                    <div>
+                        <strong>Aplicați</strong> Activity Selection, Fractional Knapsack, N-Queens, Sudoku Solver
+                    </div>
+                </li>
+                <li>
+                    <span class="obj-icon">📊</span>
+                    <div>
+                        <strong>Analizați</strong> complexitatea timp/spațiu și efectul pruning-ului în backtracking
+                    </div>
+                </li>
+                <li>
+                    <span class="obj-icon">⚖️</span>
+                    <div>
+                        <strong>Evaluați</strong> care paradigmă e potrivită pentru o problemă nouă
+                    </div>
+                </li>
+                <li>
+                    <span class="obj-icon">🛠️</span>
+                    <div>
+                        <strong>Creați</strong> soluții pentru probleme combinatoriale complexe
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Slide 3: Historical Context -->
+        <div class="slide">
+            <h2>📜 Context Istoric</h2>
+            <div class="two-columns">
+                <div class="column">
+                    <h3 style="color: var(--accent-green);">George Dantzig (1914-2005)</h3>
+                    <p><em>Părintele Programării Liniare</em></p>
+                    <ul>
+                        <li>A dezvoltat <strong>Metoda Simplex</strong> (1947)</li>
+                        <li>Ideile sale au inspirat algoritmii Greedy</li>
+                        <li>Celebru pentru că a rezolvat două probleme "imposibile" crezând că sunt teme</li>
+                    </ul>
+                    <div class="info-box">
+                        <em>"The world is more complicated than any of us can figure out by ourselves, so we have to use algorithms to help us."</em>
+                    </div>
+                </div>
+                <div class="column">
+                    <h3 style="color: var(--accent-purple);">Robert W. Floyd (1936-2001)</h3>
+                    <p><em>Premiul Turing 1978</em></p>
+                    <ul>
+                        <li>A formalizat tehnica <strong>Backtracking</strong></li>
+                        <li>Algoritmi: Floyd-Warshall, verificare heap</li>
+                        <li>Contribuții majore la analiza algoritmilor</li>
+                    </ul>
+                    <div class="info-box">
+                        <em>"The amount of intelligence used to study an algorithm should be proportional to its importance."</em>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Greedy Introduction -->
+        <div class="slide">
+            <h2>💚 Paradigma Greedy - Introducere</h2>
+            <div class="info-box">
+                <h3>Principiul Alegerii Locale Optime</h3>
+                <p>La fiecare pas, algoritmul face alegerea care pare cea mai bună <strong>în acel moment</strong>, fără a se uita în viitor sau a reconsidera deciziile anterioare.</p>
+            </div>
+            
+            <div class="diagram">
+   Problemă
+      │
+      ▼
+┌─────────────────┐
+│ Alegere Locală  │ ◄── Selectează cea mai bună opțiune disponibilă
+│    Optimă       │
+└────────┬────────┘
+         │
+         ▼
+   Subproblemă     ◄── Problema se reduce
+      │
+      ▼
+┌─────────────────┐
+│ Alegere Locală  │ ◄── Repetă procesul
+│    Optimă       │
+└────────┬────────┘
+         │
+         ▼
+    Soluție        ◄── Construită incremental
+            </div>
+            
+            <div class="warning-box">
+                <strong>⚠️ Atenție:</strong> Greedy nu garantează ÎNTOTDEAUNA soluția optimă globală!
+            </div>
+        </div>
+
+        <!-- Slide 5: When Greedy Works -->
+        <div class="slide">
+            <h2>✅ Când Funcționează Greedy?</h2>
+            
+            <p>Pentru ca Greedy să garanteze soluția optimă, problema trebuie să aibă:</p>
+            
+            <div class="two-columns">
+                <div class="column comparison-card greedy">
+                    <h3>1. Proprietatea Alegerii Greedy</h3>
+                    <p>O soluție globală optimă poate fi construită făcând alegeri locale optime.</p>
+                    <p><strong>Demonstrăm:</strong> alegerea greedy este parte dintr-o soluție optimă.</p>
+                </div>
+                <div class="column comparison-card greedy">
+                    <h3>2. Substructura Optimală</h3>
+                    <p>Soluția optimă a problemei conține soluții optime ale subproblemelor.</p>
+                    <p><strong>Verificăm:</strong> după o alegere, problema se reduce la o subproblemă similară.</p>
+                </div>
+            </div>
+            
+            <div class="danger-box" style="margin-top: 30px;">
+                <h3>❌ Contraexemplu: Coin Change</h3>
+                <p>Monede: {1, 3, 4}, Țintă: 6</p>
+                <p>Greedy: 4 + 1 + 1 = <strong>3 monede</strong></p>
+                <p>Optimal: 3 + 3 = <strong>2 monede</strong> ✓</p>
+            </div>
+        </div>
+
+        <!-- Slide 6: Activity Selection Problem -->
+        <div class="slide">
+            <h2>📅 Activity Selection Problem</h2>
+            
+            <p>Dat: set de activități cu timp de start și sfârșit. Găsește numărul maxim de activități care nu se suprapun.</p>
+            
+            <div class="diagram">
+Activități:
+┌────────────┬───────┬─────────┐
+│ Activitate │ Start │ Sfârșit │
+├────────────┼───────┼─────────┤
+│     A1     │   1   │    4    │
+│     A2     │   3   │    5    │
+│     A3     │   0   │    6    │
+│     A4     │   5   │    7    │
+│     A5     │   3   │    9    │
+│     A6     │   5   │    9    │
+│     A7     │   6   │   10    │
+│     A8     │   8   │   11    │
+│     A9     │   8   │   12    │
+│    A10     │  12   │   14    │
+└────────────┴───────┴─────────┘
+
+Timeline:
+0   1   2   3   4   5   6   7   8   9  10  11  12  13  14
+├───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┤
+█████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ A3
+    ████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ A1 ✓
+        ████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ A2
+                    ████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░ A4 ✓
+                                    ████████████░░░░░░░░ A8 ✓
+                                                ████████ A10 ✓
+
+Soluție Greedy: {A1, A4, A8, A10} = 4 activități
+            </div>
+        </div>
+
+        <!-- Slide 7: Activity Selection Algorithm -->
+        <div class="slide">
+            <h2>📅 Activity Selection - Algoritm</h2>
+            
+            <div class="step">
+                <div class="step-number">1</div>
+                <div>
+                    <strong>Sortează</strong> activitățile după timpul de <em>sfârșit</em> (crescător)
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">2</div>
+                <div>
+                    <strong>Selectează</strong> prima activitate (cea care se termină cel mai devreme)
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">3</div>
+                <div>
+                    <strong>Repetă:</strong> selectează următoarea activitate care începe după ce se termină ultima selectată
+                </div>
+            </div>
+            
+            <pre><code class="language-c">int activity_selection(Activity *activities, int n, int *selected) {
+    // Sortare după timpul de sfârșit
+    qsort(activities, n, sizeof(Activity), compare_by_finish);
+    
+    int count = 0;
+    int last_finish = 0;
+    
+    for (int i = 0; i < n; i++) {
+        if (activities[i].start >= last_finish) {
+            selected[count++] = i;
+            last_finish = activities[i].finish;
+        }
+    }
+    
+    return count;
+}</code></pre>
+            
+            <p><span class="complexity">Complexitate: O(n log n)</span> - dominată de sortare</p>
+        </div>
+
+        <!-- Slide 8: Fractional Knapsack -->
+        <div class="slide">
+            <h2>🎒 Fractional Knapsack</h2>
+            
+            <p>Dat: obiecte cu greutate și valoare, capacitate rucsac W. Maximizează valoarea (putem lua fracțiuni).</p>
+            
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Strategie Greedy</h3>
+                    <ol>
+                        <li>Calculează raportul <strong>value/weight</strong> pentru fiecare obiect</li>
+                        <li>Sortează descrescător după raport</li>
+                        <li>Ia obiecte în ordine până la capacitate</li>
+                        <li>Dacă ultimul nu încape, ia fracțiune</li>
+                    </ol>
+                </div>
+                <div class="column">
+                    <h3>Exemplu</h3>
+                    <div class="diagram" style="font-size: 0.85em;">
+Capacitate: 10 kg
+
+Obiect │ Greutate │ Valoare │ Ratio
+───────┼──────────┼─────────┼────────
+  A    │    4     │   120   │  30 ✓
+  B    │    3     │    60   │  20 ✓
+  C    │    5     │   100   │  20 ✓
+
+Soluție:
+A: complet (4kg, 120 lei)
+B: complet (3kg,  60 lei)
+C: 60% (3kg,  60 lei)
+────────────────────────
+Total: 10kg, 240 lei
+                    </div>
+                </div>
+            </div>
+            
+            <div class="success-box">
+                <strong>✓ De ce funcționează:</strong> Luând obiectele cu cel mai mare raport value/weight, maximizăm valoarea per unitate de greutate.
+            </div>
+        </div>
+
+        <!-- Slide 9: Fractional Knapsack Code -->
+        <div class="slide">
+            <h2>🎒 Fractional Knapsack - Implementare</h2>
+            
+            <pre><code class="language-c">typedef struct {
+    int id;
+    double weight;
+    double value;
+    double ratio;
+} Item;
+
+int compare_by_ratio(const void *a, const void *b) {
+    double diff = ((Item*)b)->ratio - ((Item*)a)->ratio;
+    return (diff > 0) - (diff < 0);
+}
+
+double fractional_knapsack(Item *items, int n, double capacity) {
+    // Calculează rapoartele
+    for (int i = 0; i < n; i++) {
+        items[i].ratio = items[i].value / items[i].weight;
+    }
+    
+    // Sortează descrescător după raport
+    qsort(items, n, sizeof(Item), compare_by_ratio);
+    
+    double total_value = 0;
+    double remaining = capacity;
+    
+    for (int i = 0; i < n && remaining > 0; i++) {
+        if (items[i].weight <= remaining) {
+            // Luăm obiectul complet
+            total_value += items[i].value;
+            remaining -= items[i].weight;
+        } else {
+            // Luăm doar o fracțiune
+            double fraction = remaining / items[i].weight;
+            total_value += items[i].value * fraction;
+            remaining = 0;
+        }
+    }
+    
+    return total_value;
+}</code></pre>
+        </div>
+
+        <!-- Slide 10: Backtracking Introduction -->
+        <div class="slide">
+            <h2>🔮 Paradigma Backtracking - Introducere</h2>
+            
+            <div class="info-box">
+                <h3>Explorarea Sistematică a Spațiului Soluțiilor</h3>
+                <p>Backtracking construiește soluția <strong>incremental</strong>, abandonând căile care nu pot duce la soluție validă (<strong>pruning</strong>).</p>
+            </div>
+            
+            <div class="diagram">
+Arborele Spațiului de Soluții:
+
+                        ┌─────┐
+                        │START│
+                        └──┬──┘
+            ┌──────────────┼──────────────┐
+            ▼              ▼              ▼
+         ┌─────┐       ┌─────┐        ┌─────┐
+         │Alege│       │Alege│        │Alege│
+         │  A  │       │  B  │        │  C  │
+         └──┬──┘       └──┬──┘        └──┬──┘
+      ┌─────┴─────┐       │              ✗
+      ▼           ▼       │          (pruning)
+   ┌─────┐    ┌─────┐     ▼
+   │A + 1│    │A + 2│  ┌─────┐
+   └──┬──┘    └──┬──┘  │B + 1│
+      │          ✗     └──┬──┘
+      ▼      (invalid)    │
+   ┌─────┐                ▼
+   │ ✓   │            ┌─────┐
+   │SOL! │            │ ✓   │
+   └─────┘            │SOL! │
+                      └─────┘
+            </div>
+            
+            <p>La fiecare nod, verificăm dacă alegerea curentă este <strong>promițătoare</strong>. Dacă nu, <strong>backtrack</strong> la nodul anterior.</p>
+        </div>
+
+        <!-- Slide 11: Backtracking Template -->
+        <div class="slide">
+            <h2>🔮 Backtracking - Template General</h2>
+            
+            <pre><code class="language-c">bool backtrack(State *state, int level) {
+    // Cazul de bază: am găsit o soluție?
+    if (is_solution(state, level)) {
+        process_solution(state);
+        return true;  // sau false pentru TOATE soluțiile
+    }
+    
+    // Generează candidații pentru nivelul curent
+    Candidate candidates[MAX_CANDIDATES];
+    int n = generate_candidates(state, level, candidates);
+    
+    // Încearcă fiecare candidat
+    for (int i = 0; i < n; i++) {
+        // Verifică dacă candidatul este promițător (pruning)
+        if (is_promising(state, candidates[i])) {
+            // Aplică alegerea
+            apply_choice(state, candidates[i]);
+            
+            // Recursează la nivelul următor
+            if (backtrack(state, level + 1)) {
+                return true;  // Soluție găsită
+            }
+            
+            // BACKTRACK: anulează alegerea
+            undo_choice(state, candidates[i]);
+        }
+    }
+    
+    return false;  // Nicio soluție pe această cale
+}</code></pre>
+            
+            <div class="warning-box">
+                <strong>Cheie:</strong> <code>undo_choice()</code> este esențial - resetează starea pentru a încerca alt candidat!
+            </div>
+        </div>
+
+        <!-- Slide 12: N-Queens Problem -->
+        <div class="slide">
+            <h2>👑 Problema N-Queens</h2>
+            
+            <p>Plasează N regine pe o tablă NxN astfel încât nicio regină să nu atace alta.</p>
+            
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Constrângeri</h3>
+                    <ul>
+                        <li>Cel mult o regină per <strong>rând</strong></li>
+                        <li>Cel mult o regină per <strong>coloană</strong></li>
+                        <li>Cel mult o regină per <strong>diagonală</strong></li>
+                    </ul>
+                    <div class="diagram" style="font-size: 0.9em;">
+Număr de soluții:
+N=4: 2 soluții
+N=5: 10 soluții
+N=6: 4 soluții
+N=7: 40 soluții
+N=8: 92 soluții
+                    </div>
+                </div>
+                <div class="column">
+                    <h3>Soluție pentru N=4</h3>
+                    <div class="diagram" style="font-size: 1.1em;">
+    0   1   2   3
+  ┌───┬───┬───┬───┐
+0 │ . │ ♛ │ . │ . │
+  ├───┼───┼───┼───┤
+1 │ . │ . │ . │ ♛ │
+  ├───┼───┼───┼───┤
+2 │ ♛ │ . │ . │ . │
+  ├───┼───┼───┼───┤
+3 │ . │ . │ ♛ │ . │
+  └───┴───┴───┴───┘
+  
+col[] = {1, 3, 0, 2}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: N-Queens Implementation -->
+        <div class="slide">
+            <h2>👑 N-Queens - Implementare</h2>
+            
+            <pre><code class="language-c">// Verifică dacă poziția (row, col) este sigură
+bool is_safe(int *col, int row) {
+    for (int i = 0; i < row; i++) {
+        // Același column?
+        if (col[i] == col[row]) return false;
+        
+        // Aceeași diagonală?
+        // |row - i| == |col[row] - col[i]|
+        if (abs(row - i) == abs(col[row] - col[i])) return false;
+    }
+    return true;
+}
+
+// Rezolvă problema N-Queens folosind backtracking
+bool solve_n_queens(int *col, int row, int n) {
+    if (row == n) {
+        // Am plasat toate reginele!
+        return true;
+    }
+    
+    // Încearcă fiecare coloană pentru rândul curent
+    for (int c = 0; c < n; c++) {
+        col[row] = c;
+        
+        if (is_safe(col, row)) {
+            if (solve_n_queens(col, row + 1, n)) {
+                return true;
+            }
+        }
+        // Backtrack implicit: col[row] va fi suprascris
+    }
+    
+    return false;
+}</code></pre>
+            
+            <p><span class="complexity">Complexitate: O(N!)</span> worst case, dar mult mai bine cu pruning</p>
+        </div>
+
+        <!-- Slide 14: Sudoku Solver -->
+        <div class="slide">
+            <h2>🔢 Sudoku Solver</h2>
+            
+            <p>Completează un grid 9x9 astfel încât fiecare rând, coloană și box 3x3 să conțină cifrele 1-9 exact o dată.</p>
+            
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Constrângeri</h3>
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div>Cifra nu apare în <strong>rând</strong></div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div>Cifra nu apare în <strong>coloană</strong></div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div>Cifra nu apare în <strong>box 3x3</strong></div>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="diagram" style="font-size: 0.85em;">
+╔═══════════════════════════╗
+║ 5 3 . │ . 7 . │ . . . ║
+║ 6 . . │ 1 9 5 │ . . . ║
+║ . 9 8 │ . . . │ . 6 . ║
+║───────┼───────┼───────║
+║ 8 . . │ . 6 . │ . . 3 ║
+║ 4 . . │ 8 . 3 │ . . 1 ║
+║ 7 . . │ . 2 . │ . . 6 ║
+║───────┼───────┼───────║
+║ . 6 . │ . . . │ 2 8 . ║
+║ . . . │ 4 1 9 │ . . 5 ║
+║ . . . │ . 8 . │ . 7 9 ║
+╚═══════════════════════════╝
+
+'.' = celulă goală
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 15: Sudoku Implementation -->
+        <div class="slide">
+            <h2>🔢 Sudoku Solver - Implementare</h2>
+            
+            <pre><code class="language-c">bool is_valid(int grid[9][9], int row, int col, int num) {
+    // Verifică rândul
+    for (int c = 0; c < 9; c++)
+        if (grid[row][c] == num) return false;
+    
+    // Verifică coloana
+    for (int r = 0; r < 9; r++)
+        if (grid[r][col] == num) return false;
+    
+    // Verifică box-ul 3x3
+    int box_r = (row / 3) * 3;
+    int box_c = (col / 3) * 3;
+    for (int r = 0; r < 3; r++)
+        for (int c = 0; c < 3; c++)
+            if (grid[box_r + r][box_c + c] == num) return false;
+    
+    return true;
+}
+
+bool solve_sudoku(int grid[9][9]) {
+    // Găsește prima celulă goală
+    for (int row = 0; row < 9; row++) {
+        for (int col = 0; col < 9; col++) {
+            if (grid[row][col] == 0) {
+                // Încearcă fiecare cifră 1-9
+                for (int num = 1; num <= 9; num++) {
+                    if (is_valid(grid, row, col, num)) {
+                        grid[row][col] = num;
+                        if (solve_sudoku(grid)) return true;
+                        grid[row][col] = 0;  // Backtrack
+                    }
+                }
+                return false;
+            }
+        }
+    }
+    return true;  // Toate celulele completate
+}</code></pre>
+        </div>
+
+        <!-- Slide 16: Combinatorial Generation -->
+        <div class="slide">
+            <h2>🎲 Generare Combinatorică</h2>
+            
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Permutări P(n)</h3>
+                    <p>Toate aranjamentele posibile a n elemente.</p>
+                    <div class="diagram" style="font-size: 0.9em;">
+P(3) = {1,2,3}:
+[1,2,3] [1,3,2]
+[2,1,3] [2,3,1]
+[3,1,2] [3,2,1]
+
+Total: 3! = 6
+                    </div>
+                    
+                    <h3>Combinări C(n,k)</h3>
+                    <p>Submulțimi de k elemente din n.</p>
+                    <div class="diagram" style="font-size: 0.9em;">
+C(4,2) = {1,2,3,4}:
+{1,2} {1,3} {1,4}
+{2,3} {2,4} {3,4}
+
+Total: C(4,2) = 6
+                    </div>
+                </div>
+                <div class="column">
+                    <h3>Submulțimi 2^n</h3>
+                    <p>Toate submulțimile posibile.</p>
+                    <div class="diagram" style="font-size: 0.9em;">
+2^3 pentru {1,2,3}:
+{}
+{1} {2} {3}
+{1,2} {1,3} {2,3}
+{1,2,3}
+
+Total: 2³ = 8
+                    </div>
+                    
+                    <div class="info-box">
+                        <strong>Backtracking:</strong> La fiecare element, alegem "include" sau "exclude".
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 17: Graph Coloring -->
+        <div class="slide">
+            <h2>🎨 Graph Coloring</h2>
+            
+            <p>Colorează nodurile unui graf cu maximum K culori astfel încât niciun nod adiacent să nu aibă aceeași culoare.</p>
+            
+            <div class="two-columns">
+                <div class="column">
+                    <div class="diagram">
+Graf necolorat:           Graf colorat (K=3):
+                          
+    (0)───(1)                 (🔴)───(🔵)
+     │ ╲ ╱ │                   │ ╲ ╱ │
+     │  ╳  │                   │  ╳  │
+     │ ╱ ╲ │                   │ ╱ ╲ │
+    (2)───(3)                 (🟢)───(🔴)
+      ╲   ╱                     ╲   ╱
+       ╲ ╱                       ╲ ╱
+       (4)                       (🔵)
+                    </div>
+                </div>
+                <div class="column">
+                    <h3>Aplicații</h3>
+                    <ul>
+                        <li><strong>Scheduling:</strong> Examene, ore de curs</li>
+                        <li><strong>Registre:</strong> Alocare în compilatoare</li>
+                        <li><strong>Frecvențe:</strong> Alocare radio/wireless</li>
+                        <li><strong>Sudoku:</strong> K=9 culori!</li>
+                    </ul>
+                    
+                    <div class="warning-box">
+                        <strong>NP-Complet:</strong> Pentru K ≥ 3, problema este NP-completă.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 18: Comparison Table -->
+        <div class="slide">
+            <h2>⚖️ Comparație: Greedy vs Backtracking vs DP</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th style="color: var(--accent-green);">Greedy</th>
+                        <th style="color: var(--accent-purple);">Backtracking</th>
+                        <th style="color: var(--accent-orange);">DP</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Strategie</strong></td>
+                        <td>Alegere locală optimă</td>
+                        <td>Explorare exhaustivă cu pruning</td>
+                        <td>Subprobleme + memoizare</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Garantează optim?</strong></td>
+                        <td>Doar cu proprietatea greedy</td>
+                        <td>Da (explorează tot)</td>
+                        <td>Da</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Complexitate tipică</strong></td>
+                        <td>O(n log n)</td>
+                        <td>O(k^n) exponențial</td>
+                        <td>O(n×W) pseudopolinomial</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Memorie</strong></td>
+                        <td>O(1) sau O(n)</td>
+                        <td>O(n) stiva recursiei</td>
+                        <td>O(n×W) tabelă</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Când folosești?</strong></td>
+                        <td>Probleme cu proprietatea greedy</td>
+                        <td>Combinatorică, satisfacție constrângeri</td>
+                        <td>Subprobleme suprapuse</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Slide 19: Decision Flowchart -->
+        <div class="slide">
+            <h2>🧭 Ghid de Alegere a Paradigmei</h2>
+            
+            <div class="diagram">
+                    ┌──────────────────────────────────────────┐
+                    │          PROBLEMĂ DE OPTIMIZARE          │
+                    └─────────────────────┬────────────────────┘
+                                          │
+                    ┌─────────────────────▼────────────────────┐
+                    │ Are proprietatea alegerii greedy?         │
+                    │ (alegerea locală e parte din optim global)│
+                    └─────────────────────┬────────────────────┘
+                              │                     │
+                          DA │                     │ NU
+                              │                     │
+                    ┌─────────▼────────┐  ┌────────▼─────────┐
+                    │     GREEDY       │  │ Subprobleme      │
+                    │  O(n log n)      │  │ suprapuse?       │
+                    └──────────────────┘  └────────┬─────────┘
+                                              │          │
+                                          DA │          │ NU
+                                              │          │
+                               ┌──────────────▼───┐  ┌──▼───────────────┐
+                               │  PROGRAMARE      │  │   BACKTRACKING   │
+                               │  DINAMICĂ        │  │   (sau Brute     │
+                               │  O(n×W)          │  │    Force)        │
+                               └──────────────────┘  └──────────────────┘
+            </div>
+        </div>
+
+        <!-- Slide 20: Pruning Techniques -->
+        <div class="slide">
+            <h2>✂️ Tehnici de Pruning în Backtracking</h2>
+            
+            <div class="two-columns">
+                <div class="column">
+                    <h3>1. Constraint Propagation</h3>
+                    <p>Elimină opțiuni care violeazaz constrângeri.</p>
+                    <pre><code class="language-c">// Sudoku: nu încerca cifre invalide
+if (!is_valid(grid, row, col, num))
+    continue;  // Skip</code></pre>
+                    
+                    <h3>2. Bounding (Branch & Bound)</h3>
+                    <p>Estimează dacă calea curentă poate duce la soluție mai bună.</p>
+                    <pre><code class="language-c">// Dacă suma restantă < minim necesar
+if (current_sum + max_remaining < target)
+    return;  // Prune</code></pre>
+                </div>
+                <div class="column">
+                    <h3>3. Symmetry Breaking</h3>
+                    <p>Evită explorarea soluțiilor simetrice.</p>
+                    <pre><code class="language-c">// N-Queens: prima regină doar în jumătatea stângă
+if (row == 0 && col > n/2)
+    continue;</code></pre>
+                    
+                    <h3>4. MCV (Most Constrained Variable)</h3>
+                    <p>Alege variabila cu cele mai puține opțiuni.</p>
+                    <pre><code class="language-c">// Sudoku: alege celula cu cel mai puțin opțiuni
+int best = find_most_constrained_cell(grid);</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 21: Common Mistakes -->
+        <div class="slide">
+            <h2>⚠️ Greșeli Frecvente</h2>
+            
+            <div class="two-columns">
+                <div class="column comparison-card greedy">
+                    <h3>Greedy</h3>
+                    <ul>
+                        <li>❌ <strong>Presupunere fără demonstrație</strong> că funcționează
+                            <p style="font-size: 0.9em; color: var(--text-secondary);">Greedy nu garantează optim pentru toate problemele!</p>
+                        </li>
+                        <li>❌ <strong>Sortare incorectă</strong>
+                            <p style="font-size: 0.9em; color: var(--text-secondary);">Activity Selection: sortăm după END, nu START</p>
+                        </li>
+                        <li>❌ <strong>Uitarea cazurilor limită</strong>
+                            <p style="font-size: 0.9em; color: var(--text-secondary);">Ce se întâmplă dacă n=0 sau capacity=0?</p>
+                        </li>
+                    </ul>
+                </div>
+                <div class="column comparison-card backtracking">
+                    <h3>Backtracking</h3>
+                    <ul>
+                        <li>❌ <strong>Uitarea backtrack</strong>
+                            <p style="font-size: 0.9em; color: var(--text-secondary);">Trebuie să resetăm starea după recursie eșuată!</p>
+                        </li>
+                        <li>❌ <strong>Lipsa matricei visited</strong>
+                            <p style="font-size: 0.9em; color: var(--text-secondary);">Duce la bucle infinite în labirint/graf</p>
+                        </li>
+                        <li>❌ <strong>Pruning insuficient</strong>
+                            <p style="font-size: 0.9em; color: var(--text-secondary);">Fără verificări, explorăm căi evident invalide</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="danger-box">
+                <strong>Debugging tip:</strong> Afișați starea la fiecare pas pentru a vizualiza comportamentul algoritmului!
+            </div>
+        </div>
+
+        <!-- Slide 22: Interview Questions -->
+        <div class="slide">
+            <h2>💼 Pregătire pentru Interviu</h2>
+            
+            <div class="two-columns">
+                <div class="column">
+                    <h3>Greedy - Întrebări Tipice</h3>
+                    <ol>
+                        <li>
+                            <strong>Activity Selection</strong>
+                            <p style="font-size: 0.9em;">De ce sortăm după finish time?</p>
+                        </li>
+                        <li>
+                            <strong>Huffman Coding</strong>
+                            <p style="font-size: 0.9em;">Cum construim arborele?</p>
+                        </li>
+                        <li>
+                            <strong>Coin Change</strong>
+                            <p style="font-size: 0.9em;">Când Greedy NU funcționează?</p>
+                        </li>
+                        <li>
+                            <strong>Jump Game</strong>
+                            <p style="font-size: 0.9em;">Verifică dacă poți ajunge la final</p>
+                        </li>
+                    </ol>
+                </div>
+                <div class="column">
+                    <h3>Backtracking - Întrebări Tipice</h3>
+                    <ol>
+                        <li>
+                            <strong>N-Queens</strong>
+                            <p style="font-size: 0.9em;">Clasic! Implementare + optimizări</p>
+                        </li>
+                        <li>
+                            <strong>Sudoku Solver</strong>
+                            <p style="font-size: 0.9em;">Validare + MCV heuristic</p>
+                        </li>
+                        <li>
+                            <strong>Subsets/Permutations</strong>
+                            <p style="font-size: 0.9em;">Generare combinatorică</p>
+                        </li>
+                        <li>
+                            <strong>Word Search</strong>
+                            <p style="font-size: 0.9em;">Căutare în grid de caractere</p>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 23: Lab Exercise Preview -->
+        <div class="slide">
+            <h2>🔬 Exerciții de Laborator</h2>
+            
+            <div class="two-columns">
+                <div class="column comparison-card greedy">
+                    <h3>Exercițiul 1: Activity Selection</h3>
+                    <ul>
+                        <li>Citire activități din fișier</li>
+                        <li>Implementare algoritm greedy</li>
+                        <li>Afișare timeline vizual</li>
+                        <li>Statistici: activități selectate</li>
+                    </ul>
+                    <p><strong>Fișier:</strong> <code>exercise1.c</code></p>
+                    <p><strong>Timp:</strong> ~45 minute</p>
+                </div>
+                <div class="column comparison-card backtracking">
+                    <h3>Exercițiul 2: Sudoku Solver</h3>
+                    <ul>
+                        <li>Citire puzzle din fișier</li>
+                        <li>Implementare backtracking</li>
+                        <li>Afișare grid cu culori</li>
+                        <li>Bonus: MCV optimization</li>
+                    </ul>
+                    <p><strong>Fișier:</strong> <code>exercise2.c</code></p>
+                    <p><strong>Timp:</strong> ~60 minute</p>
+                </div>
+            </div>
+            
+            <div class="success-box" style="margin-top: 30px;">
+                <strong>💡 Sfat:</strong> Începeți cu funcțiile de validare, apoi implementați algoritmul principal!
+            </div>
+        </div>
+
+        <!-- Slide 24: Summary -->
+        <div class="slide">
+            <h2>📝 Rezumat</h2>
+            
+            <div class="info-box">
+                <h3>Ce am învățat în această săptămână:</h3>
+            </div>
+            
+            <div class="two-columns">
+                <div class="column">
+                    <h3 style="color: var(--accent-green);">💚 Greedy</h3>
+                    <ul>
+                        <li>Alegere locală optimă</li>
+                        <li>Proprietatea greedy + substructură optimală</li>
+                        <li>Activity Selection O(n log n)</li>
+                        <li>Fractional Knapsack O(n log n)</li>
+                        <li>Nu garantează mereu optim!</li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <h3 style="color: var(--accent-purple);">💜 Backtracking</h3>
+                    <ul>
+                        <li>Explorare sistematică cu pruning</li>
+                        <li>Garantează găsirea soluției</li>
+                        <li>N-Queens, Sudoku, Graph Coloring</li>
+                        <li>Template: try → recurse → undo</li>
+                        <li>Optimizări: MCV, symmetry breaking</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="success-box" style="margin-top: 30px; text-align: center;">
+                <h3>🎯 Întrebarea cheie: "Alegerea locală poate fi parte din optimul global?"</h3>
+                <p>DA → Greedy | NU → Backtracking sau DP</p>
+            </div>
+        </div>
+
+        <!-- Slide 25: Next Week Preview -->
+        <div class="slide">
+            <h2>🔮 Preview: Săptămâna Următoare</h2>
+            
+            <div class="info-box" style="text-align: center;">
+                <h1 style="color: var(--accent-yellow); font-size: 3em;">📚 RECAPITULARE</h1>
+                <h2 style="border: none; margin-top: 20px;">Pregătire pentru Examen</h2>
+            </div>
+            
+            <div class="two-columns" style="margin-top: 40px;">
+                <div class="column">
+                    <h3>Ce vom recapitula</h3>
+                    <ul>
+                        <li>Structuri de date fundamentale</li>
+                        <li>Algoritmi de sortare și căutare</li>
+                        <li>Grafuri și arbori</li>
+                        <li>Paradigme algoritmice</li>
+                        <li>Complexitate și analiza algoritmilor</li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <h3>Cum să vă pregătiți</h3>
+                    <ul>
+                        <li>✅ Revedeți toate temele</li>
+                        <li>✅ Reîncercați exercițiile de laborator</li>
+                        <li>✅ Rezolvați probleme de practică</li>
+                        <li>✅ Înțelegeți "de ce", nu doar "cum"</li>
+                        <li>✅ Pregătiți întrebări pentru clarificări</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="success-box" style="margin-top: 30px; text-align: center;">
+                <strong>💪 Succes la pregătire!</strong>
+            </div>
+        </div>
+
+    </div>
+    
+    <div class="keyboard-hints">
+        <kbd>←</kbd> <kbd>→</kbd> pentru navigare | <kbd>Home</kbd> <kbd>End</kbd> pentru început/final
+    </div>
+    
+    <div class="nav-container">
+        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← Anterior</button>
+        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Următor →</button>
+    </div>
+
+    <script>
+        // Initialize highlight.js
+        hljs.highlightAll();
+
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const progressBar = document.getElementById('progressBar');
+        const slideCounter = document.getElementById('slideCounter');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            
+            if (index < 0) index = 0;
+            if (index >= totalSlides) index = totalSlides - 1;
+            
+            currentSlide = index;
+            slides[currentSlide].classList.add('active');
+            
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            progressBar.style.width = progress + '%';
+            
+            slideCounter.textContent = `${currentSlide + 1} / ${totalSlides}`;
+            
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            switch(e.key) {
+                case 'ArrowRight':
+                case 'PageDown':
+                case ' ':
+                    e.preventDefault();
+                    changeSlide(1);
+                    break;
+                case 'ArrowLeft':
+                case 'PageUp':
+                    e.preventDefault();
+                    changeSlide(-1);
+                    break;
+                case 'Home':
+                    e.preventDefault();
+                    showSlide(0);
+                    break;
+                case 'End':
+                    e.preventDefault();
+                    showSlide(totalSlides - 1);
+                    break;
+            }
+        });
+
+        // Touch support
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const threshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > threshold) {
+                if (diff > 0) {
+                    changeSlide(1);
+                } else {
+                    changeSlide(-1);
+                }
+            }
+        }
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>

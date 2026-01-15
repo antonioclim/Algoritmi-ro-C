@@ -1,0 +1,13 @@
+# Fractional Knapsack Problem
+# Format: N (număr obiecte)
+#         Capacitate rucsac (kg)
+#         Nume Greutate(kg) Valoare(lei)
+7
+15.0
+Laptop 3.0 3000
+Telefon 0.5 1200
+Aur 2.0 5000
+Argint 4.0 2400
+Ceas_Lux 0.3 800
+Tableta 0.7 900
+Camera 1.5 1500

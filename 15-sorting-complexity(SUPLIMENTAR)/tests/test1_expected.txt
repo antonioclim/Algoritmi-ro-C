@@ -1,0 +1,38 @@
+
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║     SĂPTĂMÂNA 15: ALGORITMI DE SORTARE AVANSAȚI                                ║
+║     Exercițiul 1: Benchmark Comparativ                                         ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║  BENCHMARK: Comparație algoritmi de sortare                                    ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+
+Configurație:
+  - Dimensiune array: 1000 elemente
+  - Tipuri de date: random, sorted, reversed, nearly sorted
+  - Algoritmi: Quick Sort, Merge Sort, Heap Sort
+
+Generare date de test...
+
+═══ TEST: Date RANDOM ═══
+
+[Quick Sort]
+  Timp: OK
+  Comparații: OK
+  Interschimbări: OK
+  Array sortat: DA
+
+[Merge Sort]
+  Timp: OK
+  Comparații: OK
+  Array sortat: DA
+
+[Heap Sort]
+  Timp: OK
+  Comparații: OK
+  Array sortat: DA
+
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║  BENCHMARK COMPLET - Toate testele au trecut!                                  ║
+╚═══════════════════════════════════════════════════════════════════════════════╝

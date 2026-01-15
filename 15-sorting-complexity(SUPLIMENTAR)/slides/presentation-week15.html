@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Săptămâna 15: Algoritmi de Sortare Avansați | ATP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/c.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-yellow: #d29922;
+            --accent-red: #f85149;
+            --accent-purple: #a371f7;
+            --accent-orange: #f0883e;
+            --border-color: #30363d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            transition: width 0.3s ease;
+            z-index: 1000;
+        }
+
+        #presentation {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 60px 80px;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            opacity: 1;
+        }
+
+        h1 {
+            font-size: 2.8em;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 2.2em;
+            font-weight: 600;
+            color: var(--accent-blue);
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        h3 {
+            font-size: 1.5em;
+            color: var(--accent-green);
+            margin: 20px 0 15px 0;
+        }
+
+        p {
+            font-size: 1.3em;
+            line-height: 1.7;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+        }
+
+        ul, ol {
+            font-size: 1.25em;
+            line-height: 1.8;
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 12px;
+        }
+
+        li::marker {
+            color: var(--accent-blue);
+        }
+
+        .code-block {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9em;
+            color: var(--text-secondary);
+        }
+
+        .lang-badge {
+            background: var(--accent-blue);
+            color: var(--bg-primary);
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.85em;
+        }
+
+        pre {
+            padding: 20px;
+            overflow-x: auto;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+        }
+
+        .highlight-box {
+            background: var(--bg-secondary);
+            border-left: 4px solid var(--accent-blue);
+            padding: 20px 25px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .warning-box {
+            background: rgba(248, 81, 73, 0.1);
+            border-left: 4px solid var(--accent-red);
+            padding: 20px 25px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .success-box {
+            background: rgba(63, 185, 80, 0.1);
+            border-left: 4px solid var(--accent-green);
+            padding: 20px 25px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .info-box {
+            background: rgba(136, 198, 255, 0.1);
+            border-left: 4px solid var(--accent-purple);
+            padding: 20px 25px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin: 20px 0;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 1.1em;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px 20px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+
+        .comparison-table th {
+            background: var(--bg-tertiary);
+            color: var(--accent-blue);
+            font-weight: 600;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: var(--bg-secondary);
+        }
+
+        .complexity {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .complexity.excellent {
+            background: rgba(63, 185, 80, 0.2);
+            color: var(--accent-green);
+        }
+
+        .complexity.good {
+            background: rgba(88, 166, 255, 0.2);
+            color: var(--accent-blue);
+        }
+
+        .complexity.average {
+            background: rgba(210, 153, 34, 0.2);
+            color: var(--accent-yellow);
+        }
+
+        .complexity.poor {
+            background: rgba(248, 81, 73, 0.2);
+            color: var(--accent-red);
+        }
+
+        .ascii-diagram {
+            font-family: 'JetBrains Mono', 'Consolas', monospace;
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            overflow-x: auto;
+            white-space: pre;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        .title-slide {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        }
+
+        .title-slide h1 {
+            font-size: 3.5em;
+            margin-bottom: 30px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .title-slide .subtitle {
+            font-size: 1.8em;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+        }
+
+        .title-slide .info {
+            font-size: 1.2em;
+            color: var(--text-secondary);
+        }
+
+        .historical-figure {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+
+        .historical-figure h3 {
+            color: var(--accent-yellow);
+            margin-bottom: 15px;
+        }
+
+        .quote {
+            font-style: italic;
+            color: var(--text-secondary);
+            border-left: 3px solid var(--accent-purple);
+            padding-left: 20px;
+            margin: 20px 0;
+            font-size: 1.1em;
+        }
+
+        .step-list {
+            counter-reset: step;
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .step-list li {
+            position: relative;
+            padding-left: 50px;
+            margin-bottom: 20px;
+        }
+
+        .step-list li::before {
+            counter-increment: step;
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 35px;
+            height: 35px;
+            background: var(--accent-blue);
+            color: var(--bg-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        #controls {
+            position: fixed;
+            bottom: 30px;
+            right: 40px;
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+        }
+
+        .control-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.2s ease;
+        }
+
+        .control-btn:hover {
+            background: var(--accent-blue);
+            color: var(--bg-primary);
+        }
+
+        #slide-counter {
+            position: fixed;
+            bottom: 30px;
+            left: 40px;
+            font-size: 1em;
+            color: var(--text-secondary);
+            z-index: 100;
+        }
+
+        .keyboard-hints {
+            position: fixed;
+            bottom: 80px;
+            left: 40px;
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            z-index: 100;
+        }
+
+        .keyboard-hints kbd {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+    </style>
+</head>
+<body>
+    <div id="progress-bar"></div>
+    
+    <div id="presentation">
+        <!-- Slide 1: Titlu -->
+        <div class="slide title-slide active" data-slide="1">
+            <h1>Algoritmi de Sortare Avansați<br>și Analiza Complexității</h1>
+            <p class="subtitle">Săptămâna 15</p>
+            <p class="info">
+                Algoritmi și Tehnici de Programare<br>
+                Academia de Studii Economice din București
+            </p>
+        </div>
+
+        <!-- Slide 2: Obiective -->
+        <div class="slide" data-slide="2">
+            <h2>🎯 Obiective de Învățare</h2>
+            <ol>
+                <li><strong>Rețineți</strong>: Definițiile notațiilor asimptotice (O, Ω, Θ) și complexitățile algoritmilor de sortare</li>
+                <li><strong>Înțelegeți</strong>: De ce Quick Sort are O(n²) worst-case dar O(n log n) average</li>
+                <li><strong>Aplicați</strong>: Implementarea Quick Sort, Merge Sort, Heap Sort, Counting Sort, Radix Sort</li>
+                <li><strong>Analizați</strong>: Compararea empirică pe diferite distribuții de date</li>
+                <li><strong>Evaluați</strong>: Alegerea algoritmului optim pentru context specific</li>
+                <li><strong>Creați</strong>: Implementarea unui algoritm hibrid (Introsort)</li>
+            </ol>
+        </div>
+
+        <!-- Slide 3: Context Istoric -->
+        <div class="slide" data-slide="3">
+            <h2>📜 Context Istoric</h2>
+            <div class="two-column">
+                <div>
+                    <div class="historical-figure">
+                        <h3>C.A.R. Hoare (1934-)</h3>
+                        <p>Inventatorul Quick Sort (1961)</p>
+                        <ul>
+                            <li>Premiul Turing 1980</li>
+                            <li>Logica Hoare pentru verificare</li>
+                            <li>Monitor-uri pentru concurență</li>
+                        </ul>
+                    </div>
+                    <div class="quote">
+                        "There are two ways of constructing software design: one way is to make it so simple that there are obviously no deficiencies, and the other way is to make it so complicated that there are no obvious deficiencies."
+                    </div>
+                </div>
+                <div>
+                    <div class="historical-figure">
+                        <h3>John von Neumann (1903-1957)</h3>
+                        <p>Inventatorul Merge Sort (1945)</p>
+                        <ul>
+                            <li>Arhitectura von Neumann</li>
+                            <li>Teoria jocurilor</li>
+                            <li>Computere ENIAC, EDVAC</li>
+                        </ul>
+                    </div>
+                    <div class="quote">
+                        "If people do not believe that mathematics is simple, it is only because they do not realize how complicated life is."
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Notații Asimptotice -->
+        <div class="slide" data-slide="4">
+            <h2>📊 Notații Asimptotice</h2>
+            <div class="two-column">
+                <div>
+                    <h3>Big-O (Upper Bound)</h3>
+                    <div class="highlight-box">
+                        <p><strong>f(n) = O(g(n))</strong></p>
+                        <p>∃ c > 0, n₀ astfel încât:</p>
+                        <p>f(n) ≤ c · g(n), ∀n ≥ n₀</p>
+                    </div>
+                    <p>Descrie <strong>limita superioară</strong> - "cel mult atât"</p>
+                </div>
+                <div>
+                    <h3>Big-Ω (Lower Bound)</h3>
+                    <div class="highlight-box">
+                        <p><strong>f(n) = Ω(g(n))</strong></p>
+                        <p>∃ c > 0, n₀ astfel încât:</p>
+                        <p>f(n) ≥ c · g(n), ∀n ≥ n₀</p>
+                    </div>
+                    <p>Descrie <strong>limita inferioară</strong> - "cel puțin atât"</p>
+                </div>
+            </div>
+            <div class="info-box">
+                <h3>Big-Θ (Tight Bound)</h3>
+                <p><strong>f(n) = Θ(g(n))</strong> dacă f(n) = O(g(n)) și f(n) = Ω(g(n))</p>
+                <p>Descrie comportamentul <strong>exact</strong> - rata de creștere precisă.</p>
+            </div>
+        </div>
+
+        <!-- Slide 5: Tabel Comparativ Algoritmi -->
+        <div class="slide" data-slide="5">
+            <h2>📋 Comparație Algoritmi de Sortare</h2>
+            <table class="comparison-table">
+                <tr>
+                    <th>Algoritm</th>
+                    <th>Best</th>
+                    <th>Average</th>
+                    <th>Worst</th>
+                    <th>Spațiu</th>
+                    <th>Stabil?</th>
+                </tr>
+                <tr>
+                    <td>Quick Sort</td>
+                    <td><span class="complexity excellent">O(n log n)</span></td>
+                    <td><span class="complexity excellent">O(n log n)</span></td>
+                    <td><span class="complexity poor">O(n²)</span></td>
+                    <td>O(log n)</td>
+                    <td>❌</td>
+                </tr>
+                <tr>
+                    <td>Merge Sort</td>
+                    <td><span class="complexity excellent">O(n log n)</span></td>
+                    <td><span class="complexity excellent">O(n log n)</span></td>
+                    <td><span class="complexity excellent">O(n log n)</span></td>
+                    <td>O(n)</td>
+                    <td>✅</td>
+                </tr>
+                <tr>
+                    <td>Heap Sort</td>
+                    <td><span class="complexity excellent">O(n log n)</span></td>
+                    <td><span class="complexity excellent">O(n log n)</span></td>
+                    <td><span class="complexity excellent">O(n log n)</span></td>
+                    <td>O(1)</td>
+                    <td>❌</td>
+                </tr>
+                <tr>
+                    <td>Counting Sort</td>
+                    <td><span class="complexity excellent">O(n + k)</span></td>
+                    <td><span class="complexity excellent">O(n + k)</span></td>
+                    <td><span class="complexity excellent">O(n + k)</span></td>
+                    <td>O(k)</td>
+                    <td>✅</td>
+                </tr>
+                <tr>
+                    <td>Radix Sort</td>
+                    <td><span class="complexity excellent">O(d·n)</span></td>
+                    <td><span class="complexity excellent">O(d·n)</span></td>
+                    <td><span class="complexity excellent">O(d·n)</span></td>
+                    <td>O(n + k)</td>
+                    <td>✅</td>
+                </tr>
+            </table>
+            <p><em>k = interval valori, d = număr cifre</em></p>
+        </div>
+
+        <!-- Slide 6: Quick Sort - Concept -->
+        <div class="slide" data-slide="6">
+            <h2>⚡ Quick Sort - Conceptul Divide et Impera</h2>
+            <div class="ascii-diagram">
+┌────────────────────────────────────────────────────────────────────┐
+│  QUICK SORT - STRATEGIA DIVIDE ET IMPERA                           │
+├────────────────────────────────────────────────────────────────────┤
+│                                                                    │
+│   Array: [3, 8, 2, 5, 1, 4, 7, 6]    pivot = 5                    │
+│                                                                    │
+│   1. PARTIȚIONARE:                                                 │
+│      Mutăm elementele astfel încât:                                │
+│      - Toate valorile < pivot sunt la stânga                       │
+│      - Toate valorile > pivot sunt la dreapta                      │
+│                                                                    │
+│   Rezultat: [3, 2, 1, 4] [5] [8, 7, 6]                            │
+│              └───┬───┘   │   └───┬───┘                             │
+│              < pivot   pivot   > pivot                             │
+│                                                                    │
+│   2. RECURSIV: Sortăm cele două subarray-uri                       │
+│                                                                    │
+│   3. COMBINĂ: Array-ul este deja sortat! (no merge needed)         │
+│                                                                    │
+└────────────────────────────────────────────────────────────────────┘
+            </div>
+            <div class="success-box">
+                <p><strong>Avantaj principal:</strong> Sortare in-place, cache-friendly, foarte rapid în practică!</p>
+            </div>
+        </div>
+
+        <!-- Slide 7: Quick Sort - Partiționare Lomuto -->
+        <div class="slide" data-slide="7">
+            <h2>Quick Sort - Partiționare Lomuto</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Partiționare Lomuto</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">/**
+ * Partiționare Lomuto - simplu de înțeles
+ * Pivot = ultimul element
+ */
+int partition_lomuto(int arr[], int low, int high) {
+    int pivot = arr[high];  // Pivot = ultimul element
+    int i = low - 1;        // Index pentru elementele mici
+    
+    for (int j = low; j < high; j++) {
+        if (arr[j] <= pivot) {
+            i++;
+            swap(&arr[i], &arr[j]);
+        }
+    }
+    
+    // Punem pivot-ul la poziția corectă
+    swap(&arr[i + 1], &arr[high]);
+    return i + 1;  // Returnăm poziția pivotului
+}</code></pre>
+            </div>
+            <div class="warning-box">
+                <p><strong>⚠️ Problemă:</strong> Dacă array-ul este deja sortat, pivot-ul este mereu cel mai mare/mic element → O(n²)!</p>
+            </div>
+        </div>
+
+        <!-- Slide 8: Quick Sort - Pivot Aleator -->
+        <div class="slide" data-slide="8">
+            <h2>Quick Sort - Pivot Aleator (Randomized)</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Pivot aleator pentru evitarea worst-case</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">/**
+ * Partiționare cu pivot aleator
+ * Complexitate medie garantată: O(n log n)
+ */
+int partition_random(int arr[], int low, int high) {
+    // Alegem un pivot aleator
+    int random_idx = low + rand() % (high - low + 1);
+    
+    // Îl mutăm la final
+    swap(&arr[random_idx], &arr[high]);
+    
+    // Continuăm cu partiționarea standard
+    return partition_lomuto(arr, low, high);
+}
+
+void quick_sort_randomized(int arr[], int low, int high) {
+    if (low < high) {
+        int pi = partition_random(arr, low, high);
+        quick_sort_randomized(arr, low, pi - 1);
+        quick_sort_randomized(arr, pi + 1, high);
+    }
+}</code></pre>
+            </div>
+            <div class="success-box">
+                <p><strong>✓ Soluție:</strong> Pivot aleator previne worst-case pentru orice input determinist.</p>
+            </div>
+        </div>
+
+        <!-- Slide 9: Quick Sort - Median of Three -->
+        <div class="slide" data-slide="9">
+            <h2>Quick Sort - Median of Three</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Median din 3 elemente ca pivot</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">/**
+ * Alege mediana dintre arr[low], arr[mid], arr[high]
+ * Îmbunătățește semnificativ performanța pe date parțial sortate
+ */
+int median_of_three(int arr[], int low, int high) {
+    int mid = low + (high - low) / 2;
+    
+    // Sortăm cele 3 poziții
+    if (arr[low] > arr[mid])  swap(&arr[low], &arr[mid]);
+    if (arr[low] > arr[high]) swap(&arr[low], &arr[high]);
+    if (arr[mid] > arr[high]) swap(&arr[mid], &arr[high]);
+    
+    // Mediana este acum arr[mid], o mutăm lângă high
+    swap(&arr[mid], &arr[high - 1]);
+    return arr[high - 1];
+}</code></pre>
+            </div>
+            <div class="highlight-box">
+                <p><strong>Utilizat în:</strong> std::sort() din C++ (parte din Introsort)</p>
+            </div>
+        </div>
+
+        <!-- Slide 10: Merge Sort -->
+        <div class="slide" data-slide="10">
+            <h2>🔀 Merge Sort - Algoritmul Lui von Neumann</h2>
+            <div class="ascii-diagram">
+┌─────────────────────────────────────────────────────────────────────┐
+│  MERGE SORT - DIVIDE & CONQUER                                      │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│   [38, 27, 43, 3, 9, 82, 10]                                       │
+│            │                                                        │
+│     ┌──────┴───────┐                                               │
+│     ▼              ▼                                               │
+│  [38,27,43,3]   [9,82,10]       DIVIDE                             │
+│     │              │                                               │
+│  ┌──┴──┐       ┌───┴───┐                                          │
+│  ▼     ▼       ▼       ▼                                          │
+│ [38,27][43,3] [9,82]  [10]                                        │
+│  │   │  │  │   │  │    │                                          │
+│  ▼   ▼  ▼  ▼   ▼  ▼    ▼                                          │
+│ [38][27][43][3][9][82][10]     BASE CASE                          │
+│  │   │  │   │  │   │   │                                          │
+│  └─┬─┘  └─┬─┘  └─┬─┘   │                                          │
+│    ▼      ▼      ▼     ▼                                          │
+│ [27,38] [3,43] [9,82] [10]     MERGE                              │
+│    │      │      │     │                                          │
+│    └──┬───┘      └──┬──┘                                          │
+│       ▼             ▼                                             │
+│   [3,27,38,43]  [9,10,82]                                         │
+│        │            │                                             │
+│        └─────┬──────┘                                             │
+│              ▼                                                     │
+│     [3, 9, 10, 27, 38, 43, 82]  SORTED!                           │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+            </div>
+        </div>
+
+        <!-- Slide 11: Merge Sort - Cod -->
+        <div class="slide" data-slide="11">
+            <h2>Merge Sort - Implementare</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Funcția de merge</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">void merge(int arr[], int left, int mid, int right) {
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+    
+    int *L = malloc(n1 * sizeof(int));
+    int *R = malloc(n2 * sizeof(int));
+    
+    // Copiem datele în array-uri temporare
+    for (int i = 0; i < n1; i++) L[i] = arr[left + i];
+    for (int j = 0; j < n2; j++) R[j] = arr[mid + 1 + j];
+    
+    // Interclasăm
+    int i = 0, j = 0, k = left;
+    while (i < n1 && j < n2) {
+        if (L[i] <= R[j]) arr[k++] = L[i++];
+        else              arr[k++] = R[j++];
+    }
+    
+    // Copiem restul
+    while (i < n1) arr[k++] = L[i++];
+    while (j < n2) arr[k++] = R[j++];
+    
+    free(L); free(R);
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 12: Heap Sort -->
+        <div class="slide" data-slide="12">
+            <h2>🏔️ Heap Sort - In-Place cu O(n log n) garantat</h2>
+            <div class="two-column">
+                <div>
+                    <h3>Structura Max-Heap</h3>
+                    <div class="ascii-diagram">
+         90
+        /  \
+      85    80
+     /  \   / \
+   70   60 50  30
+   /
+  40
+
+Array: [90,85,80,70,60,50,30,40]
+Index:   0  1  2  3  4  5  6  7
+
+Parent(i) = (i-1)/2
+Left(i)   = 2*i + 1
+Right(i)  = 2*i + 2
+                    </div>
+                </div>
+                <div>
+                    <h3>Algoritmul</h3>
+                    <ol class="step-list">
+                        <li>Build Max-Heap din array <strong>O(n)</strong></li>
+                        <li>Extract-Max repetat: Swap root cu ultimul, heapify <strong>O(n log n)</strong></li>
+                        <li>Array-ul devine sortat crescător</li>
+                    </ol>
+                    <div class="success-box">
+                        <p><strong>Avantaje:</strong></p>
+                        <ul>
+                            <li>In-place (O(1) spațiu)</li>
+                            <li>O(n log n) garantat</li>
+                            <li>Fără worst-case patologic</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Heap Sort - Cod -->
+        <div class="slide" data-slide="13">
+            <h2>Heap Sort - Implementare</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Heapify și Heap Sort</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">void heapify(int arr[], int n, int i) {
+    int largest = i;
+    int left = 2 * i + 1;
+    int right = 2 * i + 2;
+    
+    if (left < n && arr[left] > arr[largest])
+        largest = left;
+    if (right < n && arr[right] > arr[largest])
+        largest = right;
+    
+    if (largest != i) {
+        swap(&arr[i], &arr[largest]);
+        heapify(arr, n, largest);  // Recursiv în jos
+    }
+}
+
+void heap_sort(int arr[], int n) {
+    // Build heap - O(n)
+    for (int i = n / 2 - 1; i >= 0; i--)
+        heapify(arr, n, i);
+    
+    // Extract max repetat
+    for (int i = n - 1; i > 0; i--) {
+        swap(&arr[0], &arr[i]);    // Max la final
+        heapify(arr, i, 0);        // Repară heap-ul
+    }
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 14: Counting Sort -->
+        <div class="slide" data-slide="14">
+            <h2>🔢 Counting Sort - O(n + k) Non-Comparativ</h2>
+            <div class="ascii-diagram">
+┌─────────────────────────────────────────────────────────────────────┐
+│  COUNTING SORT - PENTRU INTERVAL MIC DE VALORI                      │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│   Input:  [4, 2, 2, 8, 3, 3, 1]     Range: 1-8                     │
+│                                                                     │
+│   Pas 1: NUMĂRARE                                                   │
+│   Count: [0, 1, 2, 2, 1, 0, 0, 0, 1]                               │
+│   Index:  0  1  2  3  4  5  6  7  8                                │
+│                                                                     │
+│   Pas 2: PREFIX SUM (pentru stabilitate)                           │
+│   Cumul: [0, 1, 3, 5, 6, 6, 6, 6, 7]                               │
+│                                                                     │
+│   Pas 3: PLASARE (de la sfârșit pentru stabilitate)                │
+│   Output: [1, 2, 2, 3, 3, 4, 8]                                    │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+            </div>
+            <div class="info-box">
+                <p><strong>Când folosim?</strong> Când k (intervalul) este comparabil cu n. Ex: sortare note 1-10, caractere ASCII, vârste.</p>
+            </div>
+        </div>
+
+        <!-- Slide 15: Counting Sort - Cod -->
+        <div class="slide" data-slide="15">
+            <h2>Counting Sort - Implementare Stabilă</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Counting Sort O(n + k)</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">void counting_sort(int arr[], int n, int max_val) {
+    int *count = calloc(max_val + 1, sizeof(int));
+    int *output = malloc(n * sizeof(int));
+    
+    // Pas 1: Numărare
+    for (int i = 0; i < n; i++)
+        count[arr[i]]++;
+    
+    // Pas 2: Prefix sum (poziții cumulative)
+    for (int i = 1; i <= max_val; i++)
+        count[i] += count[i - 1];
+    
+    // Pas 3: Plasare (de la sfârșit pentru stabilitate!)
+    for (int i = n - 1; i >= 0; i--) {
+        output[count[arr[i]] - 1] = arr[i];
+        count[arr[i]]--;
+    }
+    
+    // Copiem rezultatul
+    for (int i = 0; i < n; i++)
+        arr[i] = output[i];
+    
+    free(count);
+    free(output);
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 16: Radix Sort -->
+        <div class="slide" data-slide="16">
+            <h2>🎯 Radix Sort - Sortare pe Cifre</h2>
+            <div class="ascii-diagram">
+┌─────────────────────────────────────────────────────────────────────┐
+│  RADIX SORT LSD (Least Significant Digit First)                    │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│   Input:  [170, 45, 75, 90, 802, 24, 2, 66]                        │
+│                                                                     │
+│   CIFRA UNITĂȚILOR (1s):                                           │
+│   [170, 90, 802, 2, 24, 45, 75, 66]                                │
+│         0   0   2  2   4   5   5   6                               │
+│                                                                     │
+│   CIFRA ZECILOR (10s):                                             │
+│   [802, 2, 24, 45, 66, 170, 75, 90]                                │
+│     0   0   2   4   6    7   7   9                                 │
+│                                                                     │
+│   CIFRA SUTELOR (100s):                                            │
+│   [2, 24, 45, 66, 75, 90, 170, 802]                                │
+│    0   0   0   0   0   0    1    8                                 │
+│                                                                     │
+│   Output: SORTAT!                                                   │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+            </div>
+            <div class="highlight-box">
+                <p><strong>Complexitate:</strong> O(d × (n + k)) unde d = numărul de cifre, k = baza (10 pentru decimal)</p>
+            </div>
+        </div>
+
+        <!-- Slide 17: Introsort -->
+        <div class="slide" data-slide="17">
+            <h2>🚀 Introsort - Algoritm Hibrid Industrial</h2>
+            <div class="two-column">
+                <div>
+                    <h3>Strategia</h3>
+                    <p>Combinație inteligentă de 3 algoritmi:</p>
+                    <ol class="step-list">
+                        <li><strong>Quick Sort</strong> pentru majoritatea sortării (rapid în practică)</li>
+                        <li><strong>Heap Sort</strong> când recursiunea devine prea adâncă (evită O(n²))</li>
+                        <li><strong>Insertion Sort</strong> pentru subarray-uri mici (< 16 elemente)</li>
+                    </ol>
+                </div>
+                <div>
+                    <h3>Utilizare</h3>
+                    <div class="success-box">
+                        <p><strong>Folosit în:</strong></p>
+                        <ul>
+                            <li>C++ std::sort()</li>
+                            <li>.NET Array.Sort()</li>
+                            <li>GNU libstdc++</li>
+                        </ul>
+                    </div>
+                    <div class="info-box">
+                        <p><strong>Prag de adâncime:</strong></p>
+                        <p>maxDepth = 2 × log₂(n)</p>
+                        <p>Dacă depășit → switch la Heap Sort</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 18: Introsort - Cod -->
+        <div class="slide" data-slide="18">
+            <h2>Introsort - Implementare</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span>Introsort cu 3 algoritmi</span>
+                    <span class="lang-badge">C</span>
+                </div>
+                <pre><code class="language-c">#define INSERTION_THRESHOLD 16
+
+void introsort_helper(int arr[], int low, int high, int depth_limit) {
+    int size = high - low + 1;
+    
+    // Pentru subarray-uri mici: Insertion Sort
+    if (size < INSERTION_THRESHOLD) {
+        insertion_sort(arr + low, size);
+        return;
+    }
+    
+    // Dacă recursiunea e prea adâncă: Heap Sort
+    if (depth_limit == 0) {
+        heap_sort(arr + low, size);
+        return;
+    }
+    
+    // Altfel: Quick Sort cu median-of-three
+    int pivot = partition_mot(arr, low, high);
+    introsort_helper(arr, low, pivot - 1, depth_limit - 1);
+    introsort_helper(arr, pivot + 1, high, depth_limit - 1);
+}
+
+void introsort(int arr[], int n) {
+    int depth_limit = 2 * (int)log2(n);
+    introsort_helper(arr, 0, n - 1, depth_limit);
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 19: Când Folosim Ce? -->
+        <div class="slide" data-slide="19">
+            <h2>🎯 Ghid de Selecție Algoritm</h2>
+            <table class="comparison-table">
+                <tr>
+                    <th>Situație</th>
+                    <th>Algoritm Recomandat</th>
+                    <th>De Ce?</th>
+                </tr>
+                <tr>
+                    <td>Array mic (n < 50)</td>
+                    <td><span class="complexity good">Insertion Sort</span></td>
+                    <td>Overhead mic, rapid în practică</td>
+                </tr>
+                <tr>
+                    <td>Date aproape sortate</td>
+                    <td><span class="complexity good">Insertion Sort</span></td>
+                    <td>O(n) pentru date aproape sortate</td>
+                </tr>
+                <tr>
+                    <td>Interval mic de valori</td>
+                    <td><span class="complexity excellent">Counting Sort</span></td>
+                    <td>O(n+k) liniar</td>
+                </tr>
+                <tr>
+                    <td>Sortare stringuri</td>
+                    <td><span class="complexity excellent">Radix Sort MSD</span></td>
+                    <td>Eficient pentru chei de lungime fixă</td>
+                </tr>
+                <tr>
+                    <td>Memorie limitată</td>
+                    <td><span class="complexity good">Heap Sort</span></td>
+                    <td>O(1) spațiu suplimentar</td>
+                </tr>
+                <tr>
+                    <td>Stabilitate necesară</td>
+                    <td><span class="complexity good">Merge Sort</span></td>
+                    <td>Stabil, predictibil</td>
+                </tr>
+                <tr>
+                    <td>Caz general</td>
+                    <td><span class="complexity excellent">Introsort / Quick Sort</span></td>
+                    <td>Cel mai rapid în practică</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Slide 20: Benchmark Real -->
+        <div class="slide" data-slide="20">
+            <h2>📊 Rezultate Benchmark (10.000 elemente)</h2>
+            <div class="ascii-diagram">
+┌───────────────────────────────────────────────────────────────────────────┐
+│                    TIMP DE EXECUȚIE (milisecunde)                         │
+├───────────────────┬────────────┬────────────┬────────────┬────────────────┤
+│ Algoritm          │  Random    │  Sorted    │  Reversed  │ Nearly Sorted  │
+├───────────────────┼────────────┼────────────┼────────────┼────────────────┤
+│ Quick Sort        │   1.2 ms   │  45.2 ms   │  46.1 ms   │    1.8 ms      │
+│ Quick (random)    │   1.3 ms   │   1.2 ms   │   1.3 ms   │    1.4 ms      │
+│ Merge Sort        │   2.1 ms   │   1.8 ms   │   1.9 ms   │    2.0 ms      │
+│ Heap Sort         │   2.4 ms   │   2.3 ms   │   2.4 ms   │    2.3 ms      │
+│ Introsort         │   1.2 ms   │   1.1 ms   │   1.2 ms   │    1.2 ms      │
+│ Counting Sort*    │   0.3 ms   │   0.3 ms   │   0.3 ms   │    0.3 ms      │
+└───────────────────┴────────────┴────────────┴────────────┴────────────────┘
+│ * Counting Sort testat cu valori în intervalul [0, 1000]                  │
+└───────────────────────────────────────────────────────────────────────────┘
+            </div>
+            <div class="warning-box">
+                <p><strong>Observație:</strong> Quick Sort clasic are worst-case pe date sortate! Pivotul aleator rezolvă problema.</p>
+            </div>
+        </div>
+
+        <!-- Slide 21: Aplicații Industriale -->
+        <div class="slide" data-slide="21">
+            <h2>🏭 Aplicații în Industrie</h2>
+            <div class="two-column">
+                <div>
+                    <h3>Baze de Date</h3>
+                    <ul>
+                        <li><strong>PostgreSQL:</strong> Uses hybrid of Quick Sort + external merge</li>
+                        <li><strong>MySQL:</strong> File sorts use merge sort for stability</li>
+                        <li><strong>Redis:</strong> SORT uses Quick Sort</li>
+                    </ul>
+                    
+                    <h3>Sisteme de Operare</h3>
+                    <ul>
+                        <li><strong>Linux qsort():</strong> Merge sort (garantează O(n log n))</li>
+                        <li><strong>glibc:</strong> Introsort pentru arrays</li>
+                        <li><strong>BSD:</strong> Hybrid smoothsort</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Search Engines</h3>
+                    <ul>
+                        <li><strong>Inverted index:</strong> Merge sort pentru stabilitate la same-score docs</li>
+                        <li><strong>Result ranking:</strong> Partial sorting (Top-K) cu heap</li>
+                    </ul>
+                    
+                    <h3>Data Processing</h3>
+                    <ul>
+                        <li><strong>Hadoop/Spark:</strong> External merge sort pentru big data</li>
+                        <li><strong>Pandas:</strong> Introsort cu Timsort fallback</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 22: Exerciții -->
+        <div class="slide" data-slide="22">
+            <h2>💻 Exerciții de Laborator</h2>
+            <div class="two-column">
+                <div>
+                    <div class="highlight-box">
+                        <h3>Exercițiul 1: Benchmark</h3>
+                        <p>Implementați și comparați:</p>
+                        <ul>
+                            <li>Quick Sort (3 variante)</li>
+                            <li>Merge Sort</li>
+                            <li>Heap Sort</li>
+                        </ul>
+                        <p>Măsurați timp și comparații pe date random/sorted/reversed.</p>
+                    </div>
+                </div>
+                <div>
+                    <div class="highlight-box">
+                        <h3>Exercițiul 2: External Sort</h3>
+                        <p>Sortați un fișier mare care nu încape în memorie:</p>
+                        <ul>
+                            <li>Creați runs sortate</li>
+                            <li>K-way merge cu min-heap</li>
+                            <li>Validați rezultatul</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 23: Teme -->
+        <div class="slide" data-slide="23">
+            <h2>📝 Teme pentru Acasă</h2>
+            <div class="two-column">
+                <div>
+                    <div class="info-box">
+                        <h3>Tema 1: Sistem Adaptiv (50p)</h3>
+                        <p>Creați un sistem care:</p>
+                        <ul>
+                            <li>Analizează caracteristicile datelor</li>
+                            <li>Selectează automat algoritmul optim</li>
+                            <li>Compară cu alegerea naivă</li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <div class="info-box">
+                        <h3>Tema 2: Shell Sort (50p)</h3>
+                        <p>Implementați Shell Sort cu:</p>
+                        <ul>
+                            <li>4 secvențe de gap diferite</li>
+                            <li>Benchmark comparativ</li>
+                            <li>Vizualizare pas cu pas</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 24: Rezumat -->
+        <div class="slide" data-slide="24">
+            <h2>📋 Rezumat</h2>
+            <div class="two-column">
+                <div>
+                    <h3>Ce am învățat</h3>
+                    <ul>
+                        <li>Notațiile O, Ω, Θ pentru analiză</li>
+                        <li>Quick Sort și optimizările (pivot aleator, median-of-three)</li>
+                        <li>Merge Sort - stabil, predictibil</li>
+                        <li>Heap Sort - in-place, garantat O(n log n)</li>
+                        <li>Algoritmi non-comparativi (Counting, Radix)</li>
+                        <li>Introsort - soluția industrială hibridă</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Puncte Cheie</h3>
+                    <div class="success-box">
+                        <ul>
+                            <li>Quick Sort e cel mai rapid în practică (cu pivot aleator)</li>
+                            <li>Merge Sort pentru stabilitate și predictibilitate</li>
+                            <li>Counting/Radix Sort pentru cazuri speciale (liniari!)</li>
+                            <li>Alegerea depinde de context!</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 25: Preview Săptămâna Următoare -->
+        <div class="slide" data-slide="25">
+            <h2>🔮 Preview: Săptămâna 16</h2>
+            <h3>Paradigme Algoritmice - Greedy și Backtracking</h3>
+            <div class="two-column">
+                <div>
+                    <div class="highlight-box">
+                        <h3>Greedy</h3>
+                        <ul>
+                            <li>Activity Selection</li>
+                            <li>Fractional Knapsack</li>
+                            <li>Huffman Coding</li>
+                        </ul>
+                        <p><em>Alegerea locală optimă → Soluție globală?</em></p>
+                    </div>
+                </div>
+                <div>
+                    <div class="highlight-box">
+                        <h3>Backtracking</h3>
+                        <ul>
+                            <li>N-Queens Problem</li>
+                            <li>Sudoku Solver</li>
+                            <li>Generare permutări/combinări</li>
+                        </ul>
+                        <p><em>Explorare sistematică cu pruning</em></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 26: Final -->
+        <div class="slide title-slide" data-slide="26">
+            <h1>Întrebări?</h1>
+            <p class="subtitle">Algoritmi de Sortare Avansați</p>
+            <p class="info">
+                📧 Contact: profesor@ase.ro<br>
+                📚 Materiale: github.com/course-atp<br><br>
+                Academia de Studii Economice din București
+            </p>
+        </div>
+    </div>
+
+    <div id="slide-counter"></div>
+    <div class="keyboard-hints">
+        <kbd>←</kbd> <kbd>→</kbd> navigare | <kbd>Home</kbd> <kbd>End</kbd> prima/ultima
+    </div>
+    
+    <div id="controls">
+        <button class="control-btn" onclick="prevSlide()">◀ Anterior</button>
+        <button class="control-btn" onclick="nextSlide()">Următor ▶</button>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = document.querySelectorAll('.slide').length;
+
+        function showSlide(n) {
+            if (n < 1) n = 1;
+            if (n > totalSlides) n = totalSlides;
+            
+            document.querySelectorAll('.slide').forEach(slide => {
+                slide.classList.remove('active');
+            });
+            
+            document.querySelector(`[data-slide="${n}"]`).classList.add('active');
+            currentSlide = n;
+            
+            document.getElementById('progress-bar').style.width = 
+                ((currentSlide / totalSlides) * 100) + '%';
+            document.getElementById('slide-counter').textContent = 
+                `${currentSlide} / ${totalSlides}`;
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                prevSlide();
+            } else if (e.key === 'Home') {
+                showSlide(1);
+            } else if (e.key === 'End') {
+                showSlide(totalSlides);
+            }
+        });
+
+        // Initialize
+        showSlide(1);
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

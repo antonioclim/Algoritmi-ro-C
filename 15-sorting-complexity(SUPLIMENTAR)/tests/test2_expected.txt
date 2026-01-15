@@ -1,0 +1,29 @@
+
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║     SĂPTĂMÂNA 15: SORTARE EXTERNĂ                                              ║
+║     Exercițiul 2: External Merge Sort                                          ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+
+═══ PARAMETRI ═══
+  Număr elemente: 100
+  Buffer size: 1000
+  Fișier input: /tmp/external_input.txt
+  Fișier output: /tmp/external_output.txt
+
+═══ FAZA 1: Generare date ═══
+  Generat 100 numere aleatorii în fișier.
+
+═══ FAZA 2: Creare Run-uri Sortate ═══
+  Run-uri create: 1
+  Total elemente procesate: 100
+
+═══ FAZA 3: K-Way Merge ═══
+  Merge finalizat cu succes!
+
+═══ VERIFICARE ═══
+  Array-ul rezultat este SORTAT CORECT!
+  Total comparații în merge: OK
+
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║  SORTARE EXTERNĂ COMPLETĂ CU SUCCES!                                           ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
