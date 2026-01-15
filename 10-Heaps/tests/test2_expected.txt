@@ -1,0 +1,3 @@
+Output heap_sort: [11, 12, 22, 25, 34, 64, 90]
+  - Este sortat: ✓ DA
+  - Rezultat identic cu qsort: ✓ DA

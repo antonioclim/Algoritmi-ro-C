@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparație: Heap-uri | Pseudocod → C → Python</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text-primary: #c9d1d9;
+            --text-secondary: #8b949e;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-yellow: #d29922;
+            --accent-red: #f85149;
+            --accent-purple: #a371f7;
+            --border-color: #30363d;
+            --pseudo-color: #ffa657;
+            --c-color: #58a6ff;
+            --python-color: #3fb950;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--pseudo-color), var(--c-color), var(--python-color));
+            transition: width 0.3s ease;
+            z-index: 1000;
+        }
+
+        .slides-container {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 50px 60px;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        h1 {
+            font-size: 2.4rem;
+            color: var(--accent-blue);
+            margin-bottom: 1.2rem;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            color: var(--accent-green);
+            margin-bottom: 1rem;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        p {
+            font-size: 1.15rem;
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+
+        .three-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .column {
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            padding: 1rem;
+            overflow: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .column.pseudocod {
+            border-top-color: var(--pseudo-color);
+        }
+
+        .column.c-lang {
+            border-top-color: var(--c-color);
+        }
+
+        .column.python {
+            border-top-color: var(--python-color);
+        }
+
+        .column.pseudocod h3 { color: var(--pseudo-color); }
+        .column.c-lang h3 { color: var(--c-color); }
+        .column.python h3 { color: var(--python-color); }
+
+        pre {
+            background-color: var(--bg-tertiary);
+            border-radius: 6px;
+            padding: 0.8rem;
+            overflow-x: auto;
+            flex: 1;
+            font-size: 0.85rem;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+            line-height: 1.5;
+        }
+
+        .pseudocode {
+            color: var(--pseudo-color);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .title-slide {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .title-slide h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.6rem;
+            color: var(--accent-purple);
+            margin-bottom: 2rem;
+        }
+
+        .meta {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .info-box {
+            background-color: rgba(88, 166, 255, 0.1);
+            border-left: 4px solid var(--accent-blue);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .comparison-table th, .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+
+        .comparison-table th {
+            background-color: var(--bg-tertiary);
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background-color: var(--bg-secondary);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge.pseudo { background: rgba(255, 166, 87, 0.2); color: var(--pseudo-color); }
+        .badge.c { background: rgba(88, 166, 255, 0.2); color: var(--c-color); }
+        .badge.py { background: rgba(63, 185, 80, 0.2); color: var(--python-color); }
+
+        .navigation {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            background-color: var(--accent-purple);
+            color: var(--bg-primary);
+        }
+
+        .slide-counter {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background-color: var(--bg-secondary);
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            font-size: 0.9rem;
+            z-index: 1000;
+        }
+
+        kbd {
+            background-color: var(--bg-tertiary);
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+
+        .key-insights {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .insight-box {
+            background-color: var(--bg-secondary);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .insight-box h4 {
+            color: var(--accent-yellow);
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 1200px) {
+            .three-columns {
+                grid-template-columns: 1fr;
+            }
+            .slide { padding: 30px 40px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+
+    <div class="slides-container">
+        <!-- Slide 1: Title -->
+        <div class="slide title-slide active" data-slide="1">
+            <h1>🔄 Comparație: Heap-uri</h1>
+            <p class="subtitle">Pseudocod → C → Python</p>
+            <p class="meta">
+                Săptămâna 10 | Algoritmi și Tehnici de Programare<br><br>
+                <kbd>←</kbd> <kbd>→</kbd> pentru navigare
+            </p>
+        </div>
+
+        <!-- Slide 2: Why Compare -->
+        <div class="slide" data-slide="2">
+            <h1>❓ De Ce Comparăm Limbaje?</h1>
+            <div class="info-box">
+                <p>Înțelegerea unui algoritm în mai multe limbaje ajută la:</p>
+            </div>
+            <div class="key-insights">
+                <div class="insight-box">
+                    <h4>📝 Abstractizare</h4>
+                    <p>Pseudocodul exprimă <em>ideea</em> fără detalii de implementare</p>
+                </div>
+                <div class="insight-box">
+                    <h4>⚙️ Control</h4>
+                    <p>C oferă control total asupra memoriei și performanței</p>
+                </div>
+                <div class="insight-box">
+                    <h4>🚀 Productivitate</h4>
+                    <p>Python permite prototipare rapidă cu biblioteci built-in</p>
+                </div>
+            </div>
+            <table class="comparison-table" style="margin-top: 1.5rem;">
+                <tr>
+                    <th>Aspect</th>
+                    <th><span class="badge pseudo">Pseudocod</span></th>
+                    <th><span class="badge c">C</span></th>
+                    <th><span class="badge py">Python</span></th>
+                </tr>
+                <tr>
+                    <td>Nivel abstractizare</td>
+                    <td>Foarte înalt</td>
+                    <td>Scăzut</td>
+                    <td>Înalt</td>
+                </tr>
+                <tr>
+                    <td>Gestionare memorie</td>
+                    <td>Implicită</td>
+                    <td>Manuală</td>
+                    <td>Automată (GC)</td>
+                </tr>
+                <tr>
+                    <td>Heap built-in</td>
+                    <td>N/A</td>
+                    <td>Nu</td>
+                    <td>Da (heapq)</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Slide 3: Heap Structure -->
+        <div class="slide" data-slide="3">
+            <h1>🔺 Structura Heap</h1>
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <h3>📝 Pseudocod</h3>
+                    <pre><code class="pseudocode">STRUCTURA Heap
+    array[1..n]      // elemente
+    size             // dimensiune curentă
+    capacity         // capacitate maximă
+
+FUNCȚIE parent(i)
+    RETURNEAZĂ i / 2
+
+FUNCȚIE left(i)
+    RETURNEAZĂ 2 * i
+
+FUNCȚIE right(i)
+    RETURNEAZĂ 2 * i + 1
+
+// Notă: indexare de la 1</code></pre>
+                </div>
+                <div class="column c-lang">
+                    <h3>⚙️ C</h3>
+                    <pre><code class="language-c">typedef struct {
+    int *data;
+    int size;
+    int capacity;
+} Heap;
+
+#define PARENT(i) (((i) - 1) / 2)
+#define LEFT(i)   ((2 * (i)) + 1)
+#define RIGHT(i)  ((2 * (i)) + 2)
+
+Heap* heap_create(int cap) {
+    Heap *h = malloc(sizeof(Heap));
+    h->data = malloc(cap * sizeof(int));
+    h->size = 0;
+    h->capacity = cap;
+    return h;
+}
+// Indexare de la 0</code></pre>
+                </div>
+                <div class="column python">
+                    <h3>🐍 Python</h3>
+                    <pre><code class="language-python">class Heap:
+    def __init__(self, capacity=16):
+        self.data = []
+        self.capacity = capacity
+    
+    @staticmethod
+    def parent(i):
+        return (i - 1) // 2
+    
+    @staticmethod
+    def left(i):
+        return 2 * i + 1
+    
+    @staticmethod
+    def right(i):
+        return 2 * i + 2
+
+# Sau folosiți heapq (min-heap)
+import heapq
+h = []
+# Indexare de la 0</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Heapify -->
+        <div class="slide" data-slide="4">
+            <h1>🔧 Operația Heapify (Max-Heap)</h1>
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <h3>📝 Pseudocod</h3>
+                    <pre><code class="pseudocode">FUNCȚIE MAX-HEAPIFY(A, n, i)
+    largest ← i
+    l ← LEFT(i)
+    r ← RIGHT(i)
+    
+    DACĂ l ≤ n ȘI A[l] > A[largest]
+        largest ← l
+    
+    DACĂ r ≤ n ȘI A[r] > A[largest]
+        largest ← r
+    
+    DACĂ largest ≠ i
+        SCHIMBĂ A[i] ↔ A[largest]
+        MAX-HEAPIFY(A, n, largest)</code></pre>
+                </div>
+                <div class="column c-lang">
+                    <h3>⚙️ C</h3>
+                    <pre><code class="language-c">void max_heapify(int arr[], int n, int i) {
+    int largest = i;
+    int l = LEFT(i);
+    int r = RIGHT(i);
+    
+    if (l < n && arr[l] > arr[largest])
+        largest = l;
+    
+    if (r < n && arr[r] > arr[largest])
+        largest = r;
+    
+    if (largest != i) {
+        int tmp = arr[i];
+        arr[i] = arr[largest];
+        arr[largest] = tmp;
+        max_heapify(arr, n, largest);
+    }
+}</code></pre>
+                </div>
+                <div class="column python">
+                    <h3>🐍 Python</h3>
+                    <pre><code class="language-python">def max_heapify(arr, n, i):
+    largest = i
+    l = 2 * i + 1
+    r = 2 * i + 2
+    
+    if l < n and arr[l] > arr[largest]:
+        largest = l
+    
+    if r < n and arr[r] > arr[largest]:
+        largest = r
+    
+    if largest != i:
+        arr[i], arr[largest] = \
+            arr[largest], arr[i]
+        max_heapify(arr, n, largest)
+
+# heapq folosește min-heap!
+# Pentru max: heapq cu valori negative</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Build Heap -->
+        <div class="slide" data-slide="5">
+            <h1>🏗️ Construirea Heap-ului</h1>
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <h3>📝 Pseudocod</h3>
+                    <pre><code class="pseudocode">FUNCȚIE BUILD-MAX-HEAP(A, n)
+    // Frunzele sunt de la ⌊n/2⌋+1 la n
+    // Începem de la ultimul non-frunză
+    
+    PENTRU i ← ⌊n/2⌋ PÂNĂ LA 1
+        MAX-HEAPIFY(A, n, i)
+    
+// Complexitate: O(n)
+// Nu O(n log n)!</code></pre>
+                </div>
+                <div class="column c-lang">
+                    <h3>⚙️ C</h3>
+                    <pre><code class="language-c">void build_max_heap(int arr[], int n) {
+    // Primul index non-frunză
+    int start = (n / 2) - 1;
+    
+    // De jos în sus
+    for (int i = start; i >= 0; i--) {
+        max_heapify(arr, n, i);
+    }
+}
+
+// Utilizare:
+int arr[] = {4, 10, 3, 5, 1};
+int n = 5;
+build_max_heap(arr, n);
+// arr devine: {10, 5, 3, 4, 1}</code></pre>
+                </div>
+                <div class="column python">
+                    <h3>🐍 Python</h3>
+                    <pre><code class="language-python">def build_max_heap(arr):
+    n = len(arr)
+    start = n // 2 - 1
+    
+    for i in range(start, -1, -1):
+        max_heapify(arr, n, i)
+
+# Cu heapq (min-heap):
+import heapq
+
+arr = [4, 10, 3, 5, 1]
+heapq.heapify(arr)
+# arr devine min-heap: [1, 4, 3, 5, 10]
+
+# Pentru max-heap cu heapq:
+arr = [-x for x in [4, 10, 3, 5, 1]]
+heapq.heapify(arr)</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Insert -->
+        <div class="slide" data-slide="6">
+            <h1>➕ Inserare în Heap</h1>
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <h3>📝 Pseudocod</h3>
+                    <pre><code class="pseudocode">FUNCȚIE HEAP-INSERT(H, key)
+    H.size ← H.size + 1
+    i ← H.size
+    H.array[i] ← key
+    
+    // Sift-up
+    CÂT TIMP i > 1 ȘI H.array[PARENT(i)] < H.array[i]
+        SCHIMBĂ H.array[i] ↔ H.array[PARENT(i)]
+        i ← PARENT(i)
+
+// Complexitate: O(log n)</code></pre>
+                </div>
+                <div class="column c-lang">
+                    <h3>⚙️ C</h3>
+                    <pre><code class="language-c">void heap_insert(Heap *h, int key) {
+    // Verifică capacitatea
+    if (h->size >= h->capacity) {
+        h->capacity *= 2;
+        h->data = realloc(h->data, 
+            h->capacity * sizeof(int));
+    }
+    
+    int i = h->size;
+    h->data[i] = key;
+    h->size++;
+    
+    // Sift-up
+    while (i > 0 && 
+           h->data[PARENT(i)] < h->data[i]) {
+        SWAP(h->data[i], h->data[PARENT(i)]);
+        i = PARENT(i);
+    }
+}</code></pre>
+                </div>
+                <div class="column python">
+                    <h3>🐍 Python</h3>
+                    <pre><code class="language-python">def heap_insert(self, key):
+    self.data.append(key)
+    i = len(self.data) - 1
+    
+    # Sift-up
+    while i > 0:
+        parent = (i - 1) // 2
+        if self.data[parent] < self.data[i]:
+            self.data[i], self.data[parent] = \
+                self.data[parent], self.data[i]
+            i = parent
+        else:
+            break
+
+# Cu heapq (min-heap):
+import heapq
+heapq.heappush(h, item)
+# Pentru max: heappush(h, -item)</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Extract Max -->
+        <div class="slide" data-slide="7">
+            <h1>➖ Extragere Maximum</h1>
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <h3>📝 Pseudocod</h3>
+                    <pre><code class="pseudocode">FUNCȚIE HEAP-EXTRACT-MAX(H)
+    DACĂ H.size < 1
+        EROARE "Heap gol"
+    
+    max ← H.array[1]
+    H.array[1] ← H.array[H.size]
+    H.size ← H.size - 1
+    MAX-HEAPIFY(H, H.size, 1)
+    
+    RETURNEAZĂ max
+
+// Complexitate: O(log n)</code></pre>
+                </div>
+                <div class="column c-lang">
+                    <h3>⚙️ C</h3>
+                    <pre><code class="language-c">int heap_extract_max(Heap *h) {
+    if (h->size == 0) {
+        fprintf(stderr, "Heap gol!\n");
+        exit(EXIT_FAILURE);
+    }
+    
+    int max = h->data[0];
+    h->data[0] = h->data[h->size - 1];
+    h->size--;
+    
+    if (h->size > 0) {
+        max_heapify(h->data, h->size, 0);
+    }
+    
+    return max;
+}</code></pre>
+                </div>
+                <div class="column python">
+                    <h3>🐍 Python</h3>
+                    <pre><code class="language-python">def heap_extract_max(self):
+    if not self.data:
+        raise IndexError("Heap gol")
+    
+    max_val = self.data[0]
+    self.data[0] = self.data[-1]
+    self.data.pop()
+    
+    if self.data:
+        max_heapify(self.data, len(self.data), 0)
+    
+    return max_val
+
+# Cu heapq (min-heap):
+min_val = heapq.heappop(h)
+
+# Pentru max cu heapq:
+max_val = -heapq.heappop(h)</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Heap Sort -->
+        <div class="slide" data-slide="8">
+            <h1>🔢 Algoritmul Heap Sort</h1>
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <h3>📝 Pseudocod</h3>
+                    <pre><code class="pseudocode">FUNCȚIE HEAP-SORT(A, n)
+    BUILD-MAX-HEAP(A, n)
+    
+    PENTRU i ← n PÂNĂ LA 2
+        SCHIMBĂ A[1] ↔ A[i]
+        // Reduce dimensiunea heap
+        MAX-HEAPIFY(A, i-1, 1)
+
+// Complexitate: O(n log n)
+// Spațiu: O(1) - in-place
+// Instabil!</code></pre>
+                </div>
+                <div class="column c-lang">
+                    <h3>⚙️ C</h3>
+                    <pre><code class="language-c">void heap_sort(int arr[], int n) {
+    // Pas 1: Build max-heap
+    build_max_heap(arr, n);
+    
+    // Pas 2: Extract elements
+    for (int i = n - 1; i > 0; i--) {
+        // Mută max la sfârșit
+        int tmp = arr[0];
+        arr[0] = arr[i];
+        arr[i] = tmp;
+        
+        // Heapify pe heap redus
+        max_heapify(arr, i, 0);
+    }
+}</code></pre>
+                </div>
+                <div class="column python">
+                    <h3>🐍 Python</h3>
+                    <pre><code class="language-python">def heap_sort(arr):
+    n = len(arr)
+    build_max_heap(arr)
+    
+    for i in range(n - 1, 0, -1):
+        arr[0], arr[i] = arr[i], arr[0]
+        max_heapify(arr, i, 0)
+
+# Cu heapq - mai simplu:
+import heapq
+
+def heap_sort_heapq(arr):
+    heapq.heapify(arr)
+    return [heapq.heappop(arr) 
+            for _ in range(len(arr))]
+
+# Pythonic cu sorted():
+sorted_arr = sorted(arr)  # Timsort</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Priority Queue -->
+        <div class="slide" data-slide="9">
+            <h1>📋 Priority Queue - Utilizare Practică</h1>
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <h3>📝 Pseudocod</h3>
+                    <pre><code class="pseudocode">// Procesare task-uri cu priorități
+
+tasks ← COADĂ-CU-PRIORITĂȚI nouă
+
+ADAUGĂ(tasks, ("Email", 3))
+ADAUGĂ(tasks, ("Bug critic", 10))
+ADAUGĂ(tasks, ("Meeting", 5))
+
+CÂT TIMP NU E GOALĂ(tasks)
+    task ← EXTRAGE-MAX(tasks)
+    PROCESEAZĂ(task)
+
+// Ordine: Bug critic → Meeting → Email</code></pre>
+                </div>
+                <div class="column c-lang">
+                    <h3>⚙️ C</h3>
+                    <pre><code class="language-c">typedef struct {
+    char name[50];
+    int priority;
+} Task;
+
+// Compară după prioritate
+int cmp(Task a, Task b) {
+    return a.priority - b.priority;
+}
+
+// Utilizare
+PriorityQueue *pq = pq_create(10);
+pq_insert(pq, (Task){"Email", 3});
+pq_insert(pq, (Task){"Bug critic", 10});
+pq_insert(pq, (Task){"Meeting", 5});
+
+while (!pq_is_empty(pq)) {
+    Task t = pq_extract_max(pq);
+    process_task(t);
+}</code></pre>
+                </div>
+                <div class="column python">
+                    <h3>🐍 Python</h3>
+                    <pre><code class="language-python">import heapq
+
+tasks = []
+
+# heapq e min-heap, folosim -priority
+heapq.heappush(tasks, (-3, "Email"))
+heapq.heappush(tasks, (-10, "Bug critic"))
+heapq.heappush(tasks, (-5, "Meeting"))
+
+while tasks:
+    priority, name = heapq.heappop(tasks)
+    print(f"Procesez: {name}")
+
+# Output:
+# Procesez: Bug critic
+# Procesez: Meeting
+# Procesez: Email</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Memory Management -->
+        <div class="slide" data-slide="10">
+            <h1>🧠 Gestionarea Memoriei</h1>
+            <div class="three-columns">
+                <div class="column pseudocod">
+                    <h3>📝 Pseudocod</h3>
+                    <pre><code class="pseudocode">// Abstractizare - nu ne preocupă
+
+H ← HEAP nou cu capacitate 100
+
+// Memoria se alocă magic
+// Redimensionarea e automată
+// Nu există memory leaks
+
+// Pseudocodul ignoră aceste
+// detalii de implementare</code></pre>
+                </div>
+                <div class="column c-lang">
+                    <h3>⚙️ C</h3>
+                    <pre><code class="language-c">// Alocare manuală!
+Heap* h = malloc(sizeof(Heap));
+h->data = malloc(cap * sizeof(int));
+
+// Redimensionare manuală
+if (h->size >= h->capacity) {
+    h->capacity *= 2;
+    int *new_data = realloc(h->data,
+        h->capacity * sizeof(int));
+    if (!new_data) { /* handle error */ }
+    h->data = new_data;
+}
+
+// OBLIGATORIU: eliberare!
+void heap_destroy(Heap *h) {
+    free(h->data);  // 1. array
+    free(h);        // 2. structura
+}</code></pre>
+                </div>
+                <div class="column python">
+                    <h3>🐍 Python</h3>
+                    <pre><code class="language-python"># Gestionare automată!
+
+class Heap:
+    def __init__(self):
+        self.data = []  # Lista crește automat
+
+h = Heap()
+
+# Garbage Collector se ocupă
+# de eliberarea memoriei
+
+# Nu există memory leaks
+# (dacă nu folosim referințe circulare)
+
+# Python's list redimensionează
+# automat când e nevoie
+
+del h  # Optional, GC face cleanup</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Comparison Table -->
+        <div class="slide" data-slide="11">
+            <h1>📊 Tabel Comparativ</h1>
+            <table class="comparison-table">
+                <tr>
+                    <th>Criteriu</th>
+                    <th><span class="badge pseudo">Pseudocod</span></th>
+                    <th><span class="badge c">C</span></th>
+                    <th><span class="badge py">Python</span></th>
+                </tr>
+                <tr>
+                    <td>Indexare array</td>
+                    <td>De la 1 (convenție)</td>
+                    <td>De la 0</td>
+                    <td>De la 0</td>
+                </tr>
+                <tr>
+                    <td>Heap built-in</td>
+                    <td>N/A</td>
+                    <td>Nu - implementare manuală</td>
+                    <td>Da - heapq (min-heap)</td>
+                </tr>
+                <tr>
+                    <td>Tip heap implicit</td>
+                    <td>Max (de obicei)</td>
+                    <td>Alegem noi</td>
+                    <td>Min (heapq)</td>
+                </tr>
+                <tr>
+                    <td>Gestionare memorie</td>
+                    <td>Ignorată</td>
+                    <td>malloc/free manual</td>
+                    <td>Automată (GC)</td>
+                </tr>
+                <tr>
+                    <td>Redimensionare</td>
+                    <td>Implicită</td>
+                    <td>realloc manual</td>
+                    <td>Automată (list)</td>
+                </tr>
+                <tr>
+                    <td>Verificare erori</td>
+                    <td>Minimală</td>
+                    <td>Manuală (null checks)</td>
+                    <td>Excepții</td>
+                </tr>
+                <tr>
+                    <td>Performanță</td>
+                    <td>N/A</td>
+                    <td>Maximă (control total)</td>
+                    <td>Bună (overhead GC)</td>
+                </tr>
+                <tr>
+                    <td>Linii de cod</td>
+                    <td>~30</td>
+                    <td>~100-150</td>
+                    <td>~10-30</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Slide 12: When to Use -->
+        <div class="slide" data-slide="12">
+            <h1>🎯 Când Să Folosești Fiecare</h1>
+            <div class="key-insights">
+                <div class="insight-box">
+                    <h4 style="color: var(--pseudo-color);">📝 Pseudocod</h4>
+                    <ul style="font-size: 1rem; margin-top: 0.5rem;">
+                        <li>Învățare și înțelegere</li>
+                        <li>Documentație algoritmi</li>
+                        <li>Comunicare cu colegii</li>
+                        <li>Examene și interviuri</li>
+                        <li>Demonstrații formale</li>
+                    </ul>
+                </div>
+                <div class="insight-box">
+                    <h4 style="color: var(--c-color);">⚙️ C</h4>
+                    <ul style="font-size: 1rem; margin-top: 0.5rem;">
+                        <li>Sisteme embedded</li>
+                        <li>Sisteme de operare</li>
+                        <li>Performanță critică</li>
+                        <li>Memorie limitată</li>
+                        <li>Învățare low-level</li>
+                    </ul>
+                </div>
+                <div class="insight-box">
+                    <h4 style="color: var(--python-color);">🐍 Python</h4>
+                    <ul style="font-size: 1rem; margin-top: 0.5rem;">
+                        <li>Prototipare rapidă</li>
+                        <li>Scripting și automatizare</li>
+                        <li>Data science / ML</li>
+                        <li>Interviuri de cod</li>
+                        <li>Producție (cu grija)</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="info-box" style="margin-top: 1.5rem;">
+                <p><strong>💡 Sfat:</strong> În acest curs implementăm în C pentru a înțelege mecanismele fundamentale. În carieră, veți folosi adesea bibliotecile standard ale limbajului ales.</p>
+            </div>
+        </div>
+
+        <!-- Slide 13: Key Insights -->
+        <div class="slide" data-slide="13">
+            <h1>💡 Observații Cheie</h1>
+            <div class="key-insights">
+                <div class="insight-box">
+                    <h4>🔢 Indexare</h4>
+                    <p>Pseudocodul de la 1 → C/Python de la 0. Formulele de navigare diferă!</p>
+                    <p style="font-family: monospace; font-size: 0.9rem;">
+                        Pseudo: parent(i) = i/2<br>
+                        C/Py: parent(i) = (i-1)/2
+                    </p>
+                </div>
+                <div class="insight-box">
+                    <h4>📦 heapq în Python</h4>
+                    <p>Este <strong>min-heap</strong>! Pentru max-heap, folosiți valori negative:</p>
+                    <pre style="font-size: 0.85rem; background: var(--bg-tertiary); padding: 0.5rem; border-radius: 4px;"><code>heappush(h, -value)
+max_val = -heappop(h)</code></pre>
+                </div>
+                <div class="insight-box">
+                    <h4>🧹 Curățare în C</h4>
+                    <p>Fiecare <code>malloc</code> necesită <code>free</code>. Valgrind este prietenul vostru!</p>
+                    <pre style="font-size: 0.85rem; background: var(--bg-tertiary); padding: 0.5rem; border-radius: 4px;"><code>valgrind --leak-check=full ./program</code></pre>
+                </div>
+            </div>
+            <div class="info-box" style="margin-top: 1rem;">
+                <p><strong>Algoritmul rămâne același</strong> indiferent de limbaj. Diferențele sunt în detaliile de sintaxă și gestionarea resurselor.</p>
+            </div>
+        </div>
+
+        <!-- Slide 14: Conclusion -->
+        <div class="slide title-slide" data-slide="14">
+            <h1>✅ Concluzii</h1>
+            <p class="subtitle">Pseudocod → C → Python</p>
+            <div style="text-align: left; max-width: 700px; margin: 0 auto;">
+                <p>✓ <strong>Pseudocodul</strong> exprimă ideea algoritmului fără detalii</p>
+                <p>✓ <strong>C</strong> oferă control total și performanță maximă</p>
+                <p>✓ <strong>Python</strong> permite dezvoltare rapidă cu biblioteci</p>
+                <p>✓ <strong>Conceptele</strong> rămân aceleași în toate limbajele</p>
+                <p>✓ <strong>Complexitățile</strong> sunt identice: O(log n), O(n), O(n log n)</p>
+            </div>
+            <p class="meta" style="margin-top: 2rem;">
+                Săptămâna viitoare: Hash Tables - aceeași abordare comparativă!
+            </p>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" onclick="changeSlide(-1)">← Anterior</button>
+        <button class="nav-btn" onclick="changeSlide(1)">Următor →</button>
+    </div>
+
+    <div class="slide-counter">
+        <span id="currentSlide">1</span> / <span id="totalSlides">14</span>
+    </div>
+
+    <script>
+        hljs.highlightAll();
+
+        let currentSlideIndex = 1;
+        const totalSlides = document.querySelectorAll('.slide').length;
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            const slides = document.querySelectorAll('.slide');
+            if (n > totalSlides) currentSlideIndex = 1;
+            if (n < 1) currentSlideIndex = totalSlides;
+
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[currentSlideIndex - 1].classList.add('active');
+            document.getElementById('currentSlide').textContent = currentSlideIndex;
+            document.getElementById('progressBar').style.width = 
+                (currentSlideIndex / totalSlides) * 100 + '%';
+        }
+
+        function changeSlide(n) {
+            currentSlideIndex += n;
+            showSlide(currentSlideIndex);
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                changeSlide(1);
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                changeSlide(-1);
+            } else if (e.key === 'Home') {
+                e.preventDefault();
+                currentSlideIndex = 1;
+                showSlide(1);
+            } else if (e.key === 'End') {
+                e.preventDefault();
+                currentSlideIndex = totalSlides;
+                showSlide(totalSlides);
+            }
+        });
+
+        showSlide(currentSlideIndex);
+    </script>
+</body>
+</html>

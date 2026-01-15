@@ -1,0 +1,25 @@
+=== EXERCIȚIUL 1: Priority Queue cu Max-Heap ===
+
+Priority queue creată cu succes.
+
+Introduceți numărul de elemente: Introduceți 5 elemente:
+  Inserez 30... Heap: [30]
+  Inserez 10... Heap: [30, 10]
+  Inserez 50... Heap: [50, 10, 30]
+  Inserez 20... Heap: [50, 20, 30, 10]
+  Inserez 40... Heap: [50, 40, 30, 10, 20]
+
+--- Stare Curentă ---
+Dimensiune: 5
+Este gol? Nu
+Maximum (peek): 50
+Conținut: [50, 40, 30, 10, 20]
+
+--- Extragere în Ordine Descrescătoare ---
+Elemente extrase: 50 40 30 20 10 
+
+--- Verificare Finală ---
+Dimensiune după extragere: 0
+Este gol? Da
+
+Memorie eliberată. Program terminat cu succes!
