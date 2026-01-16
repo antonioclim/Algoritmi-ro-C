@@ -1,0 +1,14 @@
+# Expected Output pentru Test 1
+# Notă: Ordinea procesării poate varia, dar statisticile finale trebuie să fie corecte
+
+=== STATISTICI FINALE ===
+Total entries procesate: 10
+Entries per nivel:
+  INFO: 5
+  DEBUG: 2
+  WARNING: 2
+  ERROR: 1
+
+Surse unice: auth-service, database, payment, cache, api-gateway, scheduler, metrics, security
+
+Status: SUCCESS

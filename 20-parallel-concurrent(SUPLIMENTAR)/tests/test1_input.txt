@@ -1,0 +1,14 @@
+# Test 1: Producer-Consumer cu log entries simple
+# Format: TIMESTAMP|LEVEL|SOURCE|MESSAGE
+# Testează procesarea corectă cu 2 producători, 4 consumatori
+
+2026-01-16T08:00:01.001|INFO|auth-service|User login successful: user123
+2026-01-16T08:00:01.015|DEBUG|database|Query executed in 5ms
+2026-01-16T08:00:01.023|INFO|payment|Payment initiated: TXN001
+2026-01-16T08:00:01.045|WARNING|cache|Cache miss for key: session_abc
+2026-01-16T08:00:01.067|ERROR|api-gateway|Timeout connecting to backend
+2026-01-16T08:00:01.089|INFO|auth-service|User logout: user123
+2026-01-16T08:00:01.101|INFO|scheduler|Job started: cleanup_task
+2026-01-16T08:00:01.123|DEBUG|metrics|CPU usage: 45%
+2026-01-16T08:00:01.145|INFO|payment|Payment completed: TXN001
+2026-01-16T08:00:01.167|WARNING|security|Failed login attempt: unknown_user

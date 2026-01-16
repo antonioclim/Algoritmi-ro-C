@@ -1,0 +1,341 @@
+# =============================================================================
+# DATE DE TEST: Intrări Log pentru Producer-Consumer
+# =============================================================================
+# Format: TIMESTAMP|LEVEL|SOURCE|MESSAGE
+# Niveluri: ERROR, WARNING, INFO, DEBUG
+# Utilizare: ./exercise1 data/log_entries.txt
+# Total: 500 intrări log simulate
+# =============================================================================
+2026-01-16T08:00:01.123|INFO|auth-service|User login successful: user_id=1234
+2026-01-16T08:00:01.234|DEBUG|auth-service|Session created: session_id=abc123
+2026-01-16T08:00:01.456|INFO|api-gateway|Request received: GET /api/users/1234
+2026-01-16T08:00:01.567|DEBUG|database|Query executed in 12ms: SELECT * FROM users WHERE id=1234
+2026-01-16T08:00:01.789|INFO|api-gateway|Response sent: 200 OK in 45ms
+2026-01-16T08:00:02.012|WARNING|rate-limiter|Rate limit approaching for IP 192.168.1.100: 85/100 requests
+2026-01-16T08:00:02.234|INFO|cache|Cache hit for key: user_profile_1234
+2026-01-16T08:00:02.456|DEBUG|metrics|Metric recorded: api_latency=45ms
+2026-01-16T08:00:02.678|ERROR|payment-service|Payment failed: insufficient_funds for order_id=5678
+2026-01-16T08:00:02.890|INFO|notification|Email queued: user_1234@example.com
+2026-01-16T08:00:03.012|DEBUG|scheduler|Job scheduled: backup_db at 03:00:00
+2026-01-16T08:00:03.234|INFO|auth-service|User logout: user_id=1234
+2026-01-16T08:00:03.456|WARNING|disk-monitor|Disk usage at 78% on /var/log
+2026-01-16T08:00:03.678|INFO|load-balancer|Server node-02 marked as healthy
+2026-01-16T08:00:03.890|ERROR|database|Connection timeout after 30000ms to replica-03
+2026-01-16T08:00:04.012|INFO|api-gateway|Request received: POST /api/orders
+2026-01-16T08:00:04.234|DEBUG|validation|Input validation passed for order data
+2026-01-16T08:00:04.456|INFO|order-service|Order created: order_id=9012
+2026-01-16T08:00:04.678|WARNING|inventory|Low stock alert: product_id=456 quantity=5
+2026-01-16T08:00:04.890|INFO|notification|SMS sent to +40721234567
+2026-01-16T08:00:05.012|DEBUG|cache|Cache miss for key: product_inventory_456
+2026-01-16T08:00:05.234|INFO|database|Query executed in 8ms: INSERT INTO orders
+2026-01-16T08:00:05.456|ERROR|external-api|Third-party API timeout: payment_gateway
+2026-01-16T08:00:05.678|INFO|retry|Retrying request: attempt 1/3
+2026-01-16T08:00:05.890|WARNING|memory|Memory usage at 85% on worker-node-01
+2026-01-16T08:00:06.012|INFO|auth-service|New user registration: user_id=5678
+2026-01-16T08:00:06.234|DEBUG|email|Email template rendered: welcome_email
+2026-01-16T08:00:06.456|INFO|api-gateway|Request received: GET /api/products
+2026-01-16T08:00:06.678|INFO|cache|Cache populated: products_list TTL=3600s
+2026-01-16T08:00:06.890|DEBUG|compression|Response compressed: 12KB -> 3KB
+2026-01-16T08:00:07.012|ERROR|file-upload|Upload failed: file_too_large max=10MB actual=15MB
+2026-01-16T08:00:07.234|INFO|cleanup|Temporary files deleted: 23 files, 156MB freed
+2026-01-16T08:00:07.456|WARNING|ssl|SSL certificate expires in 14 days for api.example.com
+2026-01-16T08:00:07.678|INFO|health-check|All services healthy: 12/12 passing
+2026-01-16T08:00:07.890|DEBUG|tracing|Span completed: request_id=xyz789 duration=234ms
+2026-01-16T08:00:08.012|INFO|user-service|Profile updated: user_id=1234
+2026-01-16T08:00:08.234|ERROR|search|Elasticsearch cluster yellow: 2 shards unassigned
+2026-01-16T08:00:08.456|WARNING|queue|Message queue depth high: 15000 messages pending
+2026-01-16T08:00:08.678|INFO|worker|Job completed: generate_report_daily
+2026-01-16T08:00:08.890|DEBUG|audit|Audit log written: action=profile_update user=1234
+2026-01-16T08:00:09.012|INFO|api-gateway|Request received: DELETE /api/sessions/abc123
+2026-01-16T08:00:09.234|INFO|auth-service|Session invalidated: session_id=abc123
+2026-01-16T08:00:09.456|WARNING|firewall|Suspicious activity detected from IP 203.0.113.50
+2026-01-16T08:00:09.678|ERROR|backup|Backup failed: storage_quota_exceeded
+2026-01-16T08:00:09.890|INFO|notification|Push notification sent: device_id=ios_12345
+2026-01-16T08:00:10.012|DEBUG|circuit-breaker|Circuit closed for service: payment-gateway
+2026-01-16T08:00:10.234|INFO|scaling|Auto-scale triggered: adding 2 instances
+2026-01-16T08:00:10.456|INFO|deployment|Deployment started: version=2.3.1
+2026-01-16T08:00:10.678|WARNING|deprecated|Deprecated API endpoint called: /v1/users
+2026-01-16T08:00:10.890|INFO|migration|Database migration completed: version=45
+2026-01-16T08:00:11.012|ERROR|dns|DNS resolution failed for external-service.example.com
+2026-01-16T08:00:11.234|INFO|feature-flag|Feature enabled: new_checkout_flow for 10% users
+2026-01-16T08:00:11.456|DEBUG|profiler|Slow query detected: 1234ms SELECT with JOIN
+2026-01-16T08:00:11.678|INFO|auth-service|Password changed: user_id=5678
+2026-01-16T08:00:11.890|WARNING|resource|CPU usage spike: 95% on api-server-03
+2026-01-16T08:00:12.012|INFO|api-gateway|Request received: PATCH /api/users/5678
+2026-01-16T08:00:12.234|INFO|rate-limiter|Rate limit reset for IP 192.168.1.100
+2026-01-16T08:00:12.456|ERROR|transaction|Transaction rollback: constraint_violation
+2026-01-16T08:00:12.678|DEBUG|gc|Garbage collection completed: freed 234MB in 45ms
+2026-01-16T08:00:12.890|INFO|webhook|Webhook delivered: event=order.created target=partner-api
+2026-01-16T08:00:13.012|WARNING|timeout|Request timeout: /api/reports/heavy took 31000ms
+2026-01-16T08:00:13.234|INFO|batch|Batch processing started: 10000 records
+2026-01-16T08:00:13.456|INFO|etl|ETL pipeline stage 1/5 completed
+2026-01-16T08:00:13.678|DEBUG|serialization|JSON serialization: 500 objects in 12ms
+2026-01-16T08:00:13.890|ERROR|lock|Deadlock detected: tables orders, inventory
+2026-01-16T08:00:14.012|INFO|recovery|Automatic recovery initiated for deadlock
+2026-01-16T08:00:14.234|WARNING|connection-pool|Connection pool exhausted: waiting 5 connections
+2026-01-16T08:00:14.456|INFO|api-gateway|Request received: GET /api/orders/9012
+2026-01-16T08:00:14.678|INFO|order-service|Order status: order_id=9012 status=processing
+2026-01-16T08:00:14.890|DEBUG|encryption|Data encrypted: AES-256-GCM 1024 bytes
+2026-01-16T08:00:15.012|INFO|shipping|Shipping label generated: tracking=ABC123456789
+2026-01-16T08:00:15.234|ERROR|inventory|Stock discrepancy detected: product_id=789
+2026-01-16T08:00:15.456|WARNING|monitoring|Alert triggered: error_rate > 5% in last 5 minutes
+2026-01-16T08:00:15.678|INFO|api-gateway|Request received: POST /api/feedback
+2026-01-16T08:00:15.890|INFO|feedback|Feedback received: rating=5 user_id=1234
+2026-01-16T08:00:16.012|DEBUG|nlp|Sentiment analysis: positive score=0.89
+2026-01-16T08:00:16.234|INFO|analytics|Event tracked: page_view page=/products
+2026-01-16T08:00:16.456|INFO|auth-service|Two-factor authentication enabled: user_id=5678
+2026-01-16T08:00:16.678|WARNING|security|Failed login attempt: user_id=admin count=3
+2026-01-16T08:00:16.890|ERROR|validation|Input validation failed: email format invalid
+2026-01-16T08:00:17.012|INFO|api-gateway|Request received: GET /api/search?q=laptop
+2026-01-16T08:00:17.234|INFO|search|Search completed: 156 results in 45ms
+2026-01-16T08:00:17.456|DEBUG|ranking|Search ranking applied: relevance algorithm v3
+2026-01-16T08:00:17.678|INFO|recommendation|Recommendations generated: user_id=1234 items=10
+2026-01-16T08:00:17.890|INFO|cache|Cache invalidated: key=user_preferences_1234
+2026-01-16T08:00:18.012|WARNING|latency|High latency detected: p99=890ms threshold=500ms
+2026-01-16T08:00:18.234|INFO|api-gateway|Request received: POST /api/cart/add
+2026-01-16T08:00:18.456|INFO|cart-service|Item added to cart: product_id=456 quantity=2
+2026-01-16T08:00:18.678|DEBUG|pricing|Dynamic pricing calculated: base=100 final=89.99
+2026-01-16T08:00:18.890|ERROR|coupon|Coupon validation failed: code=EXPIRED2025 reason=expired
+2026-01-16T08:00:19.012|INFO|promotion|Promotion applied: buy_2_get_10_off
+2026-01-16T08:00:19.234|INFO|tax|Tax calculated: subtotal=179.98 tax=34.20 total=214.18
+2026-01-16T08:00:19.456|WARNING|fraud|Potential fraud detected: unusual purchase pattern user_id=9999
+2026-01-16T08:00:19.678|INFO|api-gateway|Request received: POST /api/checkout
+2026-01-16T08:00:19.890|INFO|checkout|Checkout initiated: cart_id=xyz789
+2026-01-16T08:00:20.012|DEBUG|address|Address validation: status=verified
+2026-01-16T08:00:20.234|INFO|payment-service|Payment processing: amount=214.18 currency=RON
+2026-01-16T08:00:20.456|INFO|payment-service|Payment successful: transaction_id=txn_123456
+2026-01-16T08:00:20.678|ERROR|email|Email delivery failed: bounce recipient=invalid@example.com
+2026-01-16T08:00:20.890|INFO|order-service|Order confirmed: order_id=9013
+2026-01-16T08:00:21.012|WARNING|stock|Stock reserved: product_id=456 remaining=3
+2026-01-16T08:00:21.234|INFO|fulfillment|Fulfillment request created: warehouse=WH-01
+2026-01-16T08:00:21.456|DEBUG|routing|Shipping route calculated: estimated_days=3
+2026-01-16T08:00:21.678|INFO|notification|Order confirmation email sent: order_id=9013
+2026-01-16T08:00:21.890|INFO|analytics|Conversion tracked: funnel=checkout step=complete
+2026-01-16T08:00:22.012|INFO|auth-service|User login successful: user_id=2345
+2026-01-16T08:00:22.234|DEBUG|auth-service|Session created: session_id=def456
+2026-01-16T08:00:22.456|INFO|api-gateway|Request received: GET /api/users/2345/orders
+2026-01-16T08:00:22.678|INFO|order-service|Orders retrieved: user_id=2345 count=7
+2026-01-16T08:00:22.890|WARNING|pagination|Large result set: 500+ items, consider pagination
+2026-01-16T08:00:23.012|INFO|api-gateway|Request received: GET /api/notifications
+2026-01-16T08:00:23.234|INFO|notification|Notifications retrieved: user_id=2345 unread=3
+2026-01-16T08:00:23.456|DEBUG|sse|Server-sent events connection established: client_id=cli_789
+2026-01-16T08:00:23.678|INFO|realtime|Real-time update pushed: type=order_status
+2026-01-16T08:00:23.890|ERROR|websocket|WebSocket connection failed: protocol_mismatch
+2026-01-16T08:00:24.012|INFO|fallback|Falling back to polling: interval=5000ms
+2026-01-16T08:00:24.234|WARNING|version|Client version outdated: client=1.2.0 latest=2.0.1
+2026-01-16T08:00:24.456|INFO|api-gateway|Request received: POST /api/support/ticket
+2026-01-16T08:00:24.678|INFO|support|Support ticket created: ticket_id=TKT-001234
+2026-01-16T08:00:24.890|DEBUG|classification|Ticket auto-classified: category=billing priority=medium
+2026-01-16T08:00:25.012|INFO|assignment|Ticket assigned to agent: agent_id=42
+2026-01-16T08:00:25.234|INFO|sla|SLA timer started: response_due=4h resolution_due=24h
+2026-01-16T08:00:25.456|ERROR|integration|CRM sync failed: connection_refused
+2026-01-16T08:00:25.678|WARNING|retry|Retry scheduled: crm_sync attempt=1/5 delay=60s
+2026-01-16T08:00:25.890|INFO|api-gateway|Request received: GET /api/products/456
+2026-01-16T08:00:26.012|INFO|product-service|Product retrieved: product_id=456
+2026-01-16T08:00:26.234|DEBUG|inventory|Inventory check: product_id=456 available=3
+2026-01-16T08:00:26.456|INFO|review|Reviews loaded: product_id=456 count=47 avg_rating=4.3
+2026-01-16T08:00:26.678|INFO|related|Related products computed: 8 items
+2026-01-16T08:00:26.890|WARNING|cdn|CDN cache miss: asset=/images/product_456_lg.jpg
+2026-01-16T08:00:27.012|INFO|cdn|Asset cached: TTL=86400s size=245KB
+2026-01-16T08:00:27.234|DEBUG|ab-test|A/B test variant assigned: test=product_page_v2 variant=B
+2026-01-16T08:00:27.456|INFO|api-gateway|Request received: POST /api/wishlist/add
+2026-01-16T08:00:27.678|INFO|wishlist|Item added to wishlist: user_id=2345 product_id=789
+2026-01-16T08:00:27.890|INFO|notification|Price drop alert configured: product_id=789
+2026-01-16T08:00:28.012|DEBUG|scheduler|Alert check scheduled: cron=0 */6 * * *
+2026-01-16T08:00:28.234|ERROR|email|SMTP connection failed: timeout after 30s
+2026-01-16T08:00:28.456|WARNING|queue|Email queue growing: 523 pending messages
+2026-01-16T08:00:28.678|INFO|health-check|SMTP server recovered: emails processing resumed
+2026-01-16T08:00:28.890|INFO|batch|Email batch sent: 100 emails in 12s
+2026-01-16T08:00:29.012|DEBUG|metrics|Email metrics: sent=100 bounced=2 opened=45
+2026-01-16T08:00:29.234|INFO|api-gateway|Request received: GET /api/categories
+2026-01-16T08:00:29.456|INFO|catalog|Categories retrieved: count=24 hierarchy_depth=3
+2026-01-16T08:00:29.678|INFO|cache|Category tree cached: TTL=3600s
+2026-01-16T08:00:29.890|DEBUG|seo|SEO metadata generated: canonical_urls=24
+2026-01-16T08:00:30.012|INFO|sitemap|Sitemap regeneration triggered
+2026-01-16T08:00:30.234|WARNING|duplicate|Potential duplicate products detected: group=789,790
+2026-01-16T08:00:30.456|INFO|api-gateway|Request received: POST /api/reviews
+2026-01-16T08:00:30.678|INFO|review|Review submitted: product_id=456 rating=5
+2026-01-16T08:00:30.890|DEBUG|moderation|Review queued for moderation: review_id=12345
+2026-01-16T08:00:31.012|INFO|moderation|Review approved: review_id=12345 auto=true
+2026-01-16T08:00:31.234|ERROR|spam|Spam detected: review_id=12346 score=0.95
+2026-01-16T08:00:31.456|INFO|moderation|Review rejected: review_id=12346 reason=spam
+2026-01-16T08:00:31.678|WARNING|abuse|User flagged for review abuse: user_id=9876
+2026-01-16T08:00:31.890|INFO|api-gateway|Request received: GET /api/deals
+2026-01-16T08:00:32.012|INFO|promotion|Active deals retrieved: count=15
+2026-01-16T08:00:32.234|DEBUG|timer|Flash sale countdown: product_id=123 remaining=3600s
+2026-01-16T08:00:32.456|INFO|notification|Deal reminder sent: subscribers=5432
+2026-01-16T08:00:32.678|INFO|analytics|Deal performance: clicks=1234 conversions=89
+2026-01-16T08:00:32.890|WARNING|inventory|Flash sale stock depleted: product_id=123
+2026-01-16T08:00:33.012|INFO|promotion|Flash sale ended: product_id=123 sold=50
+2026-01-16T08:00:33.234|ERROR|refund|Refund processing failed: gateway_error
+2026-01-16T08:00:33.456|INFO|retry|Refund retry scheduled: order_id=8901 attempt=1
+2026-01-16T08:00:33.678|INFO|payment-service|Refund processed: amount=89.99 order_id=8901
+2026-01-16T08:00:33.890|DEBUG|accounting|Ledger entry created: type=refund amount=-89.99
+2026-01-16T08:00:34.012|INFO|notification|Refund confirmation sent: order_id=8901
+2026-01-16T08:00:34.234|INFO|api-gateway|Request received: GET /api/returns/status
+2026-01-16T08:00:34.456|INFO|returns|Return status: rma_id=RMA-5678 status=approved
+2026-01-16T08:00:34.678|WARNING|logistics|Return package delayed: carrier_issue
+2026-01-16T08:00:34.890|INFO|tracking|Tracking updated: rma_id=RMA-5678 location=sorting_center
+2026-01-16T08:00:35.012|DEBUG|inspection|Return inspection scheduled: rma_id=RMA-5678
+2026-01-16T08:00:35.234|ERROR|quality|Quality check failed: item damaged beyond return policy
+2026-01-16T08:00:35.456|INFO|resolution|Partial refund issued: rma_id=RMA-5678 amount=45.00
+2026-01-16T08:00:35.678|INFO|api-gateway|Request received: POST /api/seller/products
+2026-01-16T08:00:35.890|INFO|marketplace|New product listed: seller_id=S-123 sku=SKU-789
+2026-01-16T08:00:36.012|DEBUG|validation|Product validation passed: 15 fields checked
+2026-01-16T08:00:36.234|INFO|approval|Product pending approval: product_id=10001
+2026-01-16T08:00:36.456|WARNING|compliance|Compliance check required: category=electronics
+2026-01-16T08:00:36.678|INFO|notification|Seller notified: product approval pending
+2026-01-16T08:00:36.890|INFO|api-gateway|Request received: GET /api/seller/dashboard
+2026-01-16T08:00:37.012|INFO|analytics|Seller analytics loaded: sales_30d=15000 orders=89
+2026-01-16T08:00:37.234|DEBUG|chart|Revenue chart data generated: 30 data points
+2026-01-16T08:00:37.456|INFO|payout|Payout scheduled: seller_id=S-123 amount=12500.00
+2026-01-16T08:00:37.678|WARNING|tax|Tax document missing: seller_id=S-456
+2026-01-16T08:00:37.890|ERROR|payout|Payout blocked: missing tax documentation seller_id=S-456
+2026-01-16T08:00:38.012|INFO|notification|Tax reminder sent: seller_id=S-456
+2026-01-16T08:00:38.234|INFO|api-gateway|Request received: POST /api/bulk/import
+2026-01-16T08:00:38.456|INFO|import|Bulk import started: file=products.csv rows=5000
+2026-01-16T08:00:38.678|DEBUG|parser|CSV parsing: 5000 rows in 234ms
+2026-01-16T08:00:38.890|INFO|validation|Bulk validation: 4950 valid, 50 invalid
+2026-01-16T08:00:39.012|WARNING|import|Import warnings: 50 rows skipped due to errors
+2026-01-16T08:00:39.234|INFO|import|Bulk import completed: 4950 products created
+2026-01-16T08:00:39.456|ERROR|index|Search index update failed: elasticsearch timeout
+2026-01-16T08:00:39.678|INFO|retry|Index update queued for retry
+2026-01-16T08:00:39.890|INFO|search|Search index updated: 4950 documents indexed
+2026-01-16T08:00:40.012|DEBUG|replication|Index replicated to 3 nodes
+2026-01-16T08:00:40.234|INFO|api-gateway|Request received: GET /api/admin/reports
+2026-01-16T08:00:40.456|INFO|reporting|Daily report generated: date=2026-01-15
+2026-01-16T08:00:40.678|INFO|metrics|Report metrics: revenue=125000 orders=567 users=234
+2026-01-16T08:00:40.890|WARNING|anomaly|Unusual metric detected: orders down 15% vs previous day
+2026-01-16T08:00:41.012|INFO|alert|Alert sent to operations team: orders anomaly
+2026-01-16T08:00:41.234|DEBUG|investigation|Anomaly investigation: checking external factors
+2026-01-16T08:00:41.456|INFO|resolution|Anomaly explained: holiday impact on previous day
+2026-01-16T08:00:41.678|INFO|api-gateway|Request received: POST /api/campaigns
+2026-01-16T08:00:41.890|INFO|marketing|Campaign created: id=CAMP-2026-001 type=email
+2026-01-16T08:00:42.012|DEBUG|segmentation|Audience segmented: 15000 users matched criteria
+2026-01-16T08:00:42.234|INFO|scheduling|Campaign scheduled: send_time=2026-01-17T10:00:00Z
+2026-01-16T08:00:42.456|WARNING|compliance|Campaign needs GDPR consent verification
+2026-01-16T08:00:42.678|INFO|consent|Consent filtered: 12500 users with valid consent
+2026-01-16T08:00:42.890|INFO|api-gateway|Request received: GET /api/inventory/low
+2026-01-16T08:00:43.012|INFO|inventory|Low stock report: 45 products below threshold
+2026-01-16T08:00:43.234|WARNING|reorder|Automatic reorder triggered: 15 products
+2026-01-16T08:00:43.456|INFO|purchasing|Purchase orders created: PO-2026-0123 to PO-2026-0137
+2026-01-16T08:00:43.678|DEBUG|supplier|Supplier notifications sent: 8 suppliers
+2026-01-16T08:00:43.890|ERROR|supplier|Supplier unreachable: supplier_id=SUP-789
+2026-01-16T08:00:44.012|INFO|fallback|Alternative supplier selected: supplier_id=SUP-790
+2026-01-16T08:00:44.234|INFO|api-gateway|Request received: POST /api/shipping/label
+2026-01-16T08:00:44.456|INFO|shipping|Label generated: tracking=DEF456789012
+2026-01-16T08:00:44.678|DEBUG|carrier|Carrier API response: label_url=https://carrier.com/label/xyz
+2026-01-16T08:00:44.890|INFO|print|Label print job queued: printer=warehouse-01
+2026-01-16T08:00:45.012|WARNING|printer|Printer low on labels: remaining=50
+2026-01-16T08:00:45.234|INFO|alert|Warehouse alert: reorder shipping labels
+2026-01-16T08:00:45.456|INFO|api-gateway|Request received: PATCH /api/orders/9013/status
+2026-01-16T08:00:45.678|INFO|order-service|Order status updated: order_id=9013 status=shipped
+2026-01-16T08:00:45.890|DEBUG|webhook|Webhook dispatched: event=order.shipped target=3 subscribers
+2026-01-16T08:00:46.012|INFO|tracking|Tracking page generated: order_id=9013
+2026-01-16T08:00:46.234|INFO|notification|Shipping notification sent: email+sms
+2026-01-16T08:00:46.456|ERROR|sms|SMS delivery failed: invalid_phone_number
+2026-01-16T08:00:46.678|WARNING|data-quality|Phone number format issue: user_id=2345
+2026-01-16T08:00:46.890|INFO|cleanup|Data cleanup task scheduled: phone_normalization
+2026-01-16T08:00:47.012|INFO|api-gateway|Request received: GET /api/tracking/DEF456789012
+2026-01-16T08:00:47.234|INFO|tracking|Tracking info retrieved: status=in_transit location=sorting_hub
+2026-01-16T08:00:47.456|DEBUG|carrier|Carrier polling: next_update=30min
+2026-01-16T08:00:47.678|INFO|eta|Estimated delivery: 2026-01-18 14:00-18:00
+2026-01-16T08:00:47.890|INFO|api-gateway|Request received: POST /api/delivery/preferences
+2026-01-16T08:00:48.012|INFO|delivery|Delivery preference saved: leave_at_door=true
+2026-01-16T08:00:48.234|DEBUG|routing|Delivery route optimized: 23 stops planned
+2026-01-16T08:00:48.456|WARNING|weather|Weather alert: potential delivery delay tomorrow
+2026-01-16T08:00:48.678|INFO|notification|Delivery update: potential weather delay notified
+2026-01-16T08:00:48.890|INFO|api-gateway|Request received: GET /api/loyalty/points
+2026-01-16T08:00:49.012|INFO|loyalty|Points balance: user_id=2345 points=1250
+2026-01-16T08:00:49.234|DEBUG|loyalty|Points history: 15 transactions in last 30 days
+2026-01-16T08:00:49.456|INFO|tier|Loyalty tier: Gold (next tier at 2000 points)
+2026-01-16T08:00:49.678|INFO|reward|Available rewards: 5 items can be redeemed
+2026-01-16T08:00:49.890|WARNING|expiry|Points expiring soon: 200 points expire in 30 days
+2026-01-16T08:00:50.012|INFO|notification|Points expiry reminder sent
+2026-01-16T08:00:50.234|INFO|api-gateway|Request received: POST /api/loyalty/redeem
+2026-01-16T08:00:50.456|INFO|loyalty|Points redeemed: 500 points for 10% discount coupon
+2026-01-16T08:00:50.678|DEBUG|coupon|Coupon generated: code=LOYAL500 value=10%
+2026-01-16T08:00:50.890|INFO|ledger|Points ledger updated: balance=750
+2026-01-16T08:00:51.012|ERROR|loyalty|Redemption failed: insufficient_points for item_id=REWARD-99
+2026-01-16T08:00:51.234|INFO|api-gateway|Request received: GET /api/subscriptions
+2026-01-16T08:00:51.456|INFO|subscription|Active subscriptions: user_id=2345 count=2
+2026-01-16T08:00:51.678|DEBUG|billing|Next billing: subscription_1=2026-02-01 subscription_2=2026-01-25
+2026-01-16T08:00:51.890|WARNING|payment|Payment method expiring: card ending 4242 expires 01/2026
+2026-01-16T08:00:52.012|INFO|notification|Payment method update reminder sent
+2026-01-16T08:00:52.234|INFO|api-gateway|Request received: PATCH /api/payment-methods
+2026-01-16T08:00:52.456|INFO|payment-service|Payment method updated: new card ending 5555
+2026-01-16T08:00:52.678|DEBUG|tokenization|Card tokenized: token=tok_xyz789
+2026-01-16T08:00:52.890|INFO|verification|Card verification charge: 1.00 RON authorized
+2026-01-16T08:00:53.012|INFO|verification|Verification charge reversed
+2026-01-16T08:00:53.234|ERROR|fraud|Potential card fraud: velocity check failed
+2026-01-16T08:00:53.456|WARNING|security|Account under review: user_id=7890
+2026-01-16T08:00:53.678|INFO|manual-review|Manual review queued: case_id=SEC-2026-001
+2026-01-16T08:00:53.890|INFO|api-gateway|Request received: GET /api/recommendations
+2026-01-16T08:00:54.012|INFO|recommendation|Personalized recommendations: user_id=2345
+2026-01-16T08:00:54.234|DEBUG|ml|ML model inference: model=collaborative_filter latency=45ms
+2026-01-16T08:00:54.456|INFO|recommendation|Recommendations generated: 20 items score>0.7
+2026-01-16T08:00:54.678|INFO|ab-test|Recommendation variant: algorithm=hybrid_v3
+2026-01-16T08:00:54.890|WARNING|cold-start|Cold start detected for new user: using popular items
+2026-01-16T08:00:55.012|INFO|api-gateway|Request received: POST /api/comparison
+2026-01-16T08:00:55.234|INFO|comparison|Product comparison: items=[456, 789, 1011]
+2026-01-16T08:00:55.456|DEBUG|features|Feature matrix generated: 15 comparable attributes
+2026-01-16T08:00:55.678|INFO|analytics|Comparison tracked: category=electronics
+2026-01-16T08:00:55.890|INFO|api-gateway|Request received: GET /api/price-history
+2026-01-16T08:00:56.012|INFO|pricing|Price history retrieved: product_id=456 days=90
+2026-01-16T08:00:56.234|DEBUG|chart|Price chart data: 90 data points, trend=stable
+2026-01-16T08:00:56.456|INFO|alert|Price drop alert set: product_id=456 threshold=80.00
+2026-01-16T08:00:56.678|WARNING|competitor|Competitor price lower: product_id=456 diff=-5%
+2026-01-16T08:00:56.890|INFO|repricing|Dynamic repricing triggered: product_id=456
+2026-01-16T08:00:57.012|ERROR|repricing|Repricing failed: below minimum margin threshold
+2026-01-16T08:00:57.234|INFO|manual-review|Price review queued: product_id=456
+2026-01-16T08:00:57.456|INFO|api-gateway|Request received: POST /api/gift
+2026-01-16T08:00:57.678|INFO|gift|Gift order created: from=2345 to=recipient@example.com
+2026-01-16T08:00:57.890|DEBUG|wrapping|Gift wrapping added: style=birthday
+2026-01-16T08:00:58.012|INFO|message|Gift message attached: 150 characters
+2026-01-16T08:00:58.234|INFO|scheduling|Gift delivery scheduled: 2026-01-20
+2026-01-16T08:00:58.456|WARNING|timing|Gift may not arrive by requested date: shipping_delay
+2026-01-16T08:00:58.678|INFO|notification|Gift sender notified of potential delay
+2026-01-16T08:00:58.890|INFO|api-gateway|Request received: GET /health
+2026-01-16T08:00:59.012|INFO|health-check|Health check passed: all systems operational
+2026-01-16T08:00:59.234|DEBUG|dependencies|Dependency health: db=ok cache=ok queue=ok search=ok
+2026-01-16T08:00:59.456|INFO|uptime|Service uptime: 15d 7h 23m
+2026-01-16T08:00:59.678|INFO|version|Running version: api=2.3.1 core=1.8.4
+2026-01-16T08:00:59.890|INFO|api-gateway|Request received: GET /metrics
+2026-01-16T08:01:00.012|INFO|metrics|Metrics exported: prometheus format
+2026-01-16T08:01:00.234|DEBUG|aggregation|Metrics aggregated: 156 series, 45000 samples
+2026-01-16T08:01:00.456|INFO|monitoring|Dashboard updated: grafana refresh triggered
+2026-01-16T08:01:00.678|WARNING|threshold|Alert threshold approaching: error_rate=4.8%
+2026-01-16T08:01:00.890|INFO|oncall|On-call team notified: potential incident
+2026-01-16T08:01:01.012|ERROR|cascade|Cascading failure detected: service=recommendation
+2026-01-16T08:01:01.234|INFO|circuit-breaker|Circuit opened: service=recommendation
+2026-01-16T08:01:01.456|INFO|fallback|Fallback activated: using cached recommendations
+2026-01-16T08:01:01.678|WARNING|degraded|Service degraded: recommendation latency increased
+2026-01-16T08:01:01.890|INFO|recovery|Recovery attempt: service=recommendation attempt=1
+2026-01-16T08:01:02.012|INFO|recovery|Service recovered: recommendation responding normally
+2026-01-16T08:01:02.234|DEBUG|circuit-breaker|Circuit half-open: testing with 10% traffic
+2026-01-16T08:01:02.456|INFO|circuit-breaker|Circuit closed: service=recommendation healthy
+2026-01-16T08:01:02.678|INFO|postmortem|Incident logged: duration=90s impact=medium
+2026-01-16T08:01:02.890|INFO|api-gateway|Request received: POST /api/feedback/survey
+2026-01-16T08:01:03.012|INFO|survey|Survey response recorded: nps=9 user_id=2345
+2026-01-16T08:01:03.234|DEBUG|analytics|NPS calculated: score=45 trend=improving
+2026-01-16T08:01:03.456|INFO|follow-up|Positive feedback follow-up scheduled
+2026-01-16T08:01:03.678|INFO|testimonial|Testimonial request sent: user_id=2345
+2026-01-16T08:01:03.890|WARNING|churn|Churn risk detected: user_id=8765 score=0.7
+2026-01-16T08:01:04.012|INFO|retention|Retention campaign triggered: user_id=8765
+2026-01-16T08:01:04.234|INFO|api-gateway|Request received: GET /api/user/preferences
+2026-01-16T08:01:04.456|INFO|preferences|User preferences loaded: user_id=2345
+2026-01-16T08:01:04.678|DEBUG|settings|Settings retrieved: 24 preference keys
+2026-01-16T08:01:04.890|INFO|localization|Locale settings: language=ro_RO timezone=Europe/Bucharest
+2026-01-16T08:01:05.012|INFO|currency|Currency preference: RON display=symbol
+2026-01-16T08:01:05.234|WARNING|privacy|Privacy settings review suggested: last_update=180d ago
+2026-01-16T08:01:05.456|INFO|api-gateway|Request received: PATCH /api/user/preferences
+2026-01-16T08:01:05.678|INFO|preferences|Preferences updated: notification_email=false
+2026-01-16T08:01:05.890|DEBUG|sync|Preferences synced across devices: 3 devices updated
+2026-01-16T08:01:06.012|INFO|gdpr|Consent record updated: marketing_email=withdrawn
+2026-01-16T08:01:06.234|INFO|suppression|Email suppression list updated: user_id=2345
+2026-01-16T08:01:06.456|ERROR|sync|Device sync failed: device_id=mobile_123 offline
+2026-01-16T08:01:06.678|INFO|queue|Sync queued for retry: device=mobile_123
+2026-01-16T08:01:06.890|INFO|auth-service|User logout: user_id=2345
+2026-01-16T08:01:07.012|DEBUG|cleanup|Session cleanup: session_id=def456 duration=44m45s
+2026-01-16T08:01:07.234|INFO|analytics|Session metrics: pages=34 actions=12 duration=2685s
+2026-01-16T08:01:07.456|INFO|export|Session data exported for analytics pipeline

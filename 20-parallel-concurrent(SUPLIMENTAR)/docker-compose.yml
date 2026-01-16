@@ -1,0 +1,106 @@
+# =============================================================================
+# SĂPTĂMÂNA 20: PROGRAMARE PARALELĂ ȘI CONCURENTĂ - Docker Compose
+# =============================================================================
+# Curs: Algoritmi și Tehnici de Programare (ATP)
+# Academia de Studii Economice București - CSIE
+# =============================================================================
+
+version: '3.8'
+
+services:
+  # Serviciul principal de dezvoltare
+  atp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: atp-week20-parallel
+    hostname: atp-parallel
+    
+    # Permisiuni pentru perf și alte tools
+    privileged: true
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+    
+    # Volum pentru persistența codului
+    volumes:
+      - .:/workspace
+      - /sys/kernel/debug:/sys/kernel/debug:ro
+    
+    # Variabile de mediu
+    environment:
+      - TERM=xterm-256color
+      - OMP_NUM_THREADS=4
+      - PTHREAD_STACK_SIZE=8388608
+    
+    # Resurse alocate
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 2G
+        reservations:
+          cpus: '2'
+          memory: 512M
+    
+    # Mod interactiv
+    stdin_open: true
+    tty: true
+    
+    # Comandă implicită
+    command: /bin/bash
+
+  # Serviciu pentru benchmark-uri intensive
+  benchmark:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: atp-week20-benchmark
+    
+    privileged: true
+    cap_add:
+      - SYS_PTRACE
+    
+    volumes:
+      - .:/workspace
+      - ./benchmark_results:/results
+    
+    environment:
+      - TERM=xterm-256color
+      - OMP_NUM_THREADS=8
+    
+    deploy:
+      resources:
+        limits:
+          cpus: '8'
+          memory: 4G
+    
+    # Rulează benchmark-ul automat
+    command: >
+      bash -c "
+        echo 'Running parallel benchmarks...'
+        make clean && make release
+        echo ''
+        echo '=== Sequential Benchmark ===' 
+        ./benchmark_sequential 2>/dev/null || echo 'Build benchmark first'
+        echo ''
+        echo '=== Parallel Benchmark (1-8 threads) ===' 
+        for t in 1 2 4 8; do
+          echo \"Threads: \$$t\"
+          ./benchmark_threads \$$t 2>/dev/null || echo 'Build benchmark first'
+        done
+        echo ''
+        echo 'Results saved to /results/'
+      "
+
+# Rețea pentru comunicare între servicii (dacă e necesar)
+networks:
+  default:
+    name: atp-week20-network
+    driver: bridge
+
+# Volum pentru rezultate benchmark
+volumes:
+  benchmark_results:
+    driver: local

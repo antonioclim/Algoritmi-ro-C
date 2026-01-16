@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Săptămâna 20: Comparație Pseudocod / C / Python - Paralelism</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-dark: #0d1117;
+            --bg-panel: #161b22;
+            --border: #30363d;
+            --text: #c9d1d9;
+            --text-muted: #8b949e;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-yellow: #d29922;
+            --accent-orange: #f0883e;
+            --accent-red: #f85149;
+            --accent-purple: #a371f7;
+            --accent-cyan: #39c5cf;
+            --pseudo-color: #d29922;
+            --c-color: #58a6ff;
+            --python-color: #3fb950;
+        }
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        header {
+            background: linear-gradient(135deg, var(--bg-panel) 0%, var(--bg-dark) 100%);
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 3px solid var(--accent-blue);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        header h1 {
+            font-size: 2rem;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+        header p { color: var(--text-muted); }
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: var(--bg-panel);
+            flex-wrap: wrap;
+            border-bottom: 1px solid var(--border);
+        }
+        .nav-tabs a {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+        .nav-tabs a:hover {
+            background: rgba(88, 166, 255, 0.1);
+            color: var(--accent-blue);
+        }
+        .comparison-section {
+            padding: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+            border-bottom: 1px solid var(--border);
+        }
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--accent-cyan);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--accent-cyan);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .section-description {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+        .code-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        @media (max-width: 1200px) {
+            .code-grid { grid-template-columns: 1fr; }
+        }
+        .code-panel {
+            background: var(--bg-panel);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .code-header {
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .code-header.pseudo {
+            background: linear-gradient(90deg, rgba(210, 153, 34, 0.2), transparent);
+            color: var(--pseudo-color);
+            border-bottom: 2px solid var(--pseudo-color);
+        }
+        .code-header.c-lang {
+            background: linear-gradient(90deg, rgba(88, 166, 255, 0.2), transparent);
+            color: var(--c-color);
+            border-bottom: 2px solid var(--c-color);
+        }
+        .code-header.python {
+            background: linear-gradient(90deg, rgba(63, 185, 80, 0.2), transparent);
+            color: var(--python-color);
+            border-bottom: 2px solid var(--python-color);
+        }
+        .code-content {
+            padding: 1rem;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        pre { margin: 0; white-space: pre; }
+        .keyword { color: var(--accent-purple); font-weight: bold; }
+        .type { color: var(--accent-blue); }
+        .function { color: var(--accent-yellow); }
+        .string { color: var(--accent-green); }
+        .comment { color: var(--text-muted); font-style: italic; }
+        .number { color: var(--accent-orange); }
+        .variable { color: var(--accent-cyan); }
+        .info-box {
+            background: rgba(88, 166, 255, 0.1);
+            border: 1px solid var(--accent-blue);
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+        }
+        .info-box.warning {
+            background: rgba(210, 153, 34, 0.1);
+            border-color: var(--accent-yellow);
+        }
+        .info-box.danger {
+            background: rgba(248, 81, 73, 0.1);
+            border-color: var(--accent-red);
+        }
+        .info-box.success {
+            background: rgba(63, 185, 80, 0.1);
+            border-color: var(--accent-green);
+        }
+        .info-box-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+        th {
+            background: var(--bg-panel);
+            color: var(--accent-blue);
+            font-weight: 600;
+        }
+        tr:nth-child(even) { background: rgba(255, 255, 255, 0.02); }
+        code {
+            background: rgba(88, 166, 255, 0.1);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85em;
+        }
+        .ascii-diagram {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            white-space: pre;
+            line-height: 1.4;
+        }
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🔄 Comparație: Pseudocod / C / Python</h1>
+        <p>Săptămâna 20: Programare Paralelă și Concurentă</p>
+    </header>
+
+    <nav class="nav-tabs">
+        <a href="#thread-basic">Thread Basic</a>
+        <a href="#mutex">Mutex</a>
+        <a href="#producer-consumer">Producer-Consumer</a>
+        <a href="#thread-pool">Thread Pool</a>
+        <a href="#parallel-sort">Parallel Sort</a>
+        <a href="#atomics">Atomics</a>
+        <a href="#lockfree">Lock-free Stack</a>
+        <a href="#summary">Sumar</a>
+    </nav>
+
+    <!-- SECȚIUNEA 1: THREAD BASIC -->
+    <section class="comparison-section" id="thread-basic">
+        <h2 class="section-title">🧵 Creare și Join Thread</h2>
+        <p class="section-description">Operațiile fundamentale pentru crearea unui thread și așteptarea terminării lui.</p>
+
+        <div class="code-grid">
+            <div class="code-panel">
+                <div class="code-header pseudo">📝 Pseudocod</div>
+                <div class="code-content">
+<pre><span class="comment">// Definire funcție worker</span>
+<span class="keyword">FUNCTION</span> <span class="function">worker</span>(argument):
+    id ← argument
+    <span class="function">PRINT</span>("Thread", id, "executând")
+    result ← id × 100
+    <span class="keyword">RETURN</span> result
+<span class="keyword">END FUNCTION</span>
+
+<span class="keyword">MAIN</span>:
+    threads ← <span class="keyword">ARRAY</span>[4]
+    ids ← [0, 1, 2, 3]
+    
+    <span class="comment">// Creare threads</span>
+    <span class="keyword">FOR</span> i ← 0 <span class="keyword">TO</span> 3:
+        threads[i] ← <span class="function">CREATE_THREAD</span>(worker, ids[i])
+    <span class="keyword">END FOR</span>
+    
+    <span class="comment">// Așteptare terminare</span>
+    <span class="keyword">FOR</span> i ← 0 <span class="keyword">TO</span> 3:
+        result ← <span class="function">JOIN_THREAD</span>(threads[i])
+        <span class="function">PRINT</span>("Thread", i, "returned:", result)
+    <span class="keyword">END FOR</span>
+<span class="keyword">END MAIN</span></pre>
+                </div>
+            </div>
+
+            <div class="code-panel">
+                <div class="code-header c-lang">💻 C (pthreads)</div>
+                <div class="code-content">
+<pre><span class="preprocessor">#include</span> <span class="string">&lt;pthread.h&gt;</span>
+<span class="preprocessor">#include</span> <span class="string">&lt;stdio.h&gt;</span>
+<span class="preprocessor">#include</span> <span class="string">&lt;stdlib.h&gt;</span>
+
+<span class="type">void</span>* <span class="function">worker</span>(<span class="type">void</span> *arg) {
+    <span class="type">int</span> id = *(<span class="type">int</span>*)arg;
+    <span class="function">printf</span>(<span class="string">"Thread %d executând\n"</span>, id);
+    
+    <span class="type">int</span> *result = <span class="function">malloc</span>(<span class="keyword">sizeof</span>(<span class="type">int</span>));
+    *result = id * <span class="number">100</span>;
+    <span class="keyword">return</span> result;
+}
+
+<span class="type">int</span> <span class="function">main</span>(<span class="type">void</span>) {
+    <span class="type">pthread_t</span> threads[<span class="number">4</span>];
+    <span class="type">int</span> ids[<span class="number">4</span>] = {<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>};
+    
+    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i < <span class="number">4</span>; i++) {
+        <span class="function">pthread_create</span>(&threads[i], <span class="number">NULL</span>,
+                       worker, &ids[i]);
+    }
+    
+    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i < <span class="number">4</span>; i++) {
+        <span class="type">void</span> *retval;
+        <span class="function">pthread_join</span>(threads[i], &retval);
+        <span class="function">printf</span>(<span class="string">"Thread %d returned: %d\n"</span>,
+               i, *(<span class="type">int</span>*)retval);
+        <span class="function">free</span>(retval);
+    }
+    <span class="keyword">return</span> <span class="number">0</span>;
+}</pre>
+                </div>
+            </div>
+
+            <div class="code-panel">
+                <div class="code-header python">🐍 Python (threading)</div>
+                <div class="code-content">
+<pre><span class="keyword">import</span> threading
+
+<span class="keyword">def</span> <span class="function">worker</span>(id, results):
+    <span class="function">print</span>(<span class="string">f"Thread {id} executând"</span>)
+    result = id * <span class="number">100</span>
+    results[id] = result
+
+<span class="keyword">def</span> <span class="function">main</span>():
+    threads = []
+    results = {}
+    
+    <span class="comment"># Creare threads</span>
+    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="function">range</span>(<span class="number">4</span>):
+        t = threading.Thread(
+            target=worker,
+            args=(i, results)
+        )
+        threads.append(t)
+        t.start()
+    
+    <span class="comment"># Așteptare terminare</span>
+    <span class="keyword">for</span> i, t <span class="keyword">in</span> <span class="function">enumerate</span>(threads):
+        t.join()
+        <span class="function">print</span>(<span class="string">f"Thread {i} returned: {results[i]}"</span>)
+
+<span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:
+    <span class="function">main</span>()</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <div class="info-box-title">💡 Observații</div>
+            <ul>
+                <li><strong>C:</strong> Necesită management manual al memoriei; pthread_create() pornește thread-ul imediat</li>
+                <li><strong>Python:</strong> start() trebuie apelat explicit; rezultatele se stochează într-un dicționar partajat</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- SECȚIUNEA 2: MUTEX -->
+    <section class="comparison-section" id="mutex">
+        <h2 class="section-title">🔒 Mutex - Excludere Mutuală</h2>
+        <p class="section-description">Protejarea accesului la date partajate folosind un mutex.</p>
+
+        <div class="code-grid">
+            <div class="code-panel">
+                <div class="code-header pseudo">📝 Pseudocod</div>
+                <div class="code-content">
+<pre><span class="variable">counter</span> ← 0
+<span class="variable">mutex</span> ← <span class="function">CREATE_MUTEX</span>()
+
+<span class="keyword">FUNCTION</span> <span class="function">increment</span>():
+    <span class="keyword">FOR</span> i ← 1 <span class="keyword">TO</span> 1000000:
+        <span class="function">LOCK</span>(mutex)
+        counter ← counter + 1
+        <span class="function">UNLOCK</span>(mutex)
+    <span class="keyword">END FOR</span>
+<span class="keyword">END FUNCTION</span>
+
+<span class="keyword">MAIN</span>:
+    t1 ← <span class="function">CREATE_THREAD</span>(increment)
+    t2 ← <span class="function">CREATE_THREAD</span>(increment)
+    
+    <span class="function">JOIN_THREAD</span>(t1)
+    <span class="function">JOIN_THREAD</span>(t2)
+    
+    <span class="function">PRINT</span>("Counter:", counter)
+    <span class="comment">// Rezultat: 2,000,000</span>
+<span class="keyword">END MAIN</span></pre>
+                </div>
+            </div>
+
+            <div class="code-panel">
+                <div class="code-header c-lang">💻 C (pthreads)</div>
+                <div class="code-content">
+<pre><span class="preprocessor">#include</span> <span class="string">&lt;pthread.h&gt;</span>
+<span class="preprocessor">#include</span> <span class="string">&lt;stdio.h&gt;</span>
+
+<span class="preprocessor">#define</span> ITERATIONS <span class="number">1000000</span>
+
+<span class="type">int</span> counter = <span class="number">0</span>;
+<span class="type">pthread_mutex_t</span> mutex = 
+    PTHREAD_MUTEX_INITIALIZER;
+
+<span class="type">void</span>* <span class="function">increment</span>(<span class="type">void</span> *arg) {
+    (<span class="type">void</span>)arg;
+    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i < ITERATIONS; i++) {
+        <span class="function">pthread_mutex_lock</span>(&mutex);
+        counter++;
+        <span class="function">pthread_mutex_unlock</span>(&mutex);
+    }
+    <span class="keyword">return</span> <span class="number">NULL</span>;
+}
+
+<span class="type">int</span> <span class="function">main</span>(<span class="type">void</span>) {
+    <span class="type">pthread_t</span> t1, t2;
+    
+    <span class="function">pthread_create</span>(&t1, <span class="number">NULL</span>, increment, <span class="number">NULL</span>);
+    <span class="function">pthread_create</span>(&t2, <span class="number">NULL</span>, increment, <span class="number">NULL</span>);
+    
+    <span class="function">pthread_join</span>(t1, <span class="number">NULL</span>);
+    <span class="function">pthread_join</span>(t2, <span class="number">NULL</span>);
+    
+    <span class="function">printf</span>(<span class="string">"Counter: %d\n"</span>, counter);
+    <span class="function">pthread_mutex_destroy</span>(&mutex);
+    <span class="keyword">return</span> <span class="number">0</span>;
+}</pre>
+                </div>
+            </div>
+
+            <div class="code-panel">
+                <div class="code-header python">🐍 Python (threading)</div>
+                <div class="code-content">
+<pre><span class="keyword">import</span> threading
+
+ITERATIONS = <span class="number">1_000_000</span>
+counter = <span class="number">0</span>
+mutex = threading.Lock()
+
+<span class="keyword">def</span> <span class="function">increment</span>():
+    <span class="keyword">global</span> counter
+    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="function">range</span>(ITERATIONS):
+        <span class="comment"># Context manager</span>
+        <span class="keyword">with</span> mutex:
+            counter += <span class="number">1</span>
+
+<span class="keyword">def</span> <span class="function">main</span>():
+    t1 = threading.Thread(target=increment)
+    t2 = threading.Thread(target=increment)
+    
+    t1.start()
+    t2.start()
+    
+    t1.join()
+    t2.join()
+    
+    <span class="function">print</span>(<span class="string">f"Counter: {counter}"</span>)
+
+<span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:
+    <span class="function">main</span>()</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-box warning">
+            <div class="info-box-title">⚠️ Python GIL</div>
+            <p>GIL face operații simple aparent sigure, dar Lock-ul este recomandat pentru cod corect și portabil.</p>
+        </div>
+    </section>
+
+    <!-- SECȚIUNEA 3: PRODUCER-CONSUMER -->
+    <section class="comparison-section" id="producer-consumer">
+        <h2 class="section-title">🏭 Pattern: Producer-Consumer</h2>
+        <p class="section-description">Buffer circular cu sincronizare mutex + condition variables.</p>
+
+        <div class="code-grid">
+            <div class="code-panel">
+                <div class="code-header pseudo">📝 Pseudocod</div>
+                <div class="code-content">
+<pre><span class="keyword">STRUCTURE</span> BoundedBuffer:
+    items[CAPACITY]
+    count ← 0
+    head ← 0, tail ← 0
+    mutex, not_full, not_empty
+<span class="keyword">END STRUCTURE</span>
+
+<span class="keyword">FUNCTION</span> <span class="function">put</span>(buffer, item):
+    <span class="function">LOCK</span>(buffer.mutex)
+    
+    <span class="keyword">WHILE</span> buffer.count = CAPACITY:
+        <span class="function">WAIT</span>(buffer.not_full, buffer.mutex)
+    <span class="keyword">END WHILE</span>
+    
+    buffer.items[buffer.tail] ← item
+    buffer.tail ← (buffer.tail + 1) MOD CAPACITY
+    buffer.count++
+    
+    <span class="function">SIGNAL</span>(buffer.not_empty)
+    <span class="function">UNLOCK</span>(buffer.mutex)
+<span class="keyword">END FUNCTION</span>
+
+<span class="keyword">FUNCTION</span> <span class="function">get</span>(buffer):
+    <span class="function">LOCK</span>(buffer.mutex)
+    
+    <span class="keyword">WHILE</span> buffer.count = 0:
+        <span class="function">WAIT</span>(buffer.not_empty, buffer.mutex)
+    <span class="keyword">END WHILE</span>
+    
+    item ← buffer.items[buffer.head]
+    buffer.head ← (buffer.head + 1) MOD CAPACITY
+    buffer.count--
+    
+    <span class="function">SIGNAL</span>(buffer.not_full)
+    <span class="function">UNLOCK</span>(buffer.mutex)
+    
+    <span class="keyword">RETURN</span> item
+<span class="keyword">END FUNCTION</span></pre>
+                </div>
+            </div>
+
+            <div class="code-panel">
+                <div class="code-header c-lang">💻 C (pthreads)</div>
+                <div class="code-content">
+<pre><span class="preprocessor">#define</span> CAPACITY <span class="number">10</span>
+
+<span class="keyword">typedef struct</span> {
+    <span class="type">void</span> *items[CAPACITY];
+    <span class="type">size_t</span> count, head, tail;
+    <span class="type">pthread_mutex_t</span> mutex;
+    <span class="type">pthread_cond_t</span> not_full;
+    <span class="type">pthread_cond_t</span> not_empty;
+} BoundedBuffer;
+
+<span class="type">void</span> <span class="function">buffer_put</span>(BoundedBuffer *b, <span class="type">void</span> *item) {
+    <span class="function">pthread_mutex_lock</span>(&b->mutex);
+    
+    <span class="keyword">while</span> (b->count == CAPACITY) {
+        <span class="function">pthread_cond_wait</span>(
+            &b->not_full, &b->mutex);
+    }
+    
+    b->items[b->tail] = item;
+    b->tail = (b->tail + <span class="number">1</span>) % CAPACITY;
+    b->count++;
+    
+    <span class="function">pthread_cond_signal</span>(&b->not_empty);
+    <span class="function">pthread_mutex_unlock</span>(&b->mutex);
+}
+
+<span class="type">void</span>* <span class="function">buffer_get</span>(BoundedBuffer *b) {
+    <span class="function">pthread_mutex_lock</span>(&b->mutex);
+    
+    <span class="keyword">while</span> (b->count == <span class="number">0</span>) {
+        <span class="function">pthread_cond_wait</span>(
+            &b->not_empty, &b->mutex);
+    }
+    
+    <span class="type">void</span> *item = b->items[b->head];
+    b->head = (b->head + <span class="number">1</span>) % CAPACITY;
+    b->count--;
+    
+    <span class="function">pthread_cond_signal</span>(&b->not_full);
+    <span class="function">pthread_mutex_unlock</span>(&b->mutex);
+    
+    <span class="keyword">return</span> item;
+}</pre>
+                </div>
+            </div>
+
+            <div class="code-panel">
+                <div class="code-header python">🐍 Python (queue.Queue)</div>
+                <div class="code-content">
+<pre><span class="keyword">import</span> queue
+<span class="keyword">import</span> threading
+
+<span class="comment"># Python oferă queue.Queue gata făcut!</span>
+CAPACITY = <span class="number">10</span>
+buffer = queue.Queue(maxsize=CAPACITY)
+
+<span class="keyword">def</span> <span class="function">producer</span>(id, items):
+    <span class="keyword">for</span> item <span class="keyword">in</span> items:
+        <span class="comment"># put() blochează dacă e plin</span>
+        buffer.put(item)
+        <span class="function">print</span>(<span class="string">f"Producer {id} put {item}"</span>)
+
+<span class="keyword">def</span> <span class="function">consumer</span>(id):
+    <span class="keyword">while</span> <span class="keyword">True</span>:
+        <span class="keyword">try</span>:
+            <span class="comment"># get() blochează dacă e gol</span>
+            item = buffer.get(timeout=<span class="number">1</span>)
+            <span class="function">print</span>(<span class="string">f"Consumer {id} got {item}"</span>)
+            buffer.task_done()
+        <span class="keyword">except</span> queue.Empty:
+            <span class="keyword">break</span>
+
+<span class="comment"># Implementare manuală echivalent C</span>
+<span class="keyword">class</span> <span class="type">BoundedBuffer</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, capacity):
+        self.items = []
+        self.capacity = capacity
+        self.mutex = threading.Lock()
+        self.not_full = threading.Condition(self.mutex)
+        self.not_empty = threading.Condition(self.mutex)
+    
+    <span class="keyword">def</span> <span class="function">put</span>(self, item):
+        <span class="keyword">with</span> self.not_full:
+            <span class="keyword">while</span> <span class="function">len</span>(self.items) >= self.capacity:
+                self.not_full.wait()
+            self.items.append(item)
+            self.not_empty.notify()
+    
+    <span class="keyword">def</span> <span class="function">get</span>(self):
+        <span class="keyword">with</span> self.not_empty:
+            <span class="keyword">while</span> <span class="function">len</span>(self.items) == <span class="number">0</span>:
+                self.not_empty.wait()
+            item = self.items.pop(<span class="number">0</span>)
+            self.not_full.notify()
+            <span class="keyword">return</span> item</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-box success">
+            <div class="info-box-title">✓ Python Avantaj</div>
+            <p><code>queue.Queue</code> implementează exact acest pattern, thread-safe și testat.</p>
+        </div>
+    </section>
+
+    <!-- SECȚIUNEA 4: THREAD POOL -->
+    <section class="comparison-section" id="thread-pool">
+        <h2 class="section-title">🏊 Thread Pool</h2>
+        <p class="section-description">Grup de thread-uri worker care procesează task-uri dintr-o coadă.</p>
+
+        <div class="code-grid">
+            <div class="code-panel">
+                <div class="code-header pseudo">📝 Pseudocod</div>
+                <div class="code-content">
+<pre><span class="keyword">STRUCTURE</span> ThreadPool:
+    workers[NUM_THREADS]
+    task_queue
+    mutex, not_empty
+    shutdown ← FALSE
+<span class="keyword">END STRUCTURE</span>
+
+<span class="keyword">FUNCTION</span> <span class="function">worker_loop</span>(pool):
+    <span class="keyword">WHILE</span> TRUE:
+        <span class="function">LOCK</span>(pool.mutex)
+        
+        <span class="keyword">WHILE</span> <span class="function">EMPTY</span>(pool.task_queue) 
+              AND NOT pool.shutdown:
+            <span class="function">WAIT</span>(pool.not_empty, pool.mutex)
+        <span class="keyword">END WHILE</span>
+        
+        <span class="keyword">IF</span> pool.shutdown AND <span class="function">EMPTY</span>(pool.task_queue):
+            <span class="function">UNLOCK</span>(pool.mutex)
+            <span class="keyword">EXIT</span>
+        <span class="keyword">END IF</span>
+        
+        task ← <span class="function">DEQUEUE</span>(pool.task_queue)
+        <span class="function">UNLOCK</span>(pool.mutex)
+        
+        <span class="function">CALL</span> task.function(task.argument)
+    <span class="keyword">END WHILE</span>
+<span class="keyword">END FUNCTION</span>
+
+<span class="keyword">FUNCTION</span> <span class="function">submit</span>(pool, function, argument):
+    task ← {function, argument}
+    <span class="function">LOCK</span>(pool.mutex)
+    <span class="function">ENQUEUE</span>(pool.task_queue, task)
+    <span class="function">SIGNAL</span>(pool.not_empty)
+    <span class="function">UNLOCK</span>(pool.mutex)
+<span class="keyword">END FUNCTION</span></pre>
+                </div>
+            </div>
+
+            <div class="code-panel">
+                <div class="code-header c-lang">💻 C (Simplificat)</div>
+                <div class="code-content">
+<pre><span class="keyword">typedef struct</span> Task {
+    <span class="type">void</span> (*func)(<span class="type">void</span>*);
+    <span class="type">void</span> *arg;
+    <span class="keyword">struct</span> Task *next;
+} Task;
+
+<span class="keyword">typedef struct</span> {
+    <span class="type">pthread_t</span> *threads;
+    <span class="type">size_t</span> num_threads;
+    Task *head, *tail;
+    <span class="type">pthread_mutex_t</span> mutex;
+    <span class="type">pthread_cond_t</span> not_empty;
+    <span class="type">volatile bool</span> shutdown;
+} ThreadPool;
+
+<span class="type">void</span>* <span class="function">worker</span>(<span class="type">void</span> *arg) {
+    ThreadPool *pool = (ThreadPool*)arg;
+    
+    <span class="keyword">while</span> (<span class="number">1</span>) {
+        <span class="function">pthread_mutex_lock</span>(&pool->mutex);
+        
+        <span class="keyword">while</span> (!pool->head && !pool->shutdown) {
+            <span class="function">pthread_cond_wait</span>(
+                &pool->not_empty, &pool->mutex);
+        }
+        
+        <span class="keyword">if</span> (pool->shutdown && !pool->head) {
+            <span class="function">pthread_mutex_unlock</span>(&pool->mutex);
+            <span class="keyword">break</span>;
+        }
+        
+        Task *task = pool->head;
+        pool->head = task->next;
+        <span class="function">pthread_mutex_unlock</span>(&pool->mutex);
+        
+        task-><span class="function">func</span>(task->arg);
+        <span class="function">free</span>(task);
+    }
+    <span class="keyword">return</span> <span class="number">NULL</span>;
+}
+
+<span class="type">void</span> <span class="function">pool_submit</span>(ThreadPool *p,
+                 <span class="type">void</span>(*f)(<span class="type">void</span>*), <span class="type">void</span> *a) {
+    Task *t = <span class="function">malloc</span>(<span class="keyword">sizeof</span>(Task));
+    t->func = f; t->arg = a; t->next = <span class="number">NULL</span>;
+    
+    <span class="function">pthread_mutex_lock</span>(&p->mutex);
+    <span class="keyword">if</span> (p->tail) p->tail->next = t;
+    <span class="keyword">else</span> p->head = t;
+    p->tail = t;
+    <span class="function">pthread_cond_signal</span>(&p->not_empty);
+    <span class="function">pthread_mutex_unlock</span>(&p->mutex);
+}</pre>
+                </div>
+            </div>
+
+            <div class="code-panel">
+                <div class="code-header python">🐍 Python (concurrent.futures)</div>
+                <div class="code-content">
+<pre><span class="keyword">from</span> concurrent.futures <span class="keyword">import</span> (
+    ThreadPoolExecutor,
+    ProcessPoolExecutor
+)
+
+<span class="keyword">def</span> <span class="function">task</span>(x):
+    <span class="keyword">return</span> x * x
+
+<span class="comment"># Thread pool (I/O bound)</span>
+<span class="keyword">with</span> ThreadPoolExecutor(max_workers=<span class="number">4</span>) <span class="keyword">as</span> pool:
+    <span class="comment"># Submit individual</span>
+    future = pool.submit(task, <span class="number">42</span>)
+    result = future.result()
+    
+    <span class="comment"># Map peste o colecție</span>
+    results = <span class="function">list</span>(pool.map(task, <span class="function">range</span>(<span class="number">100</span>)))
+
+<span class="comment"># Process pool (CPU bound) - evită GIL!</span>
+<span class="keyword">with</span> ProcessPoolExecutor(max_workers=<span class="number">4</span>) <span class="keyword">as</span> pool:
+    results = <span class="function">list</span>(pool.map(task, <span class="function">range</span>(<span class="number">100</span>)))
+
+<span class="comment"># Manual cu threading</span>
+<span class="keyword">import</span> threading
+<span class="keyword">import</span> queue
+
+<span class="keyword">class</span> <span class="type">ThreadPool</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, num_workers):
+        self.tasks = queue.Queue()
+        self.workers = []
+        <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="function">range</span>(num_workers):
+            t = threading.Thread(
+                target=self._worker, daemon=<span class="keyword">True</span>)
+            t.start()
+            self.workers.append(t)
+    
+    <span class="keyword">def</span> <span class="function">_worker</span>(self):
+        <span class="keyword">while</span> <span class="keyword">True</span>:
+            func, args = self.tasks.get()
+            <span class="keyword">try</span>:
+                <span class="function">func</span>(*args)
+            <span class="keyword">finally</span>:
+                self.tasks.task_done()
+    
+    <span class="keyword">def</span> <span class="function">submit</span>(self, func, *args):
+        self.tasks.put((func, args))</pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECȚIUNEA 5: PARALLEL SORT -->
+    <section class="comparison-section" id="parallel-sort">
+        <h2 class="section-title">📊 Parallel Merge Sort</h2>
+        <p class="section-description">Sortare paralelă divide-and-conquer cu threshold.</p>
+
+        <div class="code-grid">
+            <div class="code-panel">
+                <div class="code-header pseudo">📝 Pseudocod</div>
+                <div class="code-content">
+<pre><span class="variable">THRESHOLD</span> ← 10000
+
+<span class="keyword">FUNCTION</span> <span class="function">parallel_merge_sort</span>(arr, left, right):
+    <span class="keyword">IF</span> right - left <= 1:
+        <span class="keyword">RETURN</span>
+    <span class="keyword">END IF</span>
+    
+    mid ← (left + right) / 2
+    
+    <span class="keyword">IF</span> right - left > THRESHOLD:
+        <span class="comment">// Paralelizează</span>
+        <span class="variable">left_thread</span> ← <span class="function">CREATE_THREAD</span>(
+            parallel_merge_sort, arr, left, mid)
+        
+        <span class="comment">// Dreapta pe thread-ul curent</span>
+        <span class="function">parallel_merge_sort</span>(arr, mid, right)
+        
+        <span class="function">JOIN_THREAD</span>(left_thread)
+    <span class="keyword">ELSE</span>:
+        <span class="comment">// Secvențial pentru arrays mici</span>
+        <span class="function">merge_sort</span>(arr, left, mid)
+        <span class="function">merge_sort</span>(arr, mid, right)
+    <span class="keyword">END IF</span>
+    
+    <span class="function">merge</span>(arr, left, mid, right)
+<span class="keyword">END FUNCTION</span></pre>
+                </div>
+            </div>
+
+            <div class="code-panel">
+                <div class="code-header c-lang">💻 C (pthreads)</div>
+                <div class="code-content">
+<pre><span class="preprocessor">#define</span> THRESHOLD <span class="number">10000</span>
+
+<span class="keyword">typedef struct</span> {
+    <span class="type">int</span> *arr;
+    <span class="type">size_t</span> left, right;
+} SortArgs;
+
+<span class="type">void</span>* <span class="function">parallel_sort</span>(<span class="type">void</span> *arg) {
+    SortArgs *a = (SortArgs*)arg;
+    <span class="type">int</span> *arr = a->arr;
+    <span class="type">size_t</span> left = a->left;
+    <span class="type">size_t</span> right = a->right;
+    <span class="function">free</span>(a);
+    
+    <span class="keyword">if</span> (right - left <= <span class="number">1</span>) <span class="keyword">return</span> <span class="number">NULL</span>;
+    
+    <span class="type">size_t</span> mid = left + (right - left) / <span class="number">2</span>;
+    
+    <span class="keyword">if</span> (right - left > THRESHOLD) {
+        SortArgs *la = <span class="function">malloc</span>(<span class="keyword">sizeof</span>(SortArgs));
+        la->arr = arr;
+        la->left = left;
+        la->right = mid;
+        
+        <span class="type">pthread_t</span> t;
+        <span class="function">pthread_create</span>(&t, <span class="number">NULL</span>, parallel_sort, la);
+        
+        SortArgs ra = {arr, mid, right};
+        <span class="function">parallel_sort</span>(&ra);
+        
+        <span class="function">pthread_join</span>(t, <span class="number">NULL</span>);
+    } <span class="keyword">else</span> {
+        <span class="function">merge_sort_seq</span>(arr, left, mid);
+        <span class="function">merge_sort_seq</span>(arr, mid, right);
+    }
+    
+    <span class="function">merge</span>(arr, left, mid, right);
+    <span class="keyword">return</span> <span class="number">NULL</span>;
+}</pre>
+                </div>
+            </div>
+
+            <div class="code-panel">
+                <div class="code-header python">🐍 Python (multiprocessing)</div>
+                <div class="code-content">
+<pre><span class="keyword">from</span> multiprocessing <span class="keyword">import</span> Pool
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+
+THRESHOLD = <span class="number">10000</span>
+
+<span class="keyword">def</span> <span class="function">merge</span>(left, right):
+    result = []
+    i = j = <span class="number">0</span>
+    <span class="keyword">while</span> i < <span class="function">len</span>(left) <span class="keyword">and</span> j < <span class="function">len</span>(right):
+        <span class="keyword">if</span> left[i] <= right[j]:
+            result.append(left[i])
+            i += <span class="number">1</span>
+        <span class="keyword">else</span>:
+            result.append(right[j])
+            j += <span class="number">1</span>
+    result.extend(left[i:])
+    result.extend(right[j:])
+    <span class="keyword">return</span> result
+
+<span class="keyword">def</span> <span class="function">merge_sort</span>(arr):
+    <span class="keyword">if</span> <span class="function">len</span>(arr) <= <span class="number">1</span>:
+        <span class="keyword">return</span> arr
+    mid = <span class="function">len</span>(arr) // <span class="number">2</span>
+    left = <span class="function">merge_sort</span>(arr[:mid])
+    right = <span class="function">merge_sort</span>(arr[mid:])
+    <span class="keyword">return</span> <span class="function">merge</span>(left, right)
+
+<span class="keyword">def</span> <span class="function">parallel_merge_sort</span>(arr, pool=<span class="keyword">None</span>, depth=<span class="number">0</span>):
+    <span class="keyword">if</span> <span class="function">len</span>(arr) <= THRESHOLD <span class="keyword">or</span> depth > <span class="number">3</span>:
+        <span class="keyword">return</span> <span class="function">merge_sort</span>(arr)
+    
+    mid = <span class="function">len</span>(arr) // <span class="number">2</span>
+    
+    <span class="keyword">if</span> pool <span class="keyword">is</span> <span class="keyword">None</span>:
+        pool = Pool()
+    
+    left_result = pool.apply_async(
+        parallel_merge_sort, 
+        (arr[:mid], <span class="keyword">None</span>, depth+<span class="number">1</span>))
+    right = <span class="function">parallel_merge_sort</span>(
+        arr[mid:], pool, depth+<span class="number">1</span>)
+    left = left_result.get()
+    
+    <span class="keyword">return</span> <span class="function">merge</span>(left, right)</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-box warning">
+            <div class="info-box-title">⚠️ Python Notă</div>
+            <p>Pentru CPU-bound, folosiți <code>multiprocessing.Pool</code> (nu threading) pentru a evita GIL.</p>
+        </div>
+    </section>
+
+    <!-- SECȚIUNEA 6: ATOMICS -->
+    <section class="comparison-section" id="atomics">
+        <h2 class="section-title">⚛️ Operații Atomice</h2>
+        <p class="section-description">Operații hardware garantate atomice, fără lock-uri explicite.</p>
+
+        <div class="code-grid">
+            <div class="code-panel">
+                <div class="code-header pseudo">📝 Pseudocod</div>
+                <div class="code-content">
+<pre><span class="comment">// Operații atomice de bază</span>
+value ← <span class="function">ATOMIC_LOAD</span>(variable)
+<span class="function">ATOMIC_STORE</span>(variable, new_value)
+
+<span class="comment">// Fetch-and-add</span>
+old_value ← <span class="function">ATOMIC_FETCH_ADD</span>(variable, 1)
+
+<span class="comment">// Compare-And-Swap (CAS)</span>
+<span class="keyword">FUNCTION</span> <span class="function">ATOMIC_CAS</span>(variable, expected, desired):
+    <span class="comment">// Executat atomic de hardware:</span>
+    <span class="keyword">IF</span> variable = expected:
+        variable ← desired
+        <span class="keyword">RETURN</span> <span class="keyword">TRUE</span>
+    <span class="keyword">ELSE</span>:
+        expected ← variable
+        <span class="keyword">RETURN</span> <span class="keyword">FALSE</span>
+    <span class="keyword">END IF</span>
+<span class="keyword">END FUNCTION</span>
+
+<span class="comment">// Pattern: retry loop cu CAS</span>
+<span class="keyword">FUNCTION</span> <span class="function">atomic_increment</span>(counter):
+    <span class="keyword">DO</span>:
+        old ← <span class="function">ATOMIC_LOAD</span>(counter)
+        new ← old + 1
+    <span class="keyword">WHILE</span> NOT <span class="function">ATOMIC_CAS</span>(counter, old, new)
+<span class="keyword">END FUNCTION</span></pre>
+                </div>
+            </div>
+
+            <div class="code-panel">
+                <div class="code-header c-lang">💻 C11 (stdatomic.h)</div>
+                <div class="code-content">
+<pre><span class="preprocessor">#include</span> <span class="string">&lt;stdatomic.h&gt;</span>
+
+<span class="comment">// Declarare variabilă atomică</span>
+<span class="type">atomic_int</span> counter = <span class="number">0</span>;
+
+<span class="comment">// Citire/scriere atomică</span>
+<span class="type">int</span> val = <span class="function">atomic_load</span>(&counter);
+<span class="function">atomic_store</span>(&counter, <span class="number">42</span>);
+
+<span class="comment">// Fetch-and-add</span>
+<span class="type">int</span> old = <span class="function">atomic_fetch_add</span>(&counter, <span class="number">1</span>);
+
+<span class="comment">// Compare-and-swap</span>
+<span class="type">int</span> expected = <span class="number">10</span>;
+<span class="type">int</span> desired = <span class="number">20</span>;
+<span class="type">bool</span> success = <span class="function">atomic_compare_exchange_strong</span>(
+    &counter, &expected, desired);
+
+<span class="keyword">if</span> (success) {
+    <span class="comment">// counter era 10, acum e 20</span>
+} <span class="keyword">else</span> {
+    <span class="comment">// expected conține valoarea actuală</span>
+}
+
+<span class="comment">// Tipuri atomice disponibile:</span>
+<span class="type">atomic_bool</span> flag;
+<span class="type">atomic_int</span> i;
+<span class="type">atomic_long</span> l;
+<span class="type">_Atomic</span>(<span class="type">void</span>*) ptr;</pre>
+                </div>
+            </div>
+
+            <div class="code-panel">
+                <div class="code-header python">🐍 Python (aproximare)</div>
+                <div class="code-content">
+<pre><span class="keyword">import</span> threading
+
+<span class="comment"># Python NU are atomics native!</span>
+<span class="comment"># Aproximare cu Lock:</span>
+
+<span class="keyword">class</span> <span class="type">AtomicCounter</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, value=<span class="number">0</span>):
+        self._value = value
+        self._lock = threading.Lock()
+    
+    <span class="keyword">def</span> <span class="function">increment</span>(self, delta=<span class="number">1</span>):
+        <span class="keyword">with</span> self._lock:
+            old = self._value
+            self._value += delta
+            <span class="keyword">return</span> old
+    
+    <span class="keyword">def</span> <span class="function">compare_and_swap</span>(self, expected, desired):
+        <span class="keyword">with</span> self._lock:
+            <span class="keyword">if</span> self._value == expected:
+                self._value = desired
+                <span class="keyword">return</span> <span class="keyword">True</span>
+            <span class="keyword">return</span> <span class="keyword">False</span>
+    
+    @<span class="function">property</span>
+    <span class="keyword">def</span> <span class="function">value</span>(self):
+        <span class="keyword">with</span> self._lock:
+            <span class="keyword">return</span> self._value
+
+<span class="comment"># Pentru multiprocessing, Value:</span>
+<span class="keyword">from</span> multiprocessing <span class="keyword">import</span> Value
+
+shared_counter = Value(<span class="string">'i'</span>, <span class="number">0</span>)
+
+<span class="keyword">def</span> <span class="function">worker</span>(counter):
+    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="function">range</span>(<span class="number">100000</span>):
+        <span class="keyword">with</span> counter.get_lock():
+            counter.value += <span class="number">1</span></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-box danger">
+            <div class="info-box-title">❌ Python Limitare</div>
+            <p>Python nu oferă operații atomice native. Folosiți Lock sau multiprocessing.Value cu lock explicit.</p>
+        </div>
+    </section>
+
+    <!-- SECȚIUNEA 7: LOCK-FREE STACK -->
+    <section class="comparison-section" id="lockfree">
+        <h2 class="section-title">🚀 Lock-free Stack (Treiber)</h2>
+        <p class="section-description">Structură de date fără lock-uri, folosind doar CAS.</p>
+
+        <div class="code-grid">
+            <div class="code-panel">
+                <div class="code-header pseudo">📝 Pseudocod</div>
+                <div class="code-content">
+<pre><span class="keyword">STRUCTURE</span> Node:
+    data, next
+<span class="keyword">END STRUCTURE</span>
+
+<span class="keyword">STRUCTURE</span> LockFreeStack:
+    head ← NULL  <span class="comment">// Atomic pointer</span>
+<span class="keyword">END STRUCTURE</span>
+
+<span class="keyword">FUNCTION</span> <span class="function">push</span>(stack, data):
+    node ← <span class="keyword">NEW</span> Node(data)
+    
+    <span class="keyword">DO</span>:
+        old_head ← <span class="function">ATOMIC_LOAD</span>(stack.head)
+        node.next ← old_head
+    <span class="keyword">WHILE</span> NOT <span class="function">ATOMIC_CAS</span>(stack.head, old_head, node)
+<span class="keyword">END FUNCTION</span>
+
+<span class="keyword">FUNCTION</span> <span class="function">pop</span>(stack):
+    <span class="keyword">DO</span>:
+        old_head ← <span class="function">ATOMIC_LOAD</span>(stack.head)
+        
+        <span class="keyword">IF</span> old_head = NULL:
+            <span class="keyword">RETURN</span> NULL
+        <span class="keyword">END IF</span>
+        
+        new_head ← old_head.next
+        data ← old_head.data
+    <span class="keyword">WHILE</span> NOT <span class="function">ATOMIC_CAS</span>(stack.head, old_head, new_head)
+    
+    <span class="function">FREE</span>(old_head)
+    <span class="keyword">RETURN</span> data
+<span class="keyword">END FUNCTION</span></pre>
+                </div>
+            </div>
+
+            <div class="code-panel">
+                <div class="code-header c-lang">💻 C11 (Treiber Stack)</div>
+                <div class="code-content">
+<pre><span class="preprocessor">#include</span> <span class="string">&lt;stdatomic.h&gt;</span>
+<span class="preprocessor">#include</span> <span class="string">&lt;stdlib.h&gt;</span>
+
+<span class="keyword">typedef struct</span> Node {
+    <span class="type">void</span> *data;
+    <span class="keyword">struct</span> Node *next;
+} Node;
+
+<span class="keyword">typedef struct</span> {
+    <span class="type">_Atomic</span>(Node*) head;
+} LockFreeStack;
+
+<span class="type">void</span> <span class="function">lf_init</span>(LockFreeStack *s) {
+    <span class="function">atomic_store</span>(&s->head, <span class="number">NULL</span>);
+}
+
+<span class="type">void</span> <span class="function">lf_push</span>(LockFreeStack *s, <span class="type">void</span> *data) {
+    Node *node = <span class="function">malloc</span>(<span class="keyword">sizeof</span>(Node));
+    node->data = data;
+    
+    Node *old_head;
+    <span class="keyword">do</span> {
+        old_head = <span class="function">atomic_load</span>(&s->head);
+        node->next = old_head;
+    } <span class="keyword">while</span> (!<span class="function">atomic_compare_exchange_weak</span>(
+        &s->head, &old_head, node));
+}
+
+<span class="type">void</span>* <span class="function">lf_pop</span>(LockFreeStack *s) {
+    Node *old_head;
+    Node *new_head;
+    <span class="type">void</span> *data;
+    
+    <span class="keyword">do</span> {
+        old_head = <span class="function">atomic_load</span>(&s->head);
+        <span class="keyword">if</span> (old_head == <span class="number">NULL</span>) {
+            <span class="keyword">return</span> <span class="number">NULL</span>;
+        }
+        new_head = old_head->next;
+        data = old_head->data;
+    } <span class="keyword">while</span> (!<span class="function">atomic_compare_exchange_weak</span>(
+        &s->head, &old_head, new_head));
+    
+    <span class="function">free</span>(old_head);  <span class="comment">// Atenție: ABA!</span>
+    <span class="keyword">return</span> data;
+}</pre>
+                </div>
+            </div>
+
+            <div class="code-panel">
+                <div class="code-header python">🐍 Python (aproximare)</div>
+                <div class="code-content">
+<pre><span class="keyword">import</span> threading
+
+<span class="comment"># Python NU poate implementa lock-free</span>
+<span class="comment"># "real" fără extensii C.</span>
+<span class="comment"># Aproximare cu Lock:</span>
+
+<span class="keyword">class</span> <span class="type">Node</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, data):
+        self.data = data
+        self.next = <span class="keyword">None</span>
+
+<span class="keyword">class</span> <span class="type">LockFreeStack</span>:
+    <span class="string">"""Simulare - NU e lock-free real!"""</span>
+    <span class="keyword">def</span> <span class="function">__init__</span>(self):
+        self._head = <span class="keyword">None</span>
+        self._lock = threading.Lock()
+    
+    <span class="keyword">def</span> <span class="function">push</span>(self, data):
+        node = Node(data)
+        <span class="keyword">with</span> self._lock:
+            node.next = self._head
+            self._head = node
+    
+    <span class="keyword">def</span> <span class="function">pop</span>(self):
+        <span class="keyword">with</span> self._lock:
+            <span class="keyword">if</span> self._head <span class="keyword">is</span> <span class="keyword">None</span>:
+                <span class="keyword">return</span> <span class="keyword">None</span>
+            node = self._head
+            self._head = node.next
+            <span class="keyword">return</span> node.data
+
+<span class="comment"># Pentru lock-free REAL în Python:</span>
+<span class="comment"># pip install atomics</span>
+<span class="comment"># from atomics import atomicref</span></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="ascii-diagram">
+Lock-free Push - Retry Loop:
+
+Stare inițială:    head → [A] → [B] → NULL
+                    
+Thread 1 push(X):
+  1. old_head = LOAD(head) → [A]
+  2. X.next = [A]
+  3. CAS(head, [A], [X]) → SUCCESS!
+  
+Rezultat:          head → [X] → [A] → [B] → NULL
+
+Concurrent push (T1=X, T2=Y):
+  T1: old = [A], X.next = [A], CAS(head, [A], [X]) → SUCCESS
+  T2: old = [A], Y.next = [A], CAS(head, [A], [Y]) → FAIL! (head e [X])
+  T2: RETRY: old = [X], Y.next = [X], CAS(head, [X], [Y]) → SUCCESS!
+  
+Rezultat:          head → [Y] → [X] → [A] → [B] → NULL
+        </div>
+    </section>
+
+    <!-- TABEL COMPARATIV -->
+    <section class="comparison-section" id="summary">
+        <h2 class="section-title">📋 Tabel Comparativ Sintetic</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Aspect</th>
+                    <th>C (pthreads + C11)</th>
+                    <th>Python (threading/multiprocessing)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>Thread creation</strong></td><td><code>pthread_create()</code></td><td><code>threading.Thread()</code></td></tr>
+                <tr><td><strong>Join</strong></td><td><code>pthread_join()</code></td><td><code>thread.join()</code></td></tr>
+                <tr><td><strong>Mutex</strong></td><td><code>pthread_mutex_t</code></td><td><code>threading.Lock()</code></td></tr>
+                <tr><td><strong>Condition var</strong></td><td><code>pthread_cond_t</code></td><td><code>threading.Condition()</code></td></tr>
+                <tr><td><strong>Semaphore</strong></td><td><code>sem_t</code></td><td><code>threading.Semaphore()</code></td></tr>
+                <tr><td><strong>Atomics</strong></td><td><code>stdatomic.h</code> (C11)</td><td>Nu nativ (necesită lock)</td></tr>
+                <tr><td><strong>Thread pool</strong></td><td>Manual implementat</td><td><code>ThreadPoolExecutor</code></td></tr>
+                <tr><td><strong>Process pool</strong></td><td>Manual (fork)</td><td><code>multiprocessing.Pool</code></td></tr>
+                <tr><td><strong>Queue thread-safe</strong></td><td>Manual implementată</td><td><code>queue.Queue()</code></td></tr>
+                <tr><td><strong>Paralelism CPU</strong></td><td>✓ Real</td><td>✗ threading (GIL), ✓ multiprocessing</td></tr>
+                <tr><td><strong>Lock-free</strong></td><td>✓ Posibil cu CAS</td><td>✗ Nu nativ</td></tr>
+                <tr><td><strong>Performance</strong></td><td>Maximă</td><td>Bună (cu multiprocessing)</td></tr>
+            </tbody>
+        </table>
+
+        <div class="info-box success">
+            <div class="info-box-title">✓ Concluzie</div>
+            <ul>
+                <li><strong>C:</strong> Control complet, performanță maximă, dar complexitate ridicată</li>
+                <li><strong>Python threading:</strong> Simplu, bun pentru I/O-bound, dar GIL limitează paralelismul</li>
+                <li><strong>Python multiprocessing:</strong> Ocolește GIL, bun pentru CPU-bound</li>
+                <li><strong>Alegere:</strong> Performanță critică sau lock-free → C; productivitate → Python</li>
+            </ul>
+        </div>
+    </section>
+
+    <footer>
+        <p><strong>Săptămâna 20: Programare Paralelă și Concurentă</strong></p>
+        <p>Comparație: Pseudocod / C / Python</p>
+        <p>Academia de Studii Economice din București - CSIE</p>
+        <p>Curs ATP - Ianuarie 2026</p>
+    </footer>
+
+    <script>
+        document.querySelectorAll('.nav-tabs a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,2390 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Săptămâna 20: Programare Paralelă și Concurentă în C</title>
+    <style>
+        /* =================================================================
+         * STILURI GLOBALE ȘI RESET
+         * ================================================================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Paletă de culori pentru concurrency */
+            --primary-dark: #1a1a2e;
+            --primary-medium: #16213e;
+            --primary-light: #0f3460;
+            --accent-cyan: #00d9ff;
+            --accent-magenta: #ff006e;
+            --accent-yellow: #ffbe0b;
+            --accent-green: #00f5d4;
+            --accent-orange: #fb5607;
+            --accent-purple: #8338ec;
+            --text-light: #e8e8e8;
+            --text-muted: #a0a0a0;
+            --code-bg: #0d1117;
+            --success: #00ff88;
+            --warning: #ffaa00;
+            --danger: #ff4444;
+            
+            /* Thread colors */
+            --thread-1: #ff6b6b;
+            --thread-2: #4ecdc4;
+            --thread-3: #45b7d1;
+            --thread-4: #96ceb4;
+            --thread-5: #ffeaa7;
+            --thread-6: #dfe6e9;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-medium) 50%, var(--primary-light) 100%);
+            color: var(--text-light);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* =================================================================
+         * NAVIGARE ȘI HEADER
+         * ================================================================= */
+        .nav-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--accent-cyan);
+            box-shadow: 0 4px 30px rgba(0, 217, 255, 0.2);
+        }
+
+        .nav-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-magenta));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            border: 1px solid transparent;
+        }
+
+        .nav-links a:hover {
+            background: rgba(0, 217, 255, 0.2);
+            border-color: var(--accent-cyan);
+            transform: translateY(-2px);
+        }
+
+        .nav-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-magenta), var(--accent-yellow));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* =================================================================
+         * CONȚINUT PRINCIPAL
+         * ================================================================= */
+        main {
+            padding-top: 80px;
+        }
+
+        .slide {
+            min-height: 100vh;
+            padding: 4rem 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
+        }
+
+        /* =================================================================
+         * TITLURI ȘI HEADERE
+         * ================================================================= */
+        .slide-title {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .slide-title::after {
+            content: '';
+            display: block;
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-magenta));
+            margin: 1rem auto;
+            border-radius: 2px;
+        }
+
+        .slide-title.cyan { color: var(--accent-cyan); }
+        .slide-title.magenta { color: var(--accent-magenta); }
+        .slide-title.yellow { color: var(--accent-yellow); }
+        .slide-title.green { color: var(--accent-green); }
+        .slide-title.orange { color: var(--accent-orange); }
+        .slide-title.purple { color: var(--accent-purple); }
+
+        h2 {
+            font-size: 2rem;
+            color: var(--accent-cyan);
+            margin: 2rem 0 1rem;
+            border-left: 4px solid var(--accent-cyan);
+            padding-left: 1rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            color: var(--accent-yellow);
+            margin: 1.5rem 0 1rem;
+        }
+
+        h4 {
+            font-size: 1.2rem;
+            color: var(--accent-green);
+            margin: 1rem 0 0.5rem;
+        }
+
+        /* =================================================================
+         * HERO SECTION
+         * ================================================================= */
+        .hero {
+            text-align: center;
+            padding: 6rem 2rem;
+            background: radial-gradient(ellipse at center, rgba(0, 217, 255, 0.1) 0%, transparent 70%);
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta), var(--accent-yellow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titleGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.2); }
+        }
+
+        .hero-subtitle {
+            font-size: 1.8rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .hero-meta {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .meta-item {
+            text-align: center;
+            padding: 1rem 2rem;
+            background: rgba(0, 217, 255, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 217, 255, 0.3);
+        }
+
+        .meta-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent-cyan);
+        }
+
+        .meta-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* =================================================================
+         * DIAGRAME THREAD/PARALLEL
+         * ================================================================= */
+        .thread-diagram {
+            background: var(--code-bg);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            overflow-x: auto;
+            border: 1px solid rgba(0, 217, 255, 0.3);
+        }
+
+        .thread-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .thread-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .thread-label {
+            width: 100px;
+            font-weight: bold;
+            color: var(--text-light);
+        }
+
+        .thread-bar {
+            height: 30px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-dark);
+            font-weight: bold;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .thread-bar:hover {
+            transform: scaleY(1.2);
+            box-shadow: 0 0 20px currentColor;
+        }
+
+        .thread-bar.t1 { background: var(--thread-1); }
+        .thread-bar.t2 { background: var(--thread-2); }
+        .thread-bar.t3 { background: var(--thread-3); }
+        .thread-bar.t4 { background: var(--thread-4); }
+        .thread-bar.waiting { background: repeating-linear-gradient(45deg, #333, #333 10px, #444 10px, #444 20px); color: var(--text-muted); }
+        .thread-bar.blocked { background: var(--danger); }
+        .thread-bar.critical { background: var(--warning); }
+
+        /* =================================================================
+         * BLOCURI DE COD
+         * ================================================================= */
+        pre {
+            background: var(--code-bg);
+            border-radius: 10px;
+            padding: 1.5rem;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-cyan);
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        pre::before {
+            content: attr(data-lang);
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--accent-cyan);
+            background: rgba(0, 217, 255, 0.1);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        code {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .code-inline {
+            background: rgba(0, 217, 255, 0.15);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            color: var(--accent-cyan);
+        }
+
+        /* Syntax highlighting */
+        .keyword { color: var(--accent-magenta); font-weight: bold; }
+        .type { color: var(--accent-cyan); }
+        .function { color: var(--accent-yellow); }
+        .string { color: var(--accent-green); }
+        .comment { color: #6a737d; font-style: italic; }
+        .number { color: var(--accent-orange); }
+        .preprocessor { color: var(--accent-purple); }
+
+        /* =================================================================
+         * CARDURI ȘI BOXURI
+         * ================================================================= */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 1px solid rgba(0, 217, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 10px 40px rgba(0, 217, 255, 0.2);
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            color: var(--accent-cyan);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-icon {
+            font-size: 1.5rem;
+        }
+
+        /* Box-uri de alertă */
+        .box {
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+            border-left: 4px solid;
+        }
+
+        .box-info {
+            background: rgba(0, 217, 255, 0.1);
+            border-color: var(--accent-cyan);
+        }
+
+        .box-warning {
+            background: rgba(255, 170, 0, 0.1);
+            border-color: var(--warning);
+        }
+
+        .box-danger {
+            background: rgba(255, 68, 68, 0.1);
+            border-color: var(--danger);
+        }
+
+        .box-success {
+            background: rgba(0, 255, 136, 0.1);
+            border-color: var(--success);
+        }
+
+        .box-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .box-info .box-title { color: var(--accent-cyan); }
+        .box-warning .box-title { color: var(--warning); }
+        .box-danger .box-title { color: var(--danger); }
+        .box-success .box-title { color: var(--success); }
+
+        /* =================================================================
+         * TABELE
+         * ================================================================= */
+        .table-container {
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            background: rgba(0, 217, 255, 0.2);
+            color: var(--accent-cyan);
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        tr:hover {
+            background: rgba(0, 217, 255, 0.05);
+        }
+
+        td code {
+            background: rgba(0, 217, 255, 0.15);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        /* =================================================================
+         * LISTE
+         * ================================================================= */
+        ul, ol {
+            padding-left: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        li {
+            margin: 0.5rem 0;
+            position: relative;
+        }
+
+        ul li::marker {
+            color: var(--accent-cyan);
+        }
+
+        ol li::marker {
+            color: var(--accent-magenta);
+            font-weight: bold;
+        }
+
+        /* =================================================================
+         * ANIMAȚII PARALELE
+         * ================================================================= */
+        .parallel-demo {
+            display: flex;
+            gap: 1rem;
+            margin: 2rem 0;
+            padding: 2rem;
+            background: var(--code-bg);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .process-column {
+            flex: 1;
+            padding: 1rem;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .process-title {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            border-radius: 5px;
+        }
+
+        .process-column:nth-child(1) .process-title { background: var(--thread-1); color: var(--primary-dark); }
+        .process-column:nth-child(2) .process-title { background: var(--thread-2); color: var(--primary-dark); }
+        .process-column:nth-child(3) .process-title { background: var(--thread-3); color: var(--primary-dark); }
+        .process-column:nth-child(4) .process-title { background: var(--thread-4); color: var(--primary-dark); }
+
+        .task-block {
+            padding: 0.8rem;
+            margin: 0.5rem 0;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 0.85rem;
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .task-block:nth-child(2) { animation-delay: 0.1s; }
+        .task-block:nth-child(3) { animation-delay: 0.2s; }
+        .task-block:nth-child(4) { animation-delay: 0.3s; }
+        .task-block:nth-child(5) { animation-delay: 0.4s; }
+
+        /* =================================================================
+         * FORMULE MATEMATICE
+         * ================================================================= */
+        .formula {
+            text-align: center;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            background: rgba(0, 217, 255, 0.1);
+            border-radius: 10px;
+            font-size: 1.3rem;
+            font-family: 'Times New Roman', serif;
+            border: 1px solid rgba(0, 217, 255, 0.3);
+        }
+
+        .formula-name {
+            font-size: 0.9rem;
+            color: var(--accent-cyan);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* =================================================================
+         * QUOTE-URI ISTORICE
+         * ================================================================= */
+        .quote {
+            padding: 2rem;
+            margin: 2rem 0;
+            background: linear-gradient(135deg, rgba(131, 56, 236, 0.1), rgba(0, 217, 255, 0.1));
+            border-radius: 15px;
+            position: relative;
+            border-left: 4px solid var(--accent-purple);
+        }
+
+        .quote::before {
+            content: '"';
+            font-size: 4rem;
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            color: var(--accent-purple);
+            opacity: 0.5;
+            font-family: Georgia, serif;
+        }
+
+        .quote-text {
+            font-size: 1.2rem;
+            font-style: italic;
+            margin-bottom: 1rem;
+            padding-left: 2rem;
+        }
+
+        .quote-author {
+            text-align: right;
+            color: var(--accent-purple);
+            font-weight: bold;
+        }
+
+        /* =================================================================
+         * DIAGRAME DE SINCRONIZARE
+         * ================================================================= */
+        .sync-diagram {
+            background: var(--code-bg);
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+            font-family: monospace;
+            white-space: pre;
+            line-height: 1.4;
+            overflow-x: auto;
+        }
+
+        .sync-highlight {
+            background: rgba(255, 170, 0, 0.3);
+            padding: 0 0.2rem;
+        }
+
+        .sync-lock {
+            color: var(--danger);
+            font-weight: bold;
+        }
+
+        .sync-unlock {
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        /* =================================================================
+         * FOOTER
+         * ================================================================= */
+        footer {
+            text-align: center;
+            padding: 3rem;
+            background: rgba(0, 0, 0, 0.3);
+            margin-top: 4rem;
+        }
+
+        footer p {
+            color: var(--text-muted);
+            margin: 0.5rem 0;
+        }
+
+        footer a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* =================================================================
+         * RESPONSIVE
+         * ================================================================= */
+        @media (max-width: 768px) {
+            .hero-title { font-size: 2.5rem; }
+            .slide-title { font-size: 2rem; }
+            .nav-links { display: none; }
+            .card-grid { grid-template-columns: 1fr; }
+            .parallel-demo { flex-direction: column; }
+        }
+
+        /* =================================================================
+         * EFECTE SPECIALE
+         * ================================================================= */
+        .glow-text {
+            text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+        }
+
+        .pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .typing {
+            overflow: hidden;
+            border-right: 3px solid var(--accent-cyan);
+            white-space: nowrap;
+            animation: typing 3s steps(40) infinite, blink 0.75s step-end infinite;
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes blink {
+            50% { border-color: transparent; }
+        }
+
+        /* Indicator scroll */
+        .scroll-indicator {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background: var(--accent-cyan);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 217, 255, 0.4);
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .scroll-indicator:hover {
+            transform: scale(1.1);
+        }
+
+        .scroll-indicator svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--primary-dark);
+        }
+
+        /* Race condition visualization */
+        .race-demo {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            padding: 2rem;
+            background: var(--code-bg);
+            border-radius: 15px;
+            margin: 2rem 0;
+        }
+
+        .race-step {
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .race-step-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 5px;
+        }
+
+        .race-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent-cyan);
+            margin: 1rem 0;
+        }
+
+        .race-bad .race-value { color: var(--danger); }
+        .race-good .race-value { color: var(--success); }
+    </style>
+</head>
+<body>
+    <!-- ═══════════════════════════════════════════════════════════════════
+         NAVIGARE
+         ═══════════════════════════════════════════════════════════════════ -->
+    <nav class="nav-header">
+        <div class="nav-title">Săptămâna 20: Programare Paralelă și Concurentă</div>
+        <div class="nav-links">
+            <a href="#intro">Introducere</a>
+            <a href="#threads">Threads</a>
+            <a href="#sync">Sincronizare</a>
+            <a href="#patterns">Patterns</a>
+            <a href="#lockfree">Lock-free</a>
+            <a href="#benchmark">Benchmark</a>
+            <a href="#exercitii">Exerciții</a>
+        </div>
+        <div class="nav-progress" id="progressBar"></div>
+    </nav>
+
+    <main>
+        <!-- ═══════════════════════════════════════════════════════════════════
+             HERO SECTION
+             ═══════════════════════════════════════════════════════════════════ -->
+        <section class="hero slide" id="hero">
+            <h1 class="hero-title">Programare Paralelă și Concurentă</h1>
+            <p class="hero-subtitle">Exploatarea puterii procesoarelor multi-core în C</p>
+            
+            <div class="hero-meta">
+                <div class="meta-item">
+                    <div class="meta-value">POSIX</div>
+                    <div class="meta-label">Threads API</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-value">C11</div>
+                    <div class="meta-label">Atomics</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-value">Lock-free</div>
+                    <div class="meta-label">Structuri</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-value">Map-Reduce</div>
+                    <div class="meta-label">Pattern</div>
+                </div>
+            </div>
+
+            <div class="thread-diagram" style="margin-top: 3rem;">
+                <div class="thread-timeline">
+                    <div class="thread-row">
+                        <span class="thread-label">Main:</span>
+                        <div class="thread-bar t1" style="width: 100px;">create</div>
+                        <div class="thread-bar waiting" style="width: 300px;">join...</div>
+                        <div class="thread-bar t1" style="width: 80px;">done</div>
+                    </div>
+                    <div class="thread-row">
+                        <span class="thread-label">Thread 1:</span>
+                        <div style="width: 100px;"></div>
+                        <div class="thread-bar t2" style="width: 150px;">work</div>
+                        <div class="thread-bar critical" style="width: 50px;">lock</div>
+                        <div class="thread-bar t2" style="width: 100px;">work</div>
+                    </div>
+                    <div class="thread-row">
+                        <span class="thread-label">Thread 2:</span>
+                        <div style="width: 120px;"></div>
+                        <div class="thread-bar t3" style="width: 100px;">work</div>
+                        <div class="thread-bar blocked" style="width: 50px;">wait</div>
+                        <div class="thread-bar critical" style="width: 50px;">lock</div>
+                        <div class="thread-bar t3" style="width: 100px;">work</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             INTRODUCERE ȘI OBIECTIVE
+             ═══════════════════════════════════════════════════════════════════ -->
+        <section class="slide" id="intro">
+            <h1 class="slide-title cyan">🎯 Obiective de Învățare</h1>
+
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-title"><span class="card-icon">📚</span> Rețineți</div>
+                    <ul>
+                        <li>Diferența <strong>concurență vs. paralelism</strong></li>
+                        <li>Primitivele POSIX: pthread_create, mutex, semaphore</li>
+                        <li>Condițiile pentru <strong>race condition</strong> și <strong>deadlock</strong></li>
+                        <li>Formula <strong>Legii lui Amdahl</strong></li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-title"><span class="card-icon">💡</span> Înțelegeți</div>
+                    <ul>
+                        <li>De ce <strong>lock-urile</strong> sunt necesare pentru date partajate</li>
+                        <li>Cum thread-urile împărtășesc memoria</li>
+                        <li>Overhead-ul sincronizării și impactul asupra performanței</li>
+                        <li>Trade-off-uri între corectitudine și viteză</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-title"><span class="card-icon">⚙️</span> Aplicați</div>
+                    <ul>
+                        <li>Implementare <strong>Thread Pool</strong> cu coadă de taskuri</li>
+                        <li>Pattern <strong>Producer-Consumer</strong> cu buffer circular</li>
+                        <li><strong>Parallel Merge Sort</strong> cu threshold adaptiv</li>
+                        <li><strong>Lock-free stack</strong> cu atomic CAS</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-title"><span class="card-icon">🔍</span> Analizați</div>
+                    <ul>
+                        <li>Identificarea <strong>race conditions</strong> în cod</li>
+                        <li>Calcul <strong>speedup</strong> teoretic vs. empiric</li>
+                        <li>Profiling și bottleneck analysis</li>
+                        <li>Scalabilitate pe diferite arhitecturi</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-title"><span class="card-icon">⚖️</span> Evaluați</div>
+                    <ul>
+                        <li>Mutex vs. spinlock vs. atomics</li>
+                        <li>Granularitate optimă pentru lock-uri</li>
+                        <li>Când merită paralelizarea</li>
+                        <li>Alegerea pattern-ului potrivit</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-title"><span class="card-icon">🏗️</span> Creați</div>
+                    <ul>
+                        <li>Aplicație paralelă cu <strong>scalare demonstrabilă</strong></li>
+                        <li>Sistem <strong>Map-Reduce</strong> în C</li>
+                        <li>Thread Pool cu <strong>Futures</strong></li>
+                        <li>Pipeline de procesare concurentă</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             CONTEXT ISTORIC
+             ═══════════════════════════════════════════════════════════════════ -->
+        <section class="slide" id="istoric">
+            <h1 class="slide-title purple">📜 Context Istoric</h1>
+
+            <div class="quote">
+                <p class="quote-text">
+                    The free lunch is over. Concurrency is the next major revolution in how we write software.
+                </p>
+                <p class="quote-author">— Herb Sutter, 2005</p>
+            </div>
+
+            <h2>Evoluția Procesării Paralele</h2>
+
+            <div class="thread-diagram">
+<span class="comment">Timeline: De la secvențial la masiv paralel</span>
+
+<span style="color: var(--accent-cyan);">1960s</span> ────────┬──── Primele sisteme timesharing
+                     │     Multiprogramare pe mainframe-uri
+                     │
+<span style="color: var(--accent-cyan);">1970s</span> ────────┼──── <span style="color: var(--accent-magenta);">Dijkstra: Semafoare</span> (1965)
+                     │     Comunicarea proceselor secvențiale
+                     │
+<span style="color: var(--accent-cyan);">1980s</span> ────────┼──── <span style="color: var(--accent-magenta);">Lamport: Timestamps, Bakery Algorithm</span>
+                     │     Sisteme distribuite, consensul
+                     │
+<span style="color: var(--accent-cyan);">1990s</span> ────────┼──── POSIX Threads (pthreads)
+                     │     Java threads, Windows threads
+                     │
+<span style="color: var(--accent-cyan);">2000s</span> ────────┼──── Multi-core devine mainstream (2005+)
+                     │     "Free lunch is over"
+                     │
+<span style="color: var(--accent-cyan);">2010s</span> ────────┼──── Lock-free data structures mature
+                     │     GPU computing, SIMD
+                     │
+<span style="color: var(--accent-cyan);">2020s</span> ────────┴──── Heterogeneous computing
+                           CPU + GPU + TPU + ...
+            </div>
+
+            <div class="card-grid" style="margin-top: 2rem;">
+                <div class="card">
+                    <div class="card-title">Edsger W. Dijkstra (1930-2002)</div>
+                    <p>Inventatorul semafoarelor și conceptului de secțiune critică. Premiul Turing 1972.</p>
+                    <div class="quote" style="margin: 1rem 0; padding: 1rem;">
+                        <p class="quote-text" style="font-size: 1rem;">"The question of whether a computer can think is no more interesting than the question of whether a submarine can swim."</p>
+                    </div>
+                    <p><strong>Contribuții:</strong> Semafoare, algoritmul Dijkstra, problema filozofilor, goto considered harmful</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Leslie Lamport (n. 1941)</div>
+                    <p>Pionier în sisteme distribuite și concurență. Premiul Turing 2013.</p>
+                    <div class="quote" style="margin: 1rem 0; padding: 1rem;">
+                        <p class="quote-text" style="font-size: 1rem;">"A distributed system is one in which the failure of a computer you didn't even know existed can render your own computer unusable."</p>
+                    </div>
+                    <p><strong>Contribuții:</strong> Bakery algorithm, Paxos, LaTeX, happens-before relation</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Gene Amdahl (1922-2015)</div>
+                    <p>Arhitect IBM, fondator Amdahl Corporation. Formularea legii care îi poartă numele.</p>
+                    <div class="formula" style="margin: 1rem 0;">
+                        <div class="formula-name">Legea lui Amdahl (1967)</div>
+                        S(n) = 1 / ((1-P) + P/n)
+                    </div>
+                    <p><strong>Unde:</strong> P = fracțiunea paralelizabilă, n = număr procesoare</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             CONCURENȚĂ VS PARALELISM
+             ═══════════════════════════════════════════════════════════════════ -->
+        <section class="slide" id="concepts">
+            <h1 class="slide-title yellow">⚡ Concurență vs. Paralelism</h1>
+
+            <div class="box box-info">
+                <div class="box-title">💡 Diferența Fundamentală</div>
+                <ul>
+                    <li><strong>Concurența</strong> = structurarea programului pentru a gestiona mai multe sarcini (potențial pe un singur core)</li>
+                    <li><strong>Paralelismul</strong> = executarea efectivă simultană pe mai multe core-uri</li>
+                </ul>
+            </div>
+
+            <div class="parallel-demo">
+                <div class="process-column">
+                    <div class="process-title">Secvențial</div>
+                    <div class="task-block" style="background: var(--thread-1); color: var(--primary-dark);">Task A</div>
+                    <div class="task-block" style="background: var(--thread-2); color: var(--primary-dark);">Task B</div>
+                    <div class="task-block" style="background: var(--thread-3); color: var(--primary-dark);">Task C</div>
+                    <div class="task-block" style="background: var(--thread-4); color: var(--primary-dark);">Task D</div>
+                    <p style="text-align: center; margin-top: 1rem; color: var(--text-muted);">Total: 4 unități timp</p>
+                </div>
+
+                <div class="process-column">
+                    <div class="process-title">Concurrent (1 core)</div>
+                    <div class="task-block" style="background: linear-gradient(90deg, var(--thread-1) 50%, var(--thread-2) 50%); color: var(--primary-dark);">A│B│A│B</div>
+                    <div class="task-block" style="background: linear-gradient(90deg, var(--thread-3) 50%, var(--thread-4) 50%); color: var(--primary-dark);">C│D│C│D</div>
+                    <p style="text-align: center; margin-top: 1rem; color: var(--text-muted);">Total: ~4 unități<br>(context switch overhead)</p>
+                </div>
+
+                <div class="process-column">
+                    <div class="process-title">Paralel (2 cores)</div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <div class="task-block" style="flex: 1; background: var(--thread-1); color: var(--primary-dark);">A</div>
+                        <div class="task-block" style="flex: 1; background: var(--thread-2); color: var(--primary-dark);">B</div>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <div class="task-block" style="flex: 1; background: var(--thread-3); color: var(--primary-dark);">C</div>
+                        <div class="task-block" style="flex: 1; background: var(--thread-4); color: var(--primary-dark);">D</div>
+                    </div>
+                    <p style="text-align: center; margin-top: 1rem; color: var(--text-muted);">Total: 2 unități<br>(speedup ~2x)</p>
+                </div>
+
+                <div class="process-column">
+                    <div class="process-title">Paralel (4 cores)</div>
+                    <div style="display: flex; gap: 0.3rem;">
+                        <div class="task-block" style="flex: 1; background: var(--thread-1); color: var(--primary-dark); font-size: 0.7rem;">A</div>
+                        <div class="task-block" style="flex: 1; background: var(--thread-2); color: var(--primary-dark); font-size: 0.7rem;">B</div>
+                        <div class="task-block" style="flex: 1; background: var(--thread-3); color: var(--primary-dark); font-size: 0.7rem;">C</div>
+                        <div class="task-block" style="flex: 1; background: var(--thread-4); color: var(--primary-dark); font-size: 0.7rem;">D</div>
+                    </div>
+                    <p style="text-align: center; margin-top: 1rem; color: var(--text-muted);">Total: 1 unitate<br>(speedup ~4x)</p>
+                </div>
+            </div>
+
+            <h2>Procesele și Thread-urile</h2>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Caracteristică</th>
+                            <th>Proces</th>
+                            <th>Thread</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Memorie</td>
+                            <td>Spațiu de adrese <strong>separat</strong></td>
+                            <td>Spațiu de adrese <strong>partajat</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Creare</td>
+                            <td>Costisitoare (fork)</td>
+                            <td>Relativ ieftină</td>
+                        </tr>
+                        <tr>
+                            <td>Comunicare</td>
+                            <td>IPC (pipes, sockets, shared memory)</td>
+                            <td>Directă (variabile globale)</td>
+                        </tr>
+                        <tr>
+                            <td>Izolare</td>
+                            <td>Completă (crash nu afectează altele)</td>
+                            <td>Limitată (crash = proces mort)</td>
+                        </tr>
+                        <tr>
+                            <td>Context switch</td>
+                            <td>Lent (flush TLB)</td>
+                            <td>Rapid</td>
+                        </tr>
+                        <tr>
+                            <td>Sincronizare</td>
+                            <td>Necesită IPC explicit</td>
+                            <td>Mutex, semafoare, atomics</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="thread-diagram">
+<span class="comment">Anatomia unui proces cu multiple threads:</span>
+
+┌─────────────────────────────────────────────────────────────────┐
+│                        <span style="color: var(--accent-cyan);">PROCES</span>                                 │
+├─────────────────────────────────────────────────────────────────┤
+│  <span style="color: var(--accent-yellow);">Spațiu de adrese partajat:</span>                                  │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
+│  │    Code     │  │    Data     │  │    Heap     │             │
+│  │  (text)     │  │  (global)   │  │  (malloc)   │             │
+│  └─────────────┘  └─────────────┘  └─────────────┘             │
+│                                                                 │
+│  <span style="color: var(--accent-magenta);">Per-thread (separate):</span>                                       │
+│  ┌───────────┐   ┌───────────┐   ┌───────────┐                 │
+│  │  <span style="color: var(--thread-1);">Thread 1</span>  │   │  <span style="color: var(--thread-2);">Thread 2</span>  │   │  <span style="color: var(--thread-3);">Thread 3</span>  │                 │
+│  │           │   │           │   │           │                 │
+│  │  Stack    │   │  Stack    │   │  Stack    │                 │
+│  │  Registers│   │  Registers│   │  Registers│                 │
+│  │  PC       │   │  PC       │   │  PC       │                 │
+│  │  Thread ID│   │  Thread ID│   │  Thread ID│                 │
+│  └───────────┘   └───────────┘   └───────────┘                 │
+└─────────────────────────────────────────────────────────────────┘
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             PTHREADS BASICS
+             ═══════════════════════════════════════════════════════════════════ -->
+        <section class="slide" id="threads">
+            <h1 class="slide-title cyan">🧵 POSIX Threads (pthreads)</h1>
+
+            <h2>Creare și Terminare Thread</h2>
+
+            <pre data-lang="C"><code><span class="preprocessor">#include</span> <span class="string">&lt;pthread.h&gt;</span>
+<span class="preprocessor">#include</span> <span class="string">&lt;stdio.h&gt;</span>
+
+<span class="comment">/* Funcția executată de thread */</span>
+<span class="type">void</span>* <span class="function">worker</span>(<span class="type">void</span> *arg) {
+    <span class="type">int</span> id = *(<span class="type">int</span>*)arg;
+    <span class="function">printf</span>(<span class="string">"Thread %d: Salut din thread!\n"</span>, id);
+    
+    <span class="comment">/* Valoarea returnată poate fi obținută prin pthread_join */</span>
+    <span class="type">int</span> *result = <span class="function">malloc</span>(<span class="keyword">sizeof</span>(<span class="type">int</span>));
+    *result = id * <span class="number">100</span>;
+    <span class="keyword">return</span> result;
+}
+
+<span class="type">int</span> <span class="function">main</span>(<span class="type">void</span>) {
+    <span class="type">pthread_t</span> threads[<span class="number">4</span>];
+    <span class="type">int</span> ids[<span class="number">4</span>] = {<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>};
+    
+    <span class="comment">/* Creare threads */</span>
+    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i < <span class="number">4</span>; i++) {
+        <span class="keyword">if</span> (<span class="function">pthread_create</span>(&threads[i], <span class="number">NULL</span>, worker, &ids[i]) != <span class="number">0</span>) {
+            <span class="function">perror</span>(<span class="string">"pthread_create failed"</span>);
+            <span class="keyword">return</span> <span class="number">1</span>;
+        }
+    }
+    
+    <span class="comment">/* Așteptare terminare și colectare rezultate */</span>
+    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i < <span class="number">4</span>; i++) {
+        <span class="type">void</span> *retval;
+        <span class="function">pthread_join</span>(threads[i], &retval);
+        <span class="function">printf</span>(<span class="string">"Thread %d returned: %d\n"</span>, i, *(<span class="type">int</span>*)retval);
+        <span class="function">free</span>(retval);
+    }
+    
+    <span class="keyword">return</span> <span class="number">0</span>;
+}
+
+<span class="comment">/* Compilare: gcc -Wall -pthread -o demo demo.c */</span></code></pre>
+
+            <h2>API Principal pthread</h2>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Funcție</th>
+                            <th>Descriere</th>
+                            <th>Notă</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>pthread_create()</code></td>
+                            <td>Creează un nou thread</td>
+                            <td>Returnează 0 la succes</td>
+                        </tr>
+                        <tr>
+                            <td><code>pthread_join()</code></td>
+                            <td>Așteaptă terminarea thread-ului</td>
+                            <td>Blochează până la terminare</td>
+                        </tr>
+                        <tr>
+                            <td><code>pthread_detach()</code></td>
+                            <td>Marchează thread-ul ca detached</td>
+                            <td>Resursele eliberate automat</td>
+                        </tr>
+                        <tr>
+                            <td><code>pthread_exit()</code></td>
+                            <td>Termină thread-ul curent</td>
+                            <td>Nu termină procesul</td>
+                        </tr>
+                        <tr>
+                            <td><code>pthread_self()</code></td>
+                            <td>Returnează ID-ul thread-ului curent</td>
+                            <td>Tip opac pthread_t</td>
+                        </tr>
+                        <tr>
+                            <td><code>pthread_equal()</code></td>
+                            <td>Compară două thread ID-uri</td>
+                            <td>Nu folosi == direct</td>
+                        </tr>
+                        <tr>
+                            <td><code>pthread_cancel()</code></td>
+                            <td>Solicită anularea thread-ului</td>
+                            <td>Poate fi ignorat</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="box box-warning">
+                <div class="box-title">⚠️ Greșeli Comune</div>
+                <ul>
+                    <li><strong>Pasare pointer la variabilă locală din buclă</strong> - toate thread-urile văd aceeași adresă</li>
+                    <li><strong>Uitarea pthread_join()</strong> - memory leak pentru thread-uri joinable</li>
+                    <li><strong>Return din main() înainte de join</strong> - toate thread-urile sunt terminate forțat</li>
+                    <li><strong>Uitarea flag-ului -pthread la compilare</strong> - comportament nedefinit</li>
+                </ul>
+            </div>
+
+            <h3>Pattern Corect pentru Pasare Date</h3>
+
+            <pre data-lang="C"><code><span class="comment">/* GREȘIT: Toate thread-urile primesc aceeași adresă! */</span>
+<span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i < N; i++) {
+    <span class="function">pthread_create</span>(&t[i], <span class="number">NULL</span>, worker, &i);  <span class="comment">/* BUG! */</span>
+}
+
+<span class="comment">/* CORECT: Array separat */</span>
+<span class="type">int</span> ids[N];
+<span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i < N; i++) {
+    ids[i] = i;
+    <span class="function">pthread_create</span>(&t[i], <span class="number">NULL</span>, worker, &ids[i]);
+}
+
+<span class="comment">/* CORECT: Structură alocată dinamic */</span>
+<span class="keyword">typedef struct</span> {
+    <span class="type">int</span> id;
+    <span class="type">char</span> *data;
+} ThreadArgs;
+
+<span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i < N; i++) {
+    ThreadArgs *args = <span class="function">malloc</span>(<span class="keyword">sizeof</span>(ThreadArgs));
+    args->id = i;
+    args->data = <span class="string">"shared data"</span>;
+    <span class="function">pthread_create</span>(&t[i], <span class="number">NULL</span>, worker, args);
+    <span class="comment">/* worker() va face free(args) */</span>
+}</code></pre>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             RACE CONDITIONS
+             ═══════════════════════════════════════════════════════════════════ -->
+        <section class="slide" id="race">
+            <h1 class="slide-title magenta">💥 Race Conditions</h1>
+
+            <div class="box box-danger">
+                <div class="box-title">🔥 Ce este o Race Condition?</div>
+                <p>O situație în care comportamentul programului depinde de ordinea relativă a execuției operațiilor din thread-uri diferite. Rezultatul este <strong>nedeterminist</strong> și <strong>greu de reprodus</strong>.</p>
+            </div>
+
+            <h2>Demonstrație: Counter Fără Protecție</h2>
+
+            <div class="race-demo">
+                <div class="race-step">
+                    <div class="race-step-title" style="background: var(--thread-1); color: var(--primary-dark);">Thread A</div>
+                    <p>1. Citește counter (0)</p>
+                    <p>2. Adaugă 1 → 1</p>
+                    <p>3. Scrie counter (1)</p>
+                </div>
+                <div class="race-step race-bad">
+                    <div class="race-step-title" style="background: var(--danger);">Problema</div>
+                    <p>Thread B citește <strong>înainte</strong> ca A să scrie!</p>
+                    <div class="race-value">1</div>
+                    <p>În loc de 2!</p>
+                </div>
+                <div class="race-step">
+                    <div class="race-step-title" style="background: var(--thread-2); color: var(--primary-dark);">Thread B</div>
+                    <p>1. Citește counter (0)</p>
+                    <p>2. Adaugă 1 → 1</p>
+                    <p>3. Scrie counter (1)</p>
+                </div>
+            </div>
+
+            <pre data-lang="C"><code><span class="preprocessor">#include</span> <span class="string">&lt;pthread.h&gt;</span>
+<span class="preprocessor">#include</span> <span class="string">&lt;stdio.h&gt;</span>
+
+<span class="type">volatile int</span> counter = <span class="number">0</span>;  <span class="comment">/* Variabilă partajată */</span>
+<span class="preprocessor">#define</span> ITERATIONS <span class="number">1000000</span>
+
+<span class="type">void</span>* <span class="function">increment</span>(<span class="type">void</span> *arg) {
+    (<span class="type">void</span>)arg;
+    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i < ITERATIONS; i++) {
+        counter++;  <span class="comment">/* NU ESTE ATOMIC! */</span>
+        <span class="comment">/*
+         * Echivalent cu:
+         *   int temp = counter;    // LOAD
+         *   temp = temp + 1;       // ADD
+         *   counter = temp;        // STORE
+         * 
+         * Între LOAD și STORE alt thread poate interveni!
+         */</span>
+    }
+    <span class="keyword">return</span> <span class="number">NULL</span>;
+}
+
+<span class="type">int</span> <span class="function">main</span>(<span class="type">void</span>) {
+    <span class="type">pthread_t</span> t1, t2;
+    
+    <span class="function">pthread_create</span>(&t1, <span class="number">NULL</span>, increment, <span class="number">NULL</span>);
+    <span class="function">pthread_create</span>(&t2, <span class="number">NULL</span>, increment, <span class="number">NULL</span>);
+    
+    <span class="function">pthread_join</span>(t1, <span class="number">NULL</span>);
+    <span class="function">pthread_join</span>(t2, <span class="number">NULL</span>);
+    
+    <span class="comment">/* Așteptat: 2,000,000 */</span>
+    <span class="comment">/* Real: 1,000,000 - 2,000,000 (nedeterminist!) */</span>
+    <span class="function">printf</span>(<span class="string">"Counter: %d (expected %d)\n"</span>, counter, <span class="number">2</span> * ITERATIONS);
+    
+    <span class="keyword">return</span> <span class="number">0</span>;
+}</code></pre>
+
+            <div class="thread-diagram">
+<span class="comment">Execuție intercalată (race condition):</span>
+
+Timp    Thread A                   Thread B                    counter
+────────────────────────────────────────────────────────────────────────
+t₀      LOAD counter (→ 0)                                        0
+t₁                                 LOAD counter (→ 0)             0
+t₂      ADD 1 (temp_A = 1)                                        0
+t₃                                 ADD 1 (temp_B = 1)             0
+t₄      STORE counter (← 1)                                       <span style="color: var(--thread-1);">1</span>
+t₅                                 STORE counter (← 1)            <span style="color: var(--danger);">1</span> ✗
+────────────────────────────────────────────────────────────────────────
+                                                                  <span style="color: var(--danger);">Pierdut un increment!</span>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             MUTEX
+             ═══════════════════════════════════════════════════════════════════ -->
+        <section class="slide" id="sync">
+            <h1 class="slide-title green">🔒 Mutex (Mutual Exclusion)</h1>
+
+            <div class="box box-success">
+                <div class="box-title">✓ Soluția: Secțiunea Critică</div>
+                <p>Un <strong>mutex</strong> asigură că doar un singur thread poate executa o secțiune critică la un moment dat.</p>
+            </div>
+
+            <pre data-lang="C"><code><span class="preprocessor">#include</span> <span class="string">&lt;pthread.h&gt;</span>
+
+<span class="type">int</span> counter = <span class="number">0</span>;
+<span class="type">pthread_mutex_t</span> mutex = PTHREAD_MUTEX_INITIALIZER;  <span class="comment">/* Inițializare statică */</span>
+
+<span class="type">void</span>* <span class="function">increment_safe</span>(<span class="type">void</span> *arg) {
+    (<span class="type">void</span>)arg;
+    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i < ITERATIONS; i++) {
+        <span class="function">pthread_mutex_lock</span>(&mutex);      <span class="comment">/* Intră în secțiunea critică */</span>
+        <span class="comment">/* ═══════ SECȚIUNE CRITICĂ ═══════ */</span>
+        counter++;                       <span class="comment">/* Acum e sigur! */</span>
+        <span class="comment">/* ═══════════════════════════════ */</span>
+        <span class="function">pthread_mutex_unlock</span>(&mutex);    <span class="comment">/* Iese din secțiunea critică */</span>
+    }
+    <span class="keyword">return</span> <span class="number">NULL</span>;
+}
+
+<span class="comment">/* Alternativ: Inițializare dinamică */</span>
+<span class="type">pthread_mutex_t</span> dyn_mutex;
+
+<span class="type">void</span> <span class="function">init_mutex</span>(<span class="type">void</span>) {
+    <span class="type">pthread_mutexattr_t</span> attr;
+    <span class="function">pthread_mutexattr_init</span>(&attr);
+    <span class="function">pthread_mutexattr_settype</span>(&attr, PTHREAD_MUTEX_ERRORCHECK);  <span class="comment">/* Debug */</span>
+    <span class="function">pthread_mutex_init</span>(&dyn_mutex, &attr);
+    <span class="function">pthread_mutexattr_destroy</span>(&attr);
+}
+
+<span class="type">void</span> <span class="function">cleanup</span>(<span class="type">void</span>) {
+    <span class="function">pthread_mutex_destroy</span>(&dyn_mutex);
+}</code></pre>
+
+            <div class="thread-diagram">
+<span class="comment">Execuție cu mutex (corectă):</span>
+
+Timp    Thread A                   Thread B                    counter   Mutex
+─────────────────────────────────────────────────────────────────────────────────
+t₀      <span class="sync-lock">lock()</span> ✓                                                0       <span style="color: var(--thread-1);">LOCKED by A</span>
+t₁      LOAD counter (→ 0)                                        0       <span style="color: var(--thread-1);">LOCKED by A</span>
+t₂      ADD 1                      <span class="sync-lock">lock()</span> ... <span style="color: var(--warning);">BLOCKED</span>           0       <span style="color: var(--thread-1);">LOCKED by A</span>
+t₃      STORE counter (← 1)        <span style="color: var(--warning);">waiting...</span>                    <span style="color: var(--success);">1</span>       <span style="color: var(--thread-1);">LOCKED by A</span>
+t₄      <span class="sync-unlock">unlock()</span>                  <span class="sync-lock">lock()</span> ✓                      1       <span style="color: var(--thread-2);">LOCKED by B</span>
+t₅                                 LOAD counter (→ 1)            1       <span style="color: var(--thread-2);">LOCKED by B</span>
+t₆                                 ADD 1                         1       <span style="color: var(--thread-2);">LOCKED by B</span>
+t₇                                 STORE counter (← 2)           <span style="color: var(--success);">2</span>       <span style="color: var(--thread-2);">LOCKED by B</span>
+t₈                                 <span class="sync-unlock">unlock()</span>                     2       UNLOCKED
+─────────────────────────────────────────────────────────────────────────────────
+                                                                  <span style="color: var(--success);">Corect!</span>
+            </div>
+
+            <h2>Tipuri de Mutex</h2>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tip</th>
+                            <th>Comportament</th>
+                            <th>Când să-l folosești</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>PTHREAD_MUTEX_NORMAL</code></td>
+                            <td>Self-deadlock posibil, nu verifică owner</td>
+                            <td>Performanță maximă (implicit)</td>
+                        </tr>
+                        <tr>
+                            <td><code>PTHREAD_MUTEX_ERRORCHECK</code></td>
+                            <td>Returnează eroare la self-lock sau unlock greșit</td>
+                            <td>Debugging</td>
+                        </tr>
+                        <tr>
+                            <td><code>PTHREAD_MUTEX_RECURSIVE</code></td>
+                            <td>Același thread poate face lock de mai multe ori</td>
+                            <td>Funcții recursive</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="box box-info">
+                <div class="box-title">💡 Granularitate Lock</div>
+                <p><strong>Fine-grained:</strong> Lock per element → mai mult paralelism, mai mult overhead</p>
+                <p><strong>Coarse-grained:</strong> Un lock pentru tot → simplu, dar serializare</p>
+                <p>Alege în funcție de cât de des accesezi date partajate și cât durează operațiile.</p>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             DEADLOCK
+             ═══════════════════════════════════════════════════════════════════ -->
+        <section class="slide" id="deadlock">
+            <h1 class="slide-title orange">☠️ Deadlock</h1>
+
+            <div class="box box-danger">
+                <div class="box-title">🔒🔒 Definiție</div>
+                <p>Un <strong>deadlock</strong> apare când două sau mai multe thread-uri se așteaptă reciproc pentru resurse pe care le dețin mutual, rezultând în blocaj permanent.</p>
+            </div>
+
+            <h2>Cele 4 Condiții Coffman (1971)</h2>
+
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-title">1. Excludere Mutuală</div>
+                    <p>Resursele sunt folosite exclusiv de un thread la un moment dat.</p>
+                </div>
+                <div class="card">
+                    <div class="card-title">2. Hold and Wait</div>
+                    <p>Thread-ul deține cel puțin o resursă și așteaptă să obțină altele.</p>
+                </div>
+                <div class="card">
+                    <div class="card-title">3. No Preemption</div>
+                    <p>Resursele nu pot fi luate forțat; doar thread-ul care le deține le poate elibera.</p>
+                </div>
+                <div class="card">
+                    <div class="card-title">4. Circular Wait</div>
+                    <p>Există un ciclu de așteptare: T1→T2→...→Tn→T1.</p>
+                </div>
+            </div>
+
+            <h3>Exemplu Clasic: Dining Philosophers</h3>
+
+            <div class="thread-diagram">
+<span class="comment">5 filozofi stau la masă rotundă, fiecare are nevoie de 2 furculițe pentru a mânca:</span>
+
+                        <span style="color: var(--thread-1);">🧑 Phil 0</span>
+                     🍴            🍴
+                    
+              <span style="color: var(--thread-5);">🧑</span>                         <span style="color: var(--thread-2);">🧑</span>
+            Phil 4   🍴    🍲     🍴   Phil 1
+              
+                    🍴            🍴
+                <span style="color: var(--thread-4);">🧑</span>                 <span style="color: var(--thread-3);">🧑</span>
+              Phil 3              Phil 2
+
+
+<span class="comment">Deadlock când toți iau furculița din stânga simultan:</span>
+
+Phil 0: <span class="sync-lock">lock(fork[0])</span> ✓ ... așteaptă fork[1]
+Phil 1: <span class="sync-lock">lock(fork[1])</span> ✓ ... așteaptă fork[2]
+Phil 2: <span class="sync-lock">lock(fork[2])</span> ✓ ... așteaptă fork[3]
+Phil 3: <span class="sync-lock">lock(fork[3])</span> ✓ ... așteaptă fork[4]
+Phil 4: <span class="sync-lock">lock(fork[4])</span> ✓ ... așteaptă fork[0] ← <span style="color: var(--danger);">DEADLOCK!</span>
+            </div>
+
+            <pre data-lang="C"><code><span class="comment">/* Soluție: Ordonare globală a resurselor */</span>
+<span class="type">void</span> <span class="function">philosopher</span>(<span class="type">int</span> id) {
+    <span class="type">int</span> left = id;
+    <span class="type">int</span> right = (id + <span class="number">1</span>) % <span class="number">5</span>;
+    
+    <span class="comment">/* ÎNTOTDEAUNA ia mai întâi furculița cu index mai mic */</span>
+    <span class="type">int</span> first = (left < right) ? left : right;
+    <span class="type">int</span> second = (left < right) ? right : left;
+    
+    <span class="keyword">while</span> (<span class="number">1</span>) {
+        <span class="function">think</span>();
+        
+        <span class="function">pthread_mutex_lock</span>(&forks[first]);   <span class="comment">/* Ordinea e consistentă */</span>
+        <span class="function">pthread_mutex_lock</span>(&forks[second]);
+        
+        <span class="function">eat</span>();
+        
+        <span class="function">pthread_mutex_unlock</span>(&forks[second]);
+        <span class="function">pthread_mutex_unlock</span>(&forks[first]);
+    }
+}</code></pre>
+
+            <h2>Strategii de Evitare Deadlock</h2>
+
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-title">🔢 Ordonare Globală</div>
+                    <p>Toate thread-urile iau lock-urile în aceeași ordine (după un ID unic). Previne ciclul.</p>
+                </div>
+                <div class="card">
+                    <div class="card-title">⏱️ Timeout</div>
+                    <p><code>pthread_mutex_timedlock()</code> - renunță dacă nu obține lock-ul în timp util.</p>
+                </div>
+                <div class="card">
+                    <div class="card-title">🔄 Try-lock</div>
+                    <p><code>pthread_mutex_trylock()</code> - non-blocking; returnează imediat cu succes/eșec.</p>
+                </div>
+                <div class="card">
+                    <div class="card-title">📊 Banker's Algorithm</div>
+                    <p>Alocă resurse doar dacă sistemul rămâne în stare "safe". Complex, rar folosit în practică.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SEMAFOARE ȘI CONDITION VARIABLES
+             ═══════════════════════════════════════════════════════════════════ -->
+        <section class="slide" id="semaphore">
+            <h1 class="slide-title purple">🚦 Semafoare și Condition Variables</h1>
+
+            <h2>Semafoare POSIX</h2>
+
+            <div class="box box-info">
+                <div class="box-title">💡 Ce este un Semafor?</div>
+                <p>Un contor atomic care permite sincronizarea mai multor thread-uri. Poate avea valori > 1 (spre deosebire de mutex care e binar).</p>
+            </div>
+
+            <pre data-lang="C"><code><span class="preprocessor">#include</span> <span class="string">&lt;semaphore.h&gt;</span>
+
+<span class="type">sem_t</span> sem;
+
+<span class="type">void</span> <span class="function">init_semaphore</span>(<span class="type">void</span>) {
+    <span class="comment">/* sem_init(semafor, pshared, valoare_inițială) */</span>
+    <span class="comment">/* pshared: 0 = între thread-uri, non-zero = între procese */</span>
+    <span class="function">sem_init</span>(&sem, <span class="number">0</span>, <span class="number">3</span>);  <span class="comment">/* Permite 3 accese simultane */</span>
+}
+
+<span class="type">void</span>* <span class="function">worker</span>(<span class="type">void</span> *arg) {
+    <span class="function">sem_wait</span>(&sem);      <span class="comment">/* P() / down() - decrementează, blochează la 0 */</span>
+    
+    <span class="comment">/* Secțiune limitată la maxim 3 thread-uri simultan */</span>
+    <span class="function">do_work</span>();
+    
+    <span class="function">sem_post</span>(&sem);      <span class="comment">/* V() / up() - incrementează, trezește un thread */</span>
+    <span class="keyword">return</span> <span class="number">NULL</span>;
+}
+
+<span class="type">void</span> <span class="function">cleanup</span>(<span class="type">void</span>) {
+    <span class="function">sem_destroy</span>(&sem);
+}</code></pre>
+
+            <h2>Condition Variables</h2>
+
+            <pre data-lang="C"><code><span class="preprocessor">#include</span> <span class="string">&lt;pthread.h&gt;</span>
+
+<span class="type">pthread_mutex_t</span> mutex = PTHREAD_MUTEX_INITIALIZER;
+<span class="type">pthread_cond_t</span> cond = PTHREAD_COND_INITIALIZER;
+
+<span class="type">bool</span> ready = <span class="keyword">false</span>;
+
+<span class="comment">/* Thread care așteaptă */</span>
+<span class="type">void</span>* <span class="function">waiter</span>(<span class="type">void</span> *arg) {
+    <span class="function">pthread_mutex_lock</span>(&mutex);
+    
+    <span class="comment">/* IMPORTANT: Folosește WHILE, nu IF! */</span>
+    <span class="comment">/* Spurious wakeups sunt posibile! */</span>
+    <span class="keyword">while</span> (!ready) {
+        <span class="comment">/* Atomically: unlock mutex + sleep */</span>
+        <span class="comment">/* La trezire: re-lock mutex */</span>
+        <span class="function">pthread_cond_wait</span>(&cond, &mutex);
+    }
+    
+    <span class="comment">/* Procesează când ready == true */</span>
+    <span class="function">process_data</span>();
+    
+    <span class="function">pthread_mutex_unlock</span>(&mutex);
+    <span class="keyword">return</span> <span class="number">NULL</span>;
+}
+
+<span class="comment">/* Thread care semnalizează */</span>
+<span class="type">void</span>* <span class="function">signaler</span>(<span class="type">void</span> *arg) {
+    <span class="function">pthread_mutex_lock</span>(&mutex);
+    
+    <span class="function">prepare_data</span>();
+    ready = <span class="keyword">true</span>;
+    
+    <span class="comment">/* pthread_cond_signal(&cond);    // Trezește UN thread */</span>
+    <span class="function">pthread_cond_broadcast</span>(&cond);    <span class="comment">/* Trezește TOATE thread-urile */</span>
+    
+    <span class="function">pthread_mutex_unlock</span>(&mutex);
+    <span class="keyword">return</span> <span class="number">NULL</span>;
+}</code></pre>
+
+            <div class="box box-warning">
+                <div class="box-title">⚠️ De ce WHILE și nu IF?</div>
+                <p><strong>Spurious wakeups:</strong> pthread_cond_wait() poate returna chiar dacă nimeni nu a apelat signal/broadcast. Standard-ul permite asta pentru optimizare.</p>
+                <p><strong>Stolen wakeups:</strong> Alt thread poate ajunge primul și consuma condiția înainte ca thread-ul trezit să verifice.</p>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             PRODUCER-CONSUMER
+             ═══════════════════════════════════════════════════════════════════ -->
+        <section class="slide" id="patterns">
+            <h1 class="slide-title yellow">🏭 Pattern: Producer-Consumer</h1>
+
+            <div class="thread-diagram">
+<span class="comment">Bounded Buffer / Circular Queue:</span>
+
+    PRODUCERS                    BUFFER                      CONSUMERS
+    ┌─────────┐               ┌─┬─┬─┬─┬─┐                   ┌─────────┐
+    │ <span style="color: var(--thread-1);">Prod 1</span>  │──────┐        │ │ │ │ │ │        ┌──────│ <span style="color: var(--thread-3);">Cons 1</span>  │
+    └─────────┘      │        └─┴─┴─┴─┴─┘        │        └─────────┘
+    ┌─────────┐      └───────►  <span style="color: var(--warning);">head</span>    <span style="color: var(--success);">tail</span> ──────┘        ┌─────────┐
+    │ <span style="color: var(--thread-2);">Prod 2</span>  │──────────────► ↓       ↑ ────────────────│ <span style="color: var(--thread-4);">Cons 2</span>  │
+    └─────────┘               │A│B│C│ │ │                   └─────────┘
+                               └─┴─┴─┴─┴─┘
+
+<span class="comment">Sincronizare necesară:</span>
+• <span style="color: var(--accent-cyan);">Mutex:</span> protejează accesul la buffer
+• <span style="color: var(--accent-magenta);">Cond not_full:</span> producers așteaptă când buffer plin
+• <span style="color: var(--accent-green);">Cond not_empty:</span> consumers așteaptă când buffer gol
+            </div>
+
+            <pre data-lang="C"><code><span class="keyword">typedef struct</span> {
+    <span class="type">void</span> **items;
+    <span class="type">size_t</span> capacity;
+    <span class="type">size_t</span> count;
+    <span class="type">size_t</span> head;      <span class="comment">/* Index pentru citire (consumator) */</span>
+    <span class="type">size_t</span> tail;      <span class="comment">/* Index pentru scriere (producător) */</span>
+    
+    <span class="type">pthread_mutex_t</span> mutex;
+    <span class="type">pthread_cond_t</span> not_full;
+    <span class="type">pthread_cond_t</span> not_empty;
+} BoundedBuffer;
+
+<span class="type">void</span> <span class="function">buffer_put</span>(BoundedBuffer *buf, <span class="type">void</span> *item) {
+    <span class="function">pthread_mutex_lock</span>(&buf->mutex);
+    
+    <span class="comment">/* Așteaptă cât timp buffer-ul e plin */</span>
+    <span class="keyword">while</span> (buf->count == buf->capacity) {
+        <span class="function">pthread_cond_wait</span>(&buf->not_full, &buf->mutex);
+    }
+    
+    buf->items[buf->tail] = item;
+    buf->tail = (buf->tail + <span class="number">1</span>) % buf->capacity;
+    buf->count++;
+    
+    <span class="function">pthread_cond_signal</span>(&buf->not_empty);
+    <span class="function">pthread_mutex_unlock</span>(&buf->mutex);
+}
+
+<span class="type">void</span>* <span class="function">buffer_get</span>(BoundedBuffer *buf) {
+    <span class="function">pthread_mutex_lock</span>(&buf->mutex);
+    
+    <span class="comment">/* Așteaptă cât timp buffer-ul e gol */</span>
+    <span class="keyword">while</span> (buf->count == <span class="number">0</span>) {
+        <span class="function">pthread_cond_wait</span>(&buf->not_empty, &buf->mutex);
+    }
+    
+    <span class="type">void</span> *item = buf->items[buf->head];
+    buf->head = (buf->head + <span class="number">1</span>) % buf->capacity;
+    buf->count--;
+    
+    <span class="function">pthread_cond_signal</span>(&buf->not_full);
+    <span class="function">pthread_mutex_unlock</span>(&buf->mutex);
+    
+    <span class="keyword">return</span> item;
+}</code></pre>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             THREAD POOL
+             ═══════════════════════════════════════════════════════════════════ -->
+        <section class="slide" id="threadpool">
+            <h1 class="slide-title cyan">🏊 Thread Pool</h1>
+
+            <div class="box box-info">
+                <div class="box-title">💡 De ce Thread Pool?</div>
+                <ul>
+                    <li><strong>Reutilizare:</strong> Evită costul creării/distrugerii thread-urilor pentru fiecare task</li>
+                    <li><strong>Limitare:</strong> Controlează numărul maxim de thread-uri active</li>
+                    <li><strong>Load balancing:</strong> Taskurile sunt distribuite automat</li>
+                </ul>
+            </div>
+
+            <div class="thread-diagram">
+<span class="comment">Arhitectura Thread Pool:</span>
+
+        ┌─────────────────────────────────────────────────────────────────┐
+        │                        <span style="color: var(--accent-cyan);">THREAD POOL</span>                            │
+        │                                                                 │
+        │  ┌─────────────────────────────────────────────────────────┐   │
+        │  │              <span style="color: var(--accent-yellow);">TASK QUEUE</span> (thread-safe)               │   │
+        │  │  ┌─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┐    │   │
+        │  │  │Task1│Task2│Task3│Task4│     │     │     │     │    │   │
+        │  │  └─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘    │   │
+        │  └─────────────────────────────────────────────────────────┘   │
+        │                              │                                  │
+        │              ┌───────────────┼───────────────┐                  │
+        │              ▼               ▼               ▼                  │
+        │         ┌─────────┐    ┌─────────┐    ┌─────────┐              │
+        │         │<span style="color: var(--thread-1);">Worker 1</span> │    │<span style="color: var(--thread-2);">Worker 2</span> │    │<span style="color: var(--thread-3);">Worker 3</span> │              │
+        │         └─────────┘    └─────────┘    └─────────┘              │
+        │              │               │               │                  │
+        │              └───────────────┼───────────────┘                  │
+        │                              ▼                                  │
+        │                         <span style="color: var(--accent-green);">Results</span>                               │
+        └─────────────────────────────────────────────────────────────────┘
+
+<span class="comment">Lifecycle:</span>
+1. <span style="color: var(--accent-cyan);">submit(task)</span> → adaugă în queue
+2. <span style="color: var(--thread-1);">Worker</span> idle → extrage task din queue
+3. <span style="color: var(--thread-1);">Worker</span> execută task
+4. <span style="color: var(--thread-1);">Worker</span> redevine idle, caută alt task
+            </div>
+
+            <pre data-lang="C"><code><span class="keyword">typedef struct</span> Task {
+    <span class="type">void</span> (*function)(<span class="type">void</span>*);   <span class="comment">/* Funcția de executat */</span>
+    <span class="type">void</span> *argument;            <span class="comment">/* Argument pentru funcție */</span>
+    <span class="keyword">struct</span> Task *next;         <span class="comment">/* Pentru listă înlănțuită */</span>
+} Task;
+
+<span class="keyword">typedef struct</span> {
+    <span class="type">pthread_t</span> *threads;        <span class="comment">/* Array de worker threads */</span>
+    <span class="type">size_t</span> num_threads;
+    
+    Task *queue_head;
+    Task *queue_tail;
+    <span class="type">size_t</span> queue_size;
+    
+    <span class="type">pthread_mutex_t</span> mutex;
+    <span class="type">pthread_cond_t</span> not_empty;
+    
+    <span class="type">volatile bool</span> shutdown;
+} ThreadPool;
+
+<span class="comment">/* Funcția executată de fiecare worker */</span>
+<span class="type">void</span>* <span class="function">worker_thread</span>(<span class="type">void</span> *arg) {
+    ThreadPool *pool = (ThreadPool*)arg;
+    
+    <span class="keyword">while</span> (<span class="number">1</span>) {
+        <span class="function">pthread_mutex_lock</span>(&pool->mutex);
+        
+        <span class="comment">/* Așteaptă task sau shutdown */</span>
+        <span class="keyword">while</span> (pool->queue_size == <span class="number">0</span> && !pool->shutdown) {
+            <span class="function">pthread_cond_wait</span>(&pool->not_empty, &pool->mutex);
+        }
+        
+        <span class="keyword">if</span> (pool->shutdown && pool->queue_size == <span class="number">0</span>) {
+            <span class="function">pthread_mutex_unlock</span>(&pool->mutex);
+            <span class="keyword">break</span>;  <span class="comment">/* Exit thread */</span>
+        }
+        
+        <span class="comment">/* Extrage task din coadă */</span>
+        Task *task = pool->queue_head;
+        pool->queue_head = task->next;
+        pool->queue_size--;
+        
+        <span class="function">pthread_mutex_unlock</span>(&pool->mutex);
+        
+        <span class="comment">/* Execută task */</span>
+        task-><span class="function">function</span>(task->argument);
+        <span class="function">free</span>(task);
+    }
+    
+    <span class="keyword">return</span> <span class="number">NULL</span>;
+}</code></pre>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             C11 ATOMICS
+             ═══════════════════════════════════════════════════════════════════ -->
+        <section class="slide" id="lockfree">
+            <h1 class="slide-title green">⚛️ C11 Atomics și Lock-free</h1>
+
+            <div class="box box-info">
+                <div class="box-title">💡 Ce sunt Operațiile Atomice?</div>
+                <p>Operații care se execută <strong>indivizibil</strong> - nu pot fi întrerupte sau observate parțial de alte thread-uri. Hardware-ul garantează atomicitatea.</p>
+            </div>
+
+            <h2>Operații Atomice în C11</h2>
+
+            <pre data-lang="C"><code><span class="preprocessor">#include</span> <span class="string">&lt;stdatomic.h&gt;</span>
+
+<span class="comment">/* Declarare variabilă atomică */</span>
+<span class="type">atomic_int</span> counter = <span class="number">0</span>;
+
+<span class="comment">/* Operații atomice de bază */</span>
+<span class="function">atomic_store</span>(&counter, <span class="number">42</span>);                   <span class="comment">/* Scriere atomică */</span>
+<span class="type">int</span> val = <span class="function">atomic_load</span>(&counter);             <span class="comment">/* Citire atomică */</span>
+
+<span class="comment">/* Read-Modify-Write (RMW) operations */</span>
+<span class="function">atomic_fetch_add</span>(&counter, <span class="number">1</span>);               <span class="comment">/* counter++ (returnează valoarea veche) */</span>
+<span class="function">atomic_fetch_sub</span>(&counter, <span class="number">1</span>);               <span class="comment">/* counter-- */</span>
+<span class="function">atomic_fetch_or</span>(&counter, <span class="number">0xFF</span>);             <span class="comment">/* counter |= 0xFF */</span>
+<span class="function">atomic_fetch_and</span>(&counter, <span class="number">0xFF</span>);            <span class="comment">/* counter &= 0xFF */</span>
+<span class="function">atomic_fetch_xor</span>(&counter, <span class="number">0xFF</span>);            <span class="comment">/* counter ^= 0xFF */</span>
+
+<span class="comment">/* Compare-And-Swap (CAS) - operația fundamentală lock-free */</span>
+<span class="type">int</span> expected = <span class="number">10</span>;
+<span class="type">int</span> desired = <span class="number">20</span>;
+
+<span class="keyword">if</span> (<span class="function">atomic_compare_exchange_strong</span>(&counter, &expected, desired)) {
+    <span class="comment">/* Succes: counter era 10, acum e 20 */</span>
+} <span class="keyword">else</span> {
+    <span class="comment">/* Eșec: counter NU era 10 */</span>
+    <span class="comment">/* expected conține acum valoarea reală */</span>
+}</code></pre>
+
+            <h2>Lock-free Stack (Treiber Stack)</h2>
+
+            <pre data-lang="C"><code><span class="keyword">typedef struct</span> Node {
+    <span class="type">void</span> *data;
+    <span class="keyword">struct</span> Node *next;
+} Node;
+
+<span class="keyword">typedef struct</span> {
+    <span class="type">_Atomic</span>(Node*) head;
+} LockFreeStack;
+
+<span class="type">void</span> <span class="function">lf_push</span>(LockFreeStack *stack, <span class="type">void</span> *data) {
+    Node *node = <span class="function">malloc</span>(<span class="keyword">sizeof</span>(Node));
+    node->data = data;
+    
+    Node *old_head;
+    <span class="keyword">do</span> {
+        old_head = <span class="function">atomic_load</span>(&stack->head);
+        node->next = old_head;
+        <span class="comment">/* CAS: dacă head nu s-a schimbat, actualizează-l la node */</span>
+    } <span class="keyword">while</span> (!<span class="function">atomic_compare_exchange_weak</span>(&stack->head, &old_head, node));
+}
+
+<span class="type">void</span>* <span class="function">lf_pop</span>(LockFreeStack *stack) {
+    Node *old_head;
+    Node *new_head;
+    <span class="type">void</span> *data;
+    
+    <span class="keyword">do</span> {
+        old_head = <span class="function">atomic_load</span>(&stack->head);
+        <span class="keyword">if</span> (old_head == <span class="number">NULL</span>) {
+            <span class="keyword">return</span> <span class="number">NULL</span>;  <span class="comment">/* Stack gol */</span>
+        }
+        new_head = old_head->next;
+        data = old_head->data;
+        <span class="comment">/* CAS: dacă head nu s-a schimbat, actualizează-l la new_head */</span>
+    } <span class="keyword">while</span> (!<span class="function">atomic_compare_exchange_weak</span>(&stack->head, &old_head, new_head));
+    
+    <span class="function">free</span>(old_head);
+    <span class="keyword">return</span> data;
+}</code></pre>
+
+            <div class="box box-warning">
+                <div class="box-title">⚠️ Problema ABA</div>
+                <p>Thread A citește valoarea X, e întrerupt. Thread B schimbă X→Y→X. Thread A reia, CAS reușește (vede tot X), dar starea s-a schimbat!</p>
+                <p><strong>Soluții:</strong> Tagged pointers (version counter), hazard pointers, epoch-based reclamation.</p>
+            </div>
+
+            <h2>Mutex vs Spinlock vs Atomics</h2>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Aspect</th>
+                            <th>Mutex</th>
+                            <th>Spinlock</th>
+                            <th>Atomics</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Blocare</td>
+                            <td>Thread doarme (yield to OS)</td>
+                            <td>Busy-wait (spin)</td>
+                            <td>N/A (lock-free)</td>
+                        </tr>
+                        <tr>
+                            <td>Overhead</td>
+                            <td>Context switch (~1μs)</td>
+                            <td>CPU cycle (~ns)</td>
+                            <td>Minimal (~ns)</td>
+                        </tr>
+                        <tr>
+                            <td>Când e bun</td>
+                            <td>Secțiuni lungi, I/O</td>
+                            <td>Secțiuni foarte scurte</td>
+                            <td>Operații simple (counter)</td>
+                        </tr>
+                        <tr>
+                            <td>Priority inversion</td>
+                            <td>Posibilă</td>
+                            <td>Posibilă</td>
+                            <td>Nu</td>
+                        </tr>
+                        <tr>
+                            <td>Complexitate</td>
+                            <td>Simplă</td>
+                            <td>Simplă</td>
+                            <td>Poate fi foarte complexă</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             AMDAHL'S LAW ȘI BENCHMARK
+             ═══════════════════════════════════════════════════════════════════ -->
+        <section class="slide" id="benchmark">
+            <h1 class="slide-title orange">📊 Legea lui Amdahl și Benchmarking</h1>
+
+            <div class="formula">
+                <div class="formula-name">Legea lui Amdahl</div>
+                S(n) = 1 / ((1 - P) + P/n)
+            </div>
+
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-title">📐 Variabilele</div>
+                    <ul>
+                        <li><strong>S(n)</strong> = Speedup cu n procesoare</li>
+                        <li><strong>P</strong> = Fracțiunea paralelizabilă (0 ≤ P ≤ 1)</li>
+                        <li><strong>n</strong> = Numărul de procesoare</li>
+                        <li><strong>1-P</strong> = Fracțiunea serială (bottleneck!)</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-title">🚀 Limita Teoretică</div>
+                    <p>Când n → ∞:</p>
+                    <div class="formula" style="margin: 1rem 0; font-size: 1.1rem;">
+                        S<sub>max</sub> = 1 / (1 - P)
+                    </div>
+                    <p>Cu P = 0.95 (95% paralel): S<sub>max</sub> = 20×</p>
+                    <p>Cu P = 0.99 (99% paralel): S<sub>max</sub> = 100×</p>
+                </div>
+            </div>
+
+            <div class="thread-diagram">
+<span class="comment">Vizualizare Legea lui Amdahl:</span>
+
+Speedup
+   │
+20 ┼ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ <span style="color: var(--success);">P=0.95 (limită=20)</span>
+   │                                    <span style="color: var(--success);">════════════════</span>
+   │                               <span style="color: var(--success);">═══╝</span>
+   │                          <span style="color: var(--success);">════╝</span>
+   │                     <span style="color: var(--success);">════╝</span>
+   │                <span style="color: var(--success);">════╝</span>
+10 ┼ ─ ─ ─ ─ ─ <span style="color: var(--success);">═══╝</span>─ ─ ─ ─ ─ ─ ─ ─ ─ ─ <span style="color: var(--warning);">P=0.90 (limită=10)</span>
+   │          <span style="color: var(--success);">╝</span>                         <span style="color: var(--warning);">════════════════════</span>
+   │        <span style="color: var(--success);">═╝</span>                     <span style="color: var(--warning);">════╝</span>
+   │       <span style="color: var(--success);">╝</span>                  <span style="color: var(--warning);">════╝</span>
+   │     <span style="color: var(--success);">═╝</span>              <span style="color: var(--warning);">════╝</span>
+ 5 ┼ ─ <span style="color: var(--success);">═╝</span>─ ─ ─ ─ ─ <span style="color: var(--warning);">═══╝</span>─ ─ ─ ─ ─ ─ <span style="color: var(--danger);">P=0.75 (limită=4)</span>
+   │  <span style="color: var(--success);">╝</span>        <span style="color: var(--warning);">═══╝</span>                   <span style="color: var(--danger);">════════════════════════</span>
+   │ <span style="color: var(--success);">╝</span>      <span style="color: var(--warning);">═══╝</span>                  <span style="color: var(--danger);">═══╝</span>
+   │<span style="color: var(--success);">═</span>     <span style="color: var(--warning);">══╝</span>                <span style="color: var(--danger);">═══╝</span>
+   │<span style="color: var(--success);">╝</span>    <span style="color: var(--warning);">═╝</span>                <span style="color: var(--danger);">═══╝</span>
+ 1 ┼─────────────────────────────────────────────
+   1   2   4   8  16  32  64 128 256 512 1024   Procesoare (n)
+            </div>
+
+            <h2>Metrici de Performanță</h2>
+
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-title">⏱️ Speedup</div>
+                    <div class="formula" style="margin: 1rem 0; font-size: 1rem;">
+                        Speedup = T<sub>secvențial</sub> / T<sub>paralel</sub>
+                    </div>
+                    <p>Linear speedup: S(n) = n</p>
+                    <p>Super-linear: S(n) > n (rar, cache effects)</p>
+                </div>
+                <div class="card">
+                    <div class="card-title">📈 Eficiență</div>
+                    <div class="formula" style="margin: 1rem 0; font-size: 1rem;">
+                        Efficiency = Speedup / n
+                    </div>
+                    <p>Ideal: E = 100%</p>
+                    <p>Real: E < 100% (overhead, Amdahl)</p>
+                </div>
+                <div class="card">
+                    <div class="card-title">📉 Scalabilitate</div>
+                    <p><strong>Strong scaling:</strong> Problemă fixă, adăugăm procesoare</p>
+                    <p><strong>Weak scaling:</strong> Problemă crește proporțional cu procesoarele</p>
+                </div>
+            </div>
+
+            <pre data-lang="C"><code><span class="comment">/* Benchmark simplu pentru parallel sort */</span>
+<span class="preprocessor">#define</span> NUM_RUNS <span class="number">5</span>
+
+<span class="type">double</span> <span class="function">benchmark_sort</span>(<span class="type">int</span> *arr, <span class="type">size_t</span> n, <span class="type">int</span> num_threads) {
+    <span class="type">double</span> total_time = <span class="number">0.0</span>;
+    
+    <span class="keyword">for</span> (<span class="type">int</span> run = <span class="number">0</span>; run < NUM_RUNS; run++) {
+        <span class="comment">/* Copie array pentru a nu afecta alte runs */</span>
+        <span class="type">int</span> *copy = <span class="function">copy_array</span>(arr, n);
+        
+        <span class="type">struct timespec</span> start, end;
+        <span class="function">clock_gettime</span>(CLOCK_MONOTONIC, &start);
+        
+        <span class="function">parallel_merge_sort</span>(copy, n, num_threads);
+        
+        <span class="function">clock_gettime</span>(CLOCK_MONOTONIC, &end);
+        
+        <span class="type">double</span> elapsed = (end.tv_sec - start.tv_sec) +
+                        (end.tv_nsec - start.tv_nsec) / <span class="number">1e9</span>;
+        total_time += elapsed;
+        
+        <span class="function">free</span>(copy);
+    }
+    
+    <span class="keyword">return</span> total_time / NUM_RUNS;
+}
+
+<span class="type">void</span> <span class="function">run_benchmark</span>(<span class="type">int</span> *arr, <span class="type">size_t</span> n) {
+    <span class="type">double</span> t_seq = <span class="function">benchmark_sort</span>(arr, n, <span class="number">1</span>);
+    
+    <span class="function">printf</span>(<span class="string">"Threads | Time (s) | Speedup | Efficiency\n"</span>);
+    <span class="function">printf</span>(<span class="string">"--------|----------|---------|----------\n"</span>);
+    
+    <span class="keyword">for</span> (<span class="type">int</span> threads = <span class="number">1</span>; threads <= <span class="number">8</span>; threads *= <span class="number">2</span>) {
+        <span class="type">double</span> t = <span class="function">benchmark_sort</span>(arr, n, threads);
+        <span class="type">double</span> speedup = t_seq / t;
+        <span class="type">double</span> efficiency = speedup / threads * <span class="number">100</span>;
+        
+        <span class="function">printf</span>(<span class="string">"   %d    | %.4f   |  %.2fx  |   %.1f%%\n"</span>,
+               threads, t, speedup, efficiency);
+    }
+}</code></pre>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             EXERCIȚII
+             ═══════════════════════════════════════════════════════════════════ -->
+        <section class="slide" id="exercitii">
+            <h1 class="slide-title cyan">💻 Exerciții de Laborator</h1>
+
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-title">📋 Exercițiul 1: Log Processor</div>
+                    <h4>Obiectiv</h4>
+                    <p>Implementați un sistem producer-consumer pentru procesarea fișierelor de log.</p>
+                    
+                    <h4>Cerințe</h4>
+                    <ul>
+                        <li>N producători citesc linii din fișiere</li>
+                        <li>M consumatori procesează (parsează, filtrează)</li>
+                        <li>Buffer circular thread-safe</li>
+                        <li>Statistici per-thread și totale</li>
+                        <li>Graceful shutdown la EOF</li>
+                    </ul>
+                    
+                    <h4>Fișiere</h4>
+                    <p><code>src/exercise1.c</code>, <code>data/log_entries.txt</code></p>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">📊 Exercițiul 2: Parallel Sort</div>
+                    <h4>Obiectiv</h4>
+                    <p>Implementați Quick Sort paralel cu benchmark și analiză.</p>
+                    
+                    <h4>Cerințe</h4>
+                    <ul>
+                        <li>Threshold pentru switch la secvențial</li>
+                        <li>Limitare număr threads active</li>
+                        <li>Benchmark cu 1, 2, 4, 8 threads</li>
+                        <li>Calcul speedup și eficiență</li>
+                        <li>Comparație cu Amdahl teoretic</li>
+                    </ul>
+                    
+                    <h4>Fișiere</h4>
+                    <p><code>src/exercise2.c</code>, <code>data/large_numbers.txt</code></p>
+                </div>
+            </div>
+
+            <h2>📝 Teme de Casă</h2>
+
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-title">🏆 Tema 1: Thread Pool cu Futures (50p)</div>
+                    <ul>
+                        <li>Structură ThreadPool cu workers și task queue</li>
+                        <li>API Future: submit, get, get_timeout, cancel, is_done</li>
+                        <li>Graceful shutdown (finalizează running, reject noi)</li>
+                        <li>Memory safety (Valgrind clean)</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">🏆 Tema 2: Map-Reduce (50p)</div>
+                    <ul>
+                        <li>Map phase: procesare paralelă fișiere</li>
+                        <li>Shuffle: distribuire key-value la reducers</li>
+                        <li>Reduce phase: agregare rezultate</li>
+                        <li>Benchmark și raport</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             PYTHON COMPARISON
+             ═══════════════════════════════════════════════════════════════════ -->
+        <section class="slide" id="python">
+            <h1 class="slide-title purple">🐍 Comparație cu Python</h1>
+
+            <div class="box box-warning">
+                <div class="box-title">⚠️ GIL (Global Interpreter Lock)</div>
+                <p>Python are un lock global care previne execuția simultană a bytecode-ului Python. Implicații:</p>
+                <ul>
+                    <li><strong>threading</strong> - NU oferă paralelism real pentru CPU-bound</li>
+                    <li><strong>multiprocessing</strong> - procese separate, fără GIL, paralelism real</li>
+                    <li><strong>asyncio</strong> - concurență pentru I/O-bound, single-threaded</li>
+                </ul>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Aspect</th>
+                            <th>C (pthreads)</th>
+                            <th>Python threading</th>
+                            <th>Python multiprocessing</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Paralelism CPU</td>
+                            <td>✓ Real</td>
+                            <td>✗ GIL blochează</td>
+                            <td>✓ Procese separate</td>
+                        </tr>
+                        <tr>
+                            <td>Memorie partajată</td>
+                            <td>✓ Direct</td>
+                            <td>✓ Direct</td>
+                            <td>✗ Necesită IPC/Manager</td>
+                        </tr>
+                        <tr>
+                            <td>Overhead creare</td>
+                            <td>~μs</td>
+                            <td>~μs</td>
+                            <td>~ms (fork)</td>
+                        </tr>
+                        <tr>
+                            <td>Complexitate</td>
+                            <td>Ridicată</td>
+                            <td>Medie</td>
+                            <td>Medie</td>
+                        </tr>
+                        <tr>
+                            <td>Când e potrivit</td>
+                            <td>Orice</td>
+                            <td>I/O bound</td>
+                            <td>CPU bound</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <pre data-lang="Python"><code><span class="comment"># Python threading - NU oferă speedup pentru CPU-bound!</span>
+<span class="keyword">import</span> threading
+<span class="keyword">from</span> concurrent.futures <span class="keyword">import</span> ThreadPoolExecutor
+
+<span class="comment"># Echivalent pthread_create + pthread_join</span>
+<span class="keyword">def</span> <span class="function">worker</span>(data):
+    <span class="keyword">return</span> <span class="function">sum</span>(x*x <span class="keyword">for</span> x <span class="keyword">in</span> data)
+
+threads = [threading.Thread(target=worker, args=(chunk,)) <span class="keyword">for</span> chunk <span class="keyword">in</span> chunks]
+<span class="keyword">for</span> t <span class="keyword">in</span> threads: t.start()
+<span class="keyword">for</span> t <span class="keyword">in</span> threads: t.join()
+
+<span class="comment"># Thread pool (echivalent ThreadPool din C)</span>
+<span class="keyword">with</span> ThreadPoolExecutor(max_workers=<span class="number">4</span>) <span class="keyword">as</span> pool:
+    futures = [pool.submit(worker, chunk) <span class="keyword">for</span> chunk <span class="keyword">in</span> chunks]
+    results = [f.result() <span class="keyword">for</span> f <span class="keyword">in</span> futures]
+
+<span class="comment"># Python multiprocessing - OFERĂ speedup pentru CPU-bound!</span>
+<span class="keyword">from</span> multiprocessing <span class="keyword">import</span> Pool
+
+<span class="keyword">with</span> Pool(processes=<span class="number">4</span>) <span class="keyword">as</span> pool:
+    results = pool.map(worker, chunks)  <span class="comment"># Paralelism real!</span></code></pre>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             RESURSE ȘI BIBLIOGRAFIE
+             ═══════════════════════════════════════════════════════════════════ -->
+        <section class="slide" id="resurse">
+            <h1 class="slide-title yellow">📖 Resurse și Bibliografie</h1>
+
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-title">📚 Cărți Esențiale</div>
+                    <ul>
+                        <li><strong>Butenhof</strong> - "Programming with POSIX Threads"</li>
+                        <li><strong>Herlihy & Shavit</strong> - "The Art of Multiprocessor Programming"</li>
+                        <li><strong>Williams</strong> - "C++ Concurrency in Action" (concepte aplicabile și în C)</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">🌐 Resurse Online</div>
+                    <ul>
+                        <li><a href="https://man7.org/linux/man-pages/man7/pthreads.7.html" target="_blank">POSIX Threads Manual</a></li>
+                        <li><a href="https://en.cppreference.com/w/c/atomic" target="_blank">C11 Atomics Reference</a></li>
+                        <li><a href="https://www.youtube.com/watch?v=A8eCGOqgvH4" target="_blank">MIT 6.172: Multithreading</a></li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">🛠️ Tools</div>
+                    <ul>
+                        <li><strong>Valgrind (Helgrind, DRD)</strong> - detectare race conditions</li>
+                        <li><strong>ThreadSanitizer</strong> - gcc/clang -fsanitize=thread</li>
+                        <li><strong>perf</strong> - Linux performance profiling</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             PREVIEW FINAL
+             ═══════════════════════════════════════════════════════════════════ -->
+        <section class="slide" id="final">
+            <h1 class="slide-title green">✅ Recapitulare</h1>
+
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-title">🧵 Threads</div>
+                    <ul>
+                        <li>pthread_create, pthread_join</li>
+                        <li>Memorie partajată între threads</li>
+                        <li>Lifecycle: creare → execuție → terminare</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">🔒 Sincronizare</div>
+                    <ul>
+                        <li>Mutex pentru excludere mutuală</li>
+                        <li>Semafoare pentru resurse limitate</li>
+                        <li>Condition variables pentru așteptare condiționată</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">⚠️ Probleme</div>
+                    <ul>
+                        <li>Race conditions → mutex/atomics</li>
+                        <li>Deadlock → ordonare/timeout</li>
+                        <li>Starvation → fairness</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">📊 Performanță</div>
+                    <ul>
+                        <li>Legea lui Amdahl limitează speedup</li>
+                        <li>Eficiență = Speedup / threads</li>
+                        <li>Profile înainte de optimizare!</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="box box-success" style="margin-top: 2rem;">
+                <div class="box-title">🎯 Ați Învățat</div>
+                <p>Fundamentele programării paralele și concurente în C: de la crearea thread-urilor, prin sincronizare cu mutex și semafoare, la structuri lock-free cu C11 atomics. Acum puteți exploata eficient procesoarele multi-core!</p>
+            </div>
+
+            <div style="text-align: center; margin-top: 3rem;">
+                <p style="font-size: 1.5rem; color: var(--accent-cyan);">🚀 Succes la implementare!</p>
+                <p style="color: var(--text-muted);">Întrebări? Consultați README.md sau materialele suplimentare.</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         FOOTER
+         ═══════════════════════════════════════════════════════════════════ -->
+    <footer>
+        <p><strong>Săptămâna 20: Programare Paralelă și Concurentă în C</strong></p>
+        <p>Curs "Algoritmi și Tehnici de Programare" (ATP)</p>
+        <p>Academia de Studii Economice din București - CSIE</p>
+        <p>Actualizat: Ianuarie 2026</p>
+    </footer>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         SCROLL TO TOP
+         ═══════════════════════════════════════════════════════════════════ -->
+    <div class="scroll-indicator" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <svg viewBox="0 0 24 24"><path d="M12 4l-8 8h5v8h6v-8h5z"/></svg>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         SCRIPTS
+         ═══════════════════════════════════════════════════════════════════ -->
+    <script>
+        // Progress bar pe scroll
+        window.addEventListener('scroll', () => {
+            const winScroll = document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById('progressBar').style.width = scrolled + '%';
+        });
+
+        // Animație pentru task blocks
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.querySelectorAll('.task-block').forEach((block, i) => {
+                        block.style.animationDelay = (i * 0.1) + 's';
+                        block.style.opacity = '1';
+                    });
+                }
+            });
+        }, { threshold: 0.2 });
+
+        document.querySelectorAll('.parallel-demo').forEach(demo => {
+            observer.observe(demo);
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            const slides = document.querySelectorAll('.slide');
+            const currentSlide = Array.from(slides).findIndex(slide => {
+                const rect = slide.getBoundingClientRect();
+                return rect.top >= 0 && rect.top < window.innerHeight / 2;
+            });
+
+            if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+                e.preventDefault();
+                if (currentSlide < slides.length - 1) {
+                    slides[currentSlide + 1].scrollIntoView({ behavior: 'smooth' });
+                }
+            } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+                e.preventDefault();
+                if (currentSlide > 0) {
+                    slides[currentSlide - 1].scrollIntoView({ behavior: 'smooth' });
+                }
+            } else if (e.key === 'Home') {
+                e.preventDefault();
+                slides[0].scrollIntoView({ behavior: 'smooth' });
+            } else if (e.key === 'End') {
+                e.preventDefault();
+                slides[slides.length - 1].scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+
+        // Highlight current section in nav
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-links a');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (scrollY >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.style.background = 'transparent';
+                link.style.borderColor = 'transparent';
+                if (link.getAttribute('href') === '#' + current) {
+                    link.style.background = 'rgba(0, 217, 255, 0.2)';
+                    link.style.borderColor = 'var(--accent-cyan)';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
