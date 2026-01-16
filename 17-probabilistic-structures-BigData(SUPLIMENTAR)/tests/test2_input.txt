@@ -1,0 +1,21 @@
+# Test 2: Count-Min Sketch - Estimare frecvențe
+# Format: ADD word COUNT sau ESTIMATE word
+ADD algorithm
+ADD algorithm
+ADD algorithm
+ADD algorithm
+ADD algorithm
+ADD data
+ADD data
+ADD data
+ADD structure
+ADD structure
+ESTIMATE algorithm
+ESTIMATE data
+ESTIMATE structure
+ESTIMATE missing
+ADD algorithm
+ADD algorithm
+ADD algorithm
+ESTIMATE algorithm
+TOPK 3

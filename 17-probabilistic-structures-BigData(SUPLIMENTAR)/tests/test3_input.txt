@@ -1,0 +1,23 @@
+# Test 3: HyperLogLog - Estimare cardinalitate
+# Adaugă elemente și verifică estimarea
+ADD user_001
+ADD user_002
+ADD user_003
+ADD user_004
+ADD user_005
+ADD user_001
+ADD user_001
+ADD user_002
+ADD user_003
+ESTIMATE
+ADD user_006
+ADD user_007
+ADD user_008
+ADD user_009
+ADD user_010
+ESTIMATE
+RESET
+ADD item_a
+ADD item_b
+ADD item_c
+ESTIMATE

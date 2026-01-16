@@ -1,0 +1,2264 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Săptămâna 17: Structuri de Date Probabilistice pentru Big Data | ATP ASE-CSIE</title>
+    <style>
+        /* ══════════════════════════════════════════════════════════════════
+           DESIGN SYSTEM - Culori și Variabile
+           ══════════════════════════════════════════════════════════════════ */
+        :root {
+            /* Paletă principală - Big Data Theme */
+            --bg-primary: #0a0f1a;
+            --bg-secondary: #111827;
+            --bg-tertiary: #1f2937;
+            --bg-card: #1a2332;
+            
+            /* Accent colors - probabilistic theme */
+            --accent-bloom: #10b981;      /* Verde - Bloom Filter */
+            --accent-cms: #3b82f6;        /* Albastru - Count-Min Sketch */
+            --accent-hll: #8b5cf6;        /* Violet - HyperLogLog */
+            --accent-skip: #f59e0b;       /* Portocaliu - Skip List */
+            --accent-hash: #ef4444;       /* Roșu - Hash Functions */
+            
+            /* Text colors */
+            --text-primary: #f9fafb;
+            --text-secondary: #d1d5db;
+            --text-muted: #9ca3af;
+            --text-code: #a5f3fc;
+            
+            /* Status colors */
+            --success: #22c55e;
+            --warning: #eab308;
+            --error: #ef4444;
+            --info: #06b6d4;
+            
+            /* Shadows & Effects */
+            --shadow-glow: 0 0 30px rgba(16, 185, 129, 0.3);
+            --border-subtle: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* ══════════════════════════════════════════════════════════════════
+           RESET & BASE STYLES
+           ══════════════════════════════════════════════════════════════════ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        /* ══════════════════════════════════════════════════════════════════
+           PRESENTATION CONTAINER
+           ══════════════════════════════════════════════════════════════════ */
+        .presentation {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* ══════════════════════════════════════════════════════════════════
+           SLIDE SYSTEM
+           ══════════════════════════════════════════════════════════════════ */
+        .slide {
+            min-height: 90vh;
+            padding: 3rem;
+            margin-bottom: 4rem;
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            border: var(--border-subtle);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-bloom), var(--accent-cms), var(--accent-hll), var(--accent-skip));
+        }
+
+        .slide-number {
+            position: absolute;
+            top: 1.5rem;
+            right: 2rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* ══════════════════════════════════════════════════════════════════
+           TYPOGRAPHY
+           ══════════════════════════════════════════════════════════════════ */
+        h1, h2, h3, h4 {
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .slide-title {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, var(--accent-bloom), var(--accent-hll));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: var(--text-primary);
+            margin: 2rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--accent-bloom);
+        }
+
+        .subsection-title {
+            font-size: 1.3rem;
+            color: var(--accent-cms);
+            margin: 1.5rem 0 0.8rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        /* ══════════════════════════════════════════════════════════════════
+           CODE BLOCKS
+           ══════════════════════════════════════════════════════════════════ */
+        pre {
+            background: var(--bg-primary);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        code {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            color: var(--text-code);
+        }
+
+        .code-inline {
+            background: rgba(16, 185, 129, 0.15);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        /* Syntax highlighting */
+        .keyword { color: #c678dd; font-weight: bold; }
+        .type { color: #e5c07b; }
+        .function { color: #61afef; }
+        .string { color: #98c379; }
+        .number { color: #d19a66; }
+        .comment { color: #5c6370; font-style: italic; }
+        .macro { color: #e06c75; }
+        .operator { color: #56b6c2; }
+
+        /* ══════════════════════════════════════════════════════════════════
+           ASCII DIAGRAMS
+           ══════════════════════════════════════════════════════════════════ */
+        .ascii-diagram {
+            background: linear-gradient(135deg, var(--bg-primary), #0d1321);
+            border: 2px solid var(--accent-bloom);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            white-space: pre;
+            overflow-x: auto;
+            color: var(--accent-bloom);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .ascii-diagram.cms-theme {
+            border-color: var(--accent-cms);
+            color: var(--accent-cms);
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
+        }
+
+        .ascii-diagram.hll-theme {
+            border-color: var(--accent-hll);
+            color: var(--accent-hll);
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
+        }
+
+        .ascii-diagram.skip-theme {
+            border-color: var(--accent-skip);
+            color: var(--accent-skip);
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.3);
+        }
+
+        /* ══════════════════════════════════════════════════════════════════
+           INFO CARDS & BOXES
+           ══════════════════════════════════════════════════════════════════ */
+        .info-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-left: 4px solid var(--accent-bloom);
+        }
+
+        .info-card.warning {
+            border-left-color: var(--warning);
+            background: rgba(234, 179, 8, 0.1);
+        }
+
+        .info-card.error {
+            border-left-color: var(--error);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .info-card.success {
+            border-left-color: var(--success);
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .info-card.historical {
+            border-left-color: var(--accent-hll);
+            background: rgba(139, 92, 246, 0.1);
+        }
+
+        .card-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* ══════════════════════════════════════════════════════════════════
+           FORMULA BOX
+           ══════════════════════════════════════════════════════════════════ */
+        .formula-box {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(59, 130, 246, 0.1));
+            border: 1px solid var(--accent-hll);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+
+        .formula {
+            font-family: 'Times New Roman', serif;
+            font-size: 1.4rem;
+            color: var(--text-primary);
+            margin: 0.5rem 0;
+        }
+
+        .formula-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        /* ══════════════════════════════════════════════════════════════════
+           GRID LAYOUTS
+           ══════════════════════════════════════════════════════════════════ */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin: 1.5rem 0;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        @media (max-width: 1200px) {
+            .grid-4 { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 900px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .grid-4 { grid-template-columns: 1fr; }
+        }
+
+        /* ══════════════════════════════════════════════════════════════════
+           STRUCTURE CARDS
+           ══════════════════════════════════════════════════════════════════ */
+        .structure-card {
+            background: var(--bg-tertiary);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .structure-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .structure-card.bloom {
+            border-color: var(--accent-bloom);
+        }
+
+        .structure-card.cms {
+            border-color: var(--accent-cms);
+        }
+
+        .structure-card.hll {
+            border-color: var(--accent-hll);
+        }
+
+        .structure-card.skip {
+            border-color: var(--accent-skip);
+        }
+
+        .structure-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .structure-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        /* ══════════════════════════════════════════════════════════════════
+           COMPARISON TABLE
+           ══════════════════════════════════════════════════════════════════ */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-size: 0.95rem;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border: 1px solid var(--bg-tertiary);
+        }
+
+        .comparison-table th {
+            background: var(--bg-tertiary);
+            font-weight: 700;
+            color: var(--accent-bloom);
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .comparison-table tr:hover {
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        /* ══════════════════════════════════════════════════════════════════
+           INTERACTIVE DEMO
+           ══════════════════════════════════════════════════════════════════ */
+        .demo-container {
+            background: var(--bg-primary);
+            border: 2px solid var(--accent-bloom);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .demo-title {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--accent-bloom);
+        }
+
+        .demo-input {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .demo-input input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--bg-tertiary);
+            border-radius: 8px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .demo-input input:focus {
+            outline: none;
+            border-color: var(--accent-bloom);
+        }
+
+        .demo-btn {
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(135deg, var(--accent-bloom), #059669);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .demo-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .demo-output {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 1rem;
+            min-height: 100px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9rem;
+        }
+
+        /* ══════════════════════════════════════════════════════════════════
+           BITMAP VISUALIZATION
+           ══════════════════════════════════════════════════════════════════ */
+        .bitmap-viz {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
+            margin: 1rem 0;
+            font-family: monospace;
+        }
+
+        .bitmap-cell {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            border-radius: 4px;
+            background: var(--bg-tertiary);
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+
+        .bitmap-cell.set {
+            background: var(--accent-bloom);
+            color: white;
+        }
+
+        /* ══════════════════════════════════════════════════════════════════
+           TIMELINE
+           ══════════════════════════════════════════════════════════════════ */
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+            margin: 2rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, var(--accent-bloom), var(--accent-hll), var(--accent-skip));
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 2rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2rem;
+            top: 0.5rem;
+            width: 12px;
+            height: 12px;
+            background: var(--accent-bloom);
+            border-radius: 50%;
+            transform: translateX(-4.5px);
+        }
+
+        .timeline-year {
+            font-weight: 700;
+            color: var(--accent-bloom);
+            font-size: 1.1rem;
+        }
+
+        .timeline-content {
+            color: var(--text-secondary);
+        }
+
+        /* ══════════════════════════════════════════════════════════════════
+           NAVIGATION
+           ══════════════════════════════════════════════════════════════════ */
+        .nav-bar {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(17, 24, 39, 0.95);
+            border: 1px solid var(--bg-tertiary);
+            border-radius: 50px;
+            padding: 0.5rem 1rem;
+            display: flex;
+            gap: 0.5rem;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-btn:hover {
+            background: var(--accent-bloom);
+            color: white;
+        }
+
+        .nav-btn.active {
+            background: var(--accent-bloom);
+            color: white;
+        }
+
+        /* ══════════════════════════════════════════════════════════════════
+           UTILITY CLASSES
+           ══════════════════════════════════════════════════════════════════ */
+        .text-center { text-align: center; }
+        .text-bloom { color: var(--accent-bloom); }
+        .text-cms { color: var(--accent-cms); }
+        .text-hll { color: var(--accent-hll); }
+        .text-skip { color: var(--accent-skip); }
+        .text-hash { color: var(--accent-hash); }
+        .mt-2 { margin-top: 2rem; }
+        .mb-2 { margin-bottom: 2rem; }
+        .highlight { background: rgba(16, 185, 129, 0.2); padding: 0.2rem 0.5rem; border-radius: 4px; }
+
+        /* ══════════════════════════════════════════════════════════════════
+           ANIMATIONS
+           ══════════════════════════════════════════════════════════════════ */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-pulse { animation: pulse 2s infinite; }
+        .animate-fade { animation: fadeIn 0.5s ease-out; }
+
+        /* ══════════════════════════════════════════════════════════════════
+           PRINT STYLES
+           ══════════════════════════════════════════════════════════════════ */
+        @media print {
+            .nav-bar { display: none; }
+            .slide { 
+                page-break-after: always;
+                min-height: auto;
+                border: 1px solid #ccc;
+            }
+            body {
+                background: white;
+                color: black;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SLIDE 1: TITLE SLIDE
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div class="slide" id="slide-1">
+            <span class="slide-number">1 / 25</span>
+            
+            <div class="text-center" style="padding-top: 10vh;">
+                <h1 style="font-size: 3.5rem; margin-bottom: 1rem;">
+                    Structuri de Date Probabilistice<br>
+                    <span class="text-bloom">pentru Big Data</span>
+                </h1>
+                
+                <p style="font-size: 1.5rem; color: var(--text-muted); margin: 2rem 0;">
+                    Săptămâna 17 — Algoritmi și Tehnici de Programare
+                </p>
+                
+                <div class="grid-4" style="max-width: 900px; margin: 4rem auto;">
+                    <div class="structure-card bloom">
+                        <div class="structure-icon">🌸</div>
+                        <div class="structure-name">Bloom Filter</div>
+                        <small class="text-muted">Membership Testing</small>
+                    </div>
+                    <div class="structure-card cms">
+                        <div class="structure-icon">📊</div>
+                        <div class="structure-name">Count-Min Sketch</div>
+                        <small class="text-muted">Frequency Estimation</small>
+                    </div>
+                    <div class="structure-card hll">
+                        <div class="structure-icon">🔢</div>
+                        <div class="structure-name">HyperLogLog</div>
+                        <small class="text-muted">Cardinality Estimation</small>
+                    </div>
+                    <div class="structure-card skip">
+                        <div class="structure-icon">⬆️</div>
+                        <div class="structure-name">Skip List</div>
+                        <small class="text-muted">Probabilistic Search</small>
+                    </div>
+                </div>
+                
+                <p style="color: var(--text-muted); font-size: 1.1rem;">
+                    Academia de Studii Economice București — CSIE<br>
+                    <span class="text-bloom">2024-2025</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SLIDE 2: LEARNING OBJECTIVES
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div class="slide" id="slide-2">
+            <span class="slide-number">2 / 25</span>
+            <h2 class="slide-title">Obiective de Învățare</h2>
+            
+            <p>La finalul acestui modul, veți fi capabili să:</p>
+            
+            <div class="grid-2">
+                <div>
+                    <div class="info-card">
+                        <div class="card-title text-bloom">🎯 Cunoaștere (Remember)</div>
+                        <p>Definiți conceptele fundamentale: fals pozitiv, estimare probabilistică, funcție hash uniformă, leading zeros, harmonic mean.</p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="card-title text-cms">📖 Înțelegere (Understand)</div>
+                        <p>Explicați trade-off-ul spațiu-acuratețe și motivați alegerea parametrilor pentru fiecare structură în funcție de cerințele aplicației.</p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="card-title text-hll">⚙️ Aplicare (Apply)</div>
+                        <p>Implementați în C Bloom Filter, Count-Min Sketch, HyperLogLog și Skip List conform specificațiilor algoritmice.</p>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="info-card">
+                        <div class="card-title text-skip">🔬 Analiză (Analyze)</div>
+                        <p>Comparați performanța teoretică vs. empirică, identificați scenariile optime de utilizare pentru fiecare structură.</p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="card-title text-hash">⚖️ Evaluare (Evaluate)</div>
+                        <p>Selectați structura potrivită pentru un scenariu dat din industrie, justificând alegerea matematic și practic.</p>
+                    </div>
+                    
+                    <div class="info-card success">
+                        <div class="card-title">🚀 Creare (Create)</div>
+                        <p>Proiectați un sistem complet de procesare streaming care integrează multiple structuri probabilistice pentru o problemă reală.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SLIDE 3: BIG DATA CHALLENGE
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div class="slide" id="slide-3">
+            <span class="slide-number">3 / 25</span>
+            <h2 class="slide-title">Problema Big Data</h2>
+            
+            <div class="info-card warning">
+                <div class="card-title">⚠️ Scenariul Real</div>
+                <p>Google procesează <strong>8.5 miliarde</strong> de căutări zilnic. Cum verifici dacă un URL a fost deja indexat?</p>
+            </div>
+            
+            <div class="grid-2 mt-2">
+                <div>
+                    <h3 class="subsection-title">Abordarea Clasică — HashSet</h3>
+                    <pre><code><span class="comment">// Structură exactă - fără erori</span>
+<span class="type">HashSet</span>&lt;<span class="type">String</span>&gt; indexed_urls;
+
+<span class="comment">// Pentru 1 miliard de URL-uri:</span>
+<span class="comment">// Dimensiune medie URL: ~80 caractere</span>
+<span class="comment">// Overhead HashSet: ~40 bytes/entry</span>
+
+<span class="comment">// TOTAL: ~120 GB RAM</span>
+<span class="comment">// Cost: ~$500/lună pe cloud</span></code></pre>
+                </div>
+                
+                <div>
+                    <h3 class="subsection-title">Abordarea Probabilistică — Bloom Filter</h3>
+                    <pre><code><span class="comment">// Structură aproximativă - 1% false positives</span>
+<span class="type">BloomFilter</span> indexed_urls;
+
+<span class="comment">// Pentru 1 miliard de URL-uri:</span>
+<span class="comment">// ~9.6 biți/element pentru 1% FPR</span>
+<span class="comment">// Overhead: 0</span>
+
+<span class="comment">// TOTAL: ~1.2 GB RAM</span>
+<span class="comment">// Cost: ~$5/lună pe cloud</span></code></pre>
+                </div>
+            </div>
+            
+            <div class="ascii-diagram text-center">
+┌──────────────────────────────────────────────────────────────────┐
+│                    COMPARAȚIE MEMORIE                            │
+├──────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  HashSet (Exact):   ████████████████████████████████  120 GB    │
+│                                                                  │
+│  Bloom Filter:      █                                   1.2 GB   │
+│                                                                  │
+│  Factor de reducere: 100x                                        │
+│  Trade-off: 1% false positives (acceptabil pentru indexare)      │
+│                                                                  │
+└──────────────────────────────────────────────────────────────────┘
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SLIDE 4: HISTORICAL CONTEXT
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div class="slide" id="slide-4">
+            <span class="slide-number">4 / 25</span>
+            <h2 class="slide-title">Context Istoric</h2>
+            
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-year">1970 — Burton H. Bloom</div>
+                    <div class="timeline-content">
+                        <p><strong>Bloom Filter</strong> — "Space/Time Trade-offs in Hash Coding with Allowable Errors"</p>
+                        <p class="text-muted">Publicat în Communications of the ACM. Prima structură care acceptă erori pentru economie de spațiu.</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-year">1990 — William Pugh</div>
+                    <div class="timeline-content">
+                        <p><strong>Skip Lists</strong> — "Skip Lists: A Probabilistic Alternative to Balanced Trees"</p>
+                        <p class="text-muted">Alternativă elegantă la arbori AVL/Red-Black. Implementare mai simplă, performanță comparabilă.</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-year">2003 — Graham Cormode & S. Muthukrishnan</div>
+                    <div class="timeline-content">
+                        <p><strong>Count-Min Sketch</strong> — "An Improved Data Stream Summary"</p>
+                        <p class="text-muted">Estimare frecvențe în streaming. Fundament pentru detectarea heavy hitters.</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-year">2007 — Philippe Flajolet et al.</div>
+                    <div class="timeline-content">
+                        <p><strong>HyperLogLog</strong> — "HyperLogLog: the analysis of a near-optimal cardinality estimation algorithm"</p>
+                        <p class="text-muted">Estimare cardinalitate cu ~0.8% eroare folosind doar ~12KB pentru miliarde de elemente.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-card historical">
+                <div class="card-title">💡 Observație</div>
+                <p>Toate aceste structuri au fost inventate pentru probleme practice ale erei pre-cloud, dar au devenit esențiale în era Big Data.</p>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SLIDE 5: HASH FUNCTIONS FUNDAMENTALS
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div class="slide" id="slide-5">
+            <span class="slide-number">5 / 25</span>
+            <h2 class="slide-title">Fundamente: Funcții Hash</h2>
+            
+            <p>Toate structurile probabilistice se bazează pe funcții hash de calitate. Proprietăți esențiale:</p>
+            
+            <div class="grid-2 mt-2">
+                <div>
+                    <div class="info-card">
+                        <div class="card-title text-hash">🎯 Uniformitate</div>
+                        <p>Distribuție uniformă a output-ului pe întreg domeniul, minimizând coliziunile.</p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="card-title text-hash">🔀 Efect Avalanșă</div>
+                        <p>O schimbare minimă în input produce schimbări majore în output (aprox. 50% biți).</p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="card-title text-hash">⚡ Eficiență</div>
+                        <p>Calcul rapid — O(n) pentru input de lungime n, fără operații costisitoare.</p>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="subsection-title">Implementare FNV-1a (32-bit)</h3>
+                    <pre><code><span class="macro">#define</span> <span class="function">FNV_OFFSET</span> <span class="number">2166136261u</span>
+<span class="macro">#define</span> <span class="function">FNV_PRIME</span>  <span class="number">16777619u</span>
+
+<span class="type">uint32_t</span> <span class="function">hash_fnv1a</span>(<span class="keyword">const</span> <span class="type">char</span> *key) {
+    <span class="type">uint32_t</span> hash = FNV_OFFSET;
+    
+    <span class="keyword">while</span> (*key) {
+        hash ^= (<span class="type">uint8_t</span>)*key++;  <span class="comment">// XOR</span>
+        hash *= FNV_PRIME;        <span class="comment">// Multiply</span>
+    }
+    
+    <span class="keyword">return</span> hash;
+}</code></pre>
+                    
+                    <p class="text-muted" style="font-size: 0.9rem; margin-top: 0.5rem;">
+                        FNV-1a: rapid, bună distribuție, non-criptografic.
+                    </p>
+                </div>
+            </div>
+            
+            <h3 class="subsection-title mt-2">Familia de Funcții Hash (Double Hashing)</h3>
+            
+            <div class="formula-box">
+                <div class="formula">h<sub>i</sub>(x) = (h<sub>1</sub>(x) + i · h<sub>2</sub>(x)) mod m</div>
+                <div class="formula-label">Generează k funcții hash independente din doar 2 funcții de bază</div>
+            </div>
+            
+            <pre><code><span class="type">uint32_t</span> <span class="function">hash_family</span>(<span class="keyword">const</span> <span class="type">char</span> *key, <span class="type">int</span> i, <span class="type">size_t</span> max) {
+    <span class="type">uint32_t</span> h1 = <span class="function">hash_fnv1a</span>(key);
+    <span class="type">uint32_t</span> h2 = <span class="function">hash_djb2</span>(key);
+    <span class="keyword">return</span> (h1 + i * h2) % max;
+}</code></pre>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SLIDE 6: BLOOM FILTER - CONCEPT
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div class="slide" id="slide-6">
+            <span class="slide-number">6 / 25</span>
+            <h2 class="slide-title">Bloom Filter — Conceptul</h2>
+            
+            <div class="info-card historical">
+                <div class="card-title">📜 Citatul Original</div>
+                <p><em>"The methods presented here allow a relatively small hash area to be used without the need for multiple probes or overflow areas."</em></p>
+                <p class="text-muted">— Burton H. Bloom, 1970</p>
+            </div>
+            
+            <div class="grid-2 mt-2">
+                <div>
+                    <h3 class="subsection-title">Ce este?</h3>
+                    <p>Un <strong>bit array</strong> de dimensiune fixă m, împreună cu k funcții hash independente. Permite testarea apartenenței probabilistice la o mulțime.</p>
+                    
+                    <h3 class="subsection-title">Garanții</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li>✅ <strong>Fals negativ</strong>: IMPOSIBIL — dacă filtrul spune "nu există", elementul garantat nu a fost adăugat</li>
+                        <li>⚠️ <strong>Fals pozitiv</strong>: POSIBIL — filtrul poate spune "există" pentru elemente neadăugate</li>
+                        <li>🚫 <strong>Ștergere</strong>: IMPOSIBIL — ar crea fals negative</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="subsection-title">Structura în C</h3>
+                    <pre><code><span class="keyword">typedef struct</span> {
+    <span class="type">uint8_t</span> *bitmap;       <span class="comment">// bit array</span>
+    <span class="type">size_t</span>  size_bits;     <span class="comment">// m biți</span>
+    <span class="type">size_t</span>  size_bytes;    <span class="comment">// m/8 bytes</span>
+    <span class="type">size_t</span>  num_hashes;    <span class="comment">// k funcții</span>
+    <span class="type">size_t</span>  elements_added;
+    <span class="type">double</span>  target_fpr;    <span class="comment">// rată țintă</span>
+} <span class="type">BloomFilter</span>;</code></pre>
+                </div>
+            </div>
+            
+            <div class="ascii-diagram">
+┌────────────────────────────────────────────────────────────────────────────┐
+│                        BLOOM FILTER - STRUCTURA                            │
+├────────────────────────────────────────────────────────────────────────────┤
+│                                                                            │
+│    Bit Array (m = 16 biți):                                                │
+│    ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐      │
+│    │ 0 │ 1 │ 0 │ 0 │ 1 │ 0 │ 0 │ 1 │ 0 │ 0 │ 0 │ 1 │ 0 │ 0 │ 1 │ 0 │      │
+│    └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘      │
+│      0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15         │
+│              ↑           ↑       ↑               ↑           ↑             │
+│              │           │       │               │           │             │
+│              └───────────┴───────┴───────────────┴───────────┘             │
+│                           k = 3 funcții hash                               │
+│                                                                            │
+│    INSERT("hello"): h₁=1, h₂=4, h₃=7  → set bits 1, 4, 7                  │
+│    INSERT("world"): h₁=4, h₂=11, h₃=14 → set bits 4, 11, 14               │
+│                                                                            │
+│    CHECK("hello"): bits 1, 4, 7 all SET → "PROBABLY EXISTS" ✓             │
+│    CHECK("foo"):   bit 9 NOT SET → "DEFINITELY NOT EXISTS" ✗              │
+│                                                                            │
+└────────────────────────────────────────────────────────────────────────────┘
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SLIDE 7: BLOOM FILTER - MATHEMATICS
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div class="slide" id="slide-7">
+            <span class="slide-number">7 / 25</span>
+            <h2 class="slide-title">Bloom Filter — Matematica</h2>
+            
+            <div class="grid-2">
+                <div>
+                    <h3 class="subsection-title">Parametri</h3>
+                    <ul style="list-style: none; padding: 0; line-height: 2;">
+                        <li><strong class="text-bloom">n</strong> = număr elemente de stocat</li>
+                        <li><strong class="text-bloom">m</strong> = dimensiune bit array (biți)</li>
+                        <li><strong class="text-bloom">k</strong> = număr funcții hash</li>
+                        <li><strong class="text-bloom">p</strong> = rată fals pozitiv (FPR)</li>
+                    </ul>
+                    
+                    <div class="info-card success">
+                        <div class="card-title">💡 Insight Cheie</div>
+                        <p>Pentru FPR fix, memoria necesară crește <strong>liniar</strong> cu n, nu exponențial!</p>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="subsection-title">Formule Fundamentale</h3>
+                    
+                    <div class="formula-box">
+                        <div class="formula">m = -n · ln(p) / (ln(2))²</div>
+                        <div class="formula-label">Dimensiune optimă bit array</div>
+                    </div>
+                    
+                    <div class="formula-box">
+                        <div class="formula">k = (m/n) · ln(2)</div>
+                        <div class="formula-label">Număr optim de funcții hash</div>
+                    </div>
+                    
+                    <div class="formula-box">
+                        <div class="formula">p = (1 - e<sup>-kn/m</sup>)<sup>k</sup></div>
+                        <div class="formula-label">Rata reală de fals pozitiv</div>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 class="subsection-title mt-2">Calcul în C</h3>
+            <pre><code><span class="type">void</span> <span class="function">bloom_calculate_params</span>(<span class="type">size_t</span> expected_elements, <span class="type">double</span> target_fpr,
+                              <span class="type">size_t</span> *out_bits, <span class="type">size_t</span> *out_hashes) {
+    <span class="comment">// m = -n * ln(p) / (ln(2))^2</span>
+    <span class="type">double</span> ln2_squared = <span class="number">0.480453</span>;  <span class="comment">// (ln(2))^2 ≈ 0.4804</span>
+    *out_bits = (<span class="type">size_t</span>)(<span class="number">-1.0</span> * expected_elements * <span class="function">log</span>(target_fpr) / ln2_squared);
+    
+    <span class="comment">// k = (m/n) * ln(2)</span>
+    <span class="type">double</span> ln2 = <span class="number">0.693147</span>;
+    *out_hashes = (<span class="type">size_t</span>)((*out_bits / (<span class="type">double</span>)expected_elements) * ln2);
+    
+    <span class="keyword">if</span> (*out_hashes < <span class="number">1</span>) *out_hashes = <span class="number">1</span>;
+}</code></pre>
+            
+            <div class="comparison-table" style="margin-top: 1.5rem;">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Elemente (n)</th>
+                            <th>FPR (p)</th>
+                            <th>Biți (m)</th>
+                            <th>Hash-uri (k)</th>
+                            <th>Memorie</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>10,000</td>
+                            <td>1%</td>
+                            <td>~96,000</td>
+                            <td>7</td>
+                            <td>12 KB</td>
+                        </tr>
+                        <tr>
+                            <td>1,000,000</td>
+                            <td>1%</td>
+                            <td>~9,600,000</td>
+                            <td>7</td>
+                            <td>1.2 MB</td>
+                        </tr>
+                        <tr>
+                            <td>1,000,000,000</td>
+                            <td>1%</td>
+                            <td>~9.6 × 10⁹</td>
+                            <td>7</td>
+                            <td>1.2 GB</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SLIDE 8: BLOOM FILTER - IMPLEMENTATION
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div class="slide" id="slide-8">
+            <span class="slide-number">8 / 25</span>
+            <h2 class="slide-title">Bloom Filter — Implementare C</h2>
+            
+            <div class="grid-2">
+                <div>
+                    <h3 class="subsection-title">Operații pe Biți</h3>
+                    <pre><code><span class="comment">// Setează bitul la poziția pos</span>
+<span class="keyword">static inline</span> <span class="type">void</span> <span class="function">set_bit</span>(<span class="type">uint8_t</span> *bitmap, <span class="type">size_t</span> pos) {
+    bitmap[pos / <span class="number">8</span>] |= (<span class="number">1</span> << (pos % <span class="number">8</span>));
+}
+
+<span class="comment">// Verifică bitul la poziția pos</span>
+<span class="keyword">static inline</span> <span class="type">bool</span> <span class="function">get_bit</span>(<span class="type">uint8_t</span> *bitmap, <span class="type">size_t</span> pos) {
+    <span class="keyword">return</span> bitmap[pos / <span class="number">8</span>] & (<span class="number">1</span> << (pos % <span class="number">8</span>));
+}</code></pre>
+                    
+                    <div class="ascii-diagram" style="font-size: 0.8rem; padding: 1rem;">
+pos = 13
+byte_index = 13 / 8 = 1
+bit_index  = 13 % 8 = 5
+
+byte 0:  [0][1][2][3][4][5][6][7]
+byte 1:  [8][9][10][11][12][13][14][15]
+                          ↑
+                       pos=13
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="subsection-title">Inserare și Verificare</h3>
+                    <pre><code><span class="type">void</span> <span class="function">bloom_add</span>(<span class="type">BloomFilter</span> *bf, <span class="keyword">const</span> <span class="type">char</span> *key) {
+    <span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i < bf->num_hashes; i++) {
+        <span class="type">size_t</span> pos = <span class="function">hash_family</span>(key, i, bf->size_bits);
+        <span class="function">set_bit</span>(bf->bitmap, pos);
+    }
+    bf->elements_added++;
+}
+
+<span class="type">bool</span> <span class="function">bloom_check</span>(<span class="type">BloomFilter</span> *bf, <span class="keyword">const</span> <span class="type">char</span> *key) {
+    <span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i < bf->num_hashes; i++) {
+        <span class="type">size_t</span> pos = <span class="function">hash_family</span>(key, i, bf->size_bits);
+        <span class="keyword">if</span> (!<span class="function">get_bit</span>(bf->bitmap, pos)) {
+            <span class="keyword">return</span> <span class="keyword">false</span>;  <span class="comment">// Garantat NU există</span>
+        }
+    }
+    <span class="keyword">return</span> <span class="keyword">true</span>;  <span class="comment">// Probabil există</span>
+}</code></pre>
+                </div>
+            </div>
+            
+            <div class="info-card warning mt-2">
+                <div class="card-title">⚠️ Atenție la Overflow</div>
+                <p>Pentru filtre foarte mari (m > 2³²), folosiți <code class="code-inline">uint64_t</code> pentru indecși și atenție la aritmetică modulară!</p>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SLIDE 9: BLOOM FILTER - DEMO
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div class="slide" id="slide-9">
+            <span class="slide-number">9 / 25</span>
+            <h2 class="slide-title">Bloom Filter — Demo Interactiv</h2>
+            
+            <div class="demo-container">
+                <div class="demo-title">🌸 Simulare Bloom Filter</div>
+                
+                <div class="demo-input">
+                    <input type="text" id="bloom-input" placeholder="Introduceți un cuvânt...">
+                    <button class="demo-btn" onclick="bloomAdd()">Adaugă</button>
+                    <button class="demo-btn" onclick="bloomCheck()" style="background: linear-gradient(135deg, var(--accent-cms), #1d4ed8);">Verifică</button>
+                    <button class="demo-btn" onclick="bloomReset()" style="background: var(--bg-tertiary);">Reset</button>
+                </div>
+                
+                <div style="margin: 1rem 0;">
+                    <strong>Bitmap (m=32, k=3):</strong>
+                    <div class="bitmap-viz" id="bloom-bitmap"></div>
+                </div>
+                
+                <div class="demo-output" id="bloom-output">
+                    <p>Filtru inițializat. Adăugați cuvinte pentru a vedea cum funcționează!</p>
+                    <p class="text-muted">Biți setați: 0 | Elemente: 0 | FPR estimată: 0%</p>
+                </div>
+            </div>
+            
+            <div class="grid-2">
+                <div class="info-card">
+                    <div class="card-title text-bloom">✓ Încercați</div>
+                    <p>Adăugați "hello", "world", "bloom", apoi verificați "hello" (există) și "test" (nu există, dar poate da fals pozitiv dacă bitmap-ul e plin).</p>
+                </div>
+                <div class="info-card warning">
+                    <div class="card-title">Observați</div>
+                    <p>Cu m=32 și k=3, filtrul se umple rapid. În practică, m e mult mai mare pentru a menține FPR scăzut.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SLIDE 10: BLOOM FILTER - APPLICATIONS
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div class="slide" id="slide-10">
+            <span class="slide-number">10 / 25</span>
+            <h2 class="slide-title">Bloom Filter — Aplicații Industriale</h2>
+            
+            <div class="grid-3">
+                <div class="structure-card bloom">
+                    <div class="structure-icon">🌐</div>
+                    <div class="structure-name">Google Chrome</div>
+                    <p class="text-secondary">Safe Browsing verifică URL-uri malițioase local înainte de request la server. Reduce latența și trafic.</p>
+                </div>
+                
+                <div class="structure-card bloom">
+                    <div class="structure-icon">📊</div>
+                    <div class="structure-name">Apache Cassandra</div>
+                    <p class="text-secondary">Evită disk I/O pentru chei inexistente. Fiecare SSTable are un Bloom Filter asociat.</p>
+                </div>
+                
+                <div class="structure-card bloom">
+                    <div class="structure-icon">🔗</div>
+                    <div class="structure-name">Bitcoin / Ethereum</div>
+                    <p class="text-secondary">SPV (Simplified Payment Verification) folosește Bloom Filters pentru a sincroniza doar tranzacțiile relevante.</p>
+                </div>
+            </div>
+            
+            <div class="info-card mt-2">
+                <div class="card-title">📱 Exemplu: Chrome Safe Browsing</div>
+                <pre><code><span class="comment">// Pseudo-cod Chrome Safe Browsing</span>
+<span class="keyword">bool</span> <span class="function">is_url_safe</span>(<span class="keyword">const</span> <span class="type">char</span> *url) {
+    <span class="comment">// 1. Verifică în Bloom Filter local (~256KB)</span>
+    <span class="keyword">if</span> (!<span class="function">bloom_check</span>(local_filter, url)) {
+        <span class="keyword">return</span> <span class="keyword">true</span>;  <span class="comment">// Garantat safe - 99% cazuri</span>
+    }
+    
+    <span class="comment">// 2. Fals pozitiv posibil - verifică cu server</span>
+    <span class="comment">// Doar ~1% requests ajung aici</span>
+    <span class="keyword">return</span> <span class="function">verify_with_google_server</span>(url);
+}</code></pre>
+            </div>
+            
+            <div class="ascii-diagram">
+┌─────────────────────────────────────────────────────────────────────────┐
+│                     CHROME SAFE BROWSING FLOW                           │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│    URL Input                                                            │
+│        │                                                                │
+│        ▼                                                                │
+│  ┌───────────┐    NOT FOUND     ┌─────────────────┐                    │
+│  │   Bloom   │ ───────────────→ │   URL is SAFE   │  (99% cazuri)      │
+│  │  Filter   │                  │   (no request)  │                    │
+│  │  (256KB)  │                  └─────────────────┘                    │
+│  └───────────┘                                                          │
+│        │                                                                │
+│        │ MAYBE FOUND                                                    │
+│        ▼                                                                │
+│  ┌───────────┐    SAFE          ┌─────────────────┐                    │
+│  │  Google   │ ───────────────→ │ URL is SAFE     │  (0.99% cazuri)    │
+│  │  Server   │                  │ (false positive)│                    │
+│  └───────────┘                  └─────────────────┘                    │
+│        │                                                                │
+│        │ MALICIOUS                                                      │
+│        ▼                                                                │
+│  ┌─────────────────┐                                                    │
+│  │ BLOCK + WARNING │  (0.01% cazuri)                                   │
+│  └─────────────────┘                                                    │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SLIDE 11: COUNT-MIN SKETCH - CONCEPT
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div class="slide" id="slide-11">
+            <span class="slide-number">11 / 25</span>
+            <h2 class="slide-title">Count-Min Sketch — Conceptul</h2>
+            
+            <div class="info-card historical">
+                <div class="card-title">📜 Citatul Original</div>
+                <p><em>"We present a new sketch construction, the Count-Min Sketch, which provides strong accuracy guarantees."</em></p>
+                <p class="text-muted">— Cormode & Muthukrishnan, 2003</p>
+            </div>
+            
+            <div class="grid-2 mt-2">
+                <div>
+                    <h3 class="subsection-title">Ce rezolvă?</h3>
+                    <p><strong>Estimarea frecvenței</strong> elementelor într-un stream de date, fără a stoca fiecare element individual. Util pentru:</p>
+                    <ul style="list-style: none; padding: 0;">
+                        <li>🔥 Detectare <strong>heavy hitters</strong> (cele mai frecvente elemente)</li>
+                        <li>📈 Monitorizare trafic în timp real</li>
+                        <li>🛡️ Detectare DDoS (IP-uri cu multe requests)</li>
+                        <li>📊 Analiză trending topics</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="subsection-title">Structura</h3>
+                    <pre><code><span class="keyword">typedef struct</span> {
+    <span class="type">int64_t</span> **counters;   <span class="comment">// matrice depth × width</span>
+    <span class="type">size_t</span>  depth;        <span class="comment">// d rânduri</span>
+    <span class="type">size_t</span>  width;        <span class="comment">// w coloane</span>
+    <span class="type">double</span>  epsilon;      <span class="comment">// eroare relativă</span>
+    <span class="type">double</span>  delta;        <span class="comment">// prob. depășire eroare</span>
+    <span class="type">uint64_t</span> total_count; <span class="comment">// N total</span>
+} <span class="type">CountMinSketch</span>;</code></pre>
+                </div>
+            </div>
+            
+            <div class="ascii-diagram cms-theme">
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    COUNT-MIN SKETCH - MATRICE                           │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│     width (w) = ⌈e/ε⌉ coloane                                          │
+│     ←───────────────────────────────────────────→                       │
+│                                                                         │
+│     ┌─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┐  ↑               │
+│  h₁ │  0  │  0  │  3  │  0  │  1  │  0  │  0  │  0  │  │               │
+│     ├─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┤  │ depth (d)     │
+│  h₂ │  0  │  1  │  0  │  0  │  0  │  2  │  0  │  0  │  │ = ⌈ln(1/δ)⌉  │
+│     ├─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┤  │ rânduri       │
+│  h₃ │  0  │  0  │  0  │  1  │  0  │  0  │  3  │  0  │  ↓               │
+│     └─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘                   │
+│       [0]   [1]   [2]   [3]   [4]   [5]   [6]   [7]                     │
+│                                                                         │
+│     UPDATE("cat"):  counters[0][h₁("cat")]++                           │
+│                     counters[1][h₂("cat")]++                           │
+│                     counters[2][h₃("cat")]++                           │
+│                                                                         │
+│     QUERY("cat"):   MIN(counters[0][h₁("cat")],                        │
+│                         counters[1][h₂("cat")],                        │
+│                         counters[2][h₃("cat")])                        │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SLIDE 12: COUNT-MIN SKETCH - MATHEMATICS
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div class="slide" id="slide-12">
+            <span class="slide-number">12 / 25</span>
+            <h2 class="slide-title">Count-Min Sketch — Matematica</h2>
+            
+            <div class="grid-2">
+                <div>
+                    <h3 class="subsection-title">Parametri</h3>
+                    <ul style="list-style: none; padding: 0; line-height: 2;">
+                        <li><strong class="text-cms">ε (epsilon)</strong> = eroare relativă acceptată</li>
+                        <li><strong class="text-cms">δ (delta)</strong> = probabilitate de depășire eroare</li>
+                        <li><strong class="text-cms">w</strong> = lățime (coloane)</li>
+                        <li><strong class="text-cms">d</strong> = adâncime (rânduri)</li>
+                        <li><strong class="text-cms">N</strong> = număr total de update-uri</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="subsection-title">Garanții</h3>
+                    <div class="formula-box">
+                        <div class="formula">w = ⌈e/ε⌉ ≈ 2.72/ε</div>
+                        <div class="formula-label">Lățime matrice</div>
+                    </div>
+                    
+                    <div class="formula-box">
+                        <div class="formula">d = ⌈ln(1/δ)⌉</div>
+                        <div class="formula-label">Adâncime matrice</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-card success mt-2">
+                <div class="card-title">✓ Garanția Teoretică</div>
+                <p>Cu probabilitate 1-δ:</p>
+                <div class="formula-box">
+                    <div class="formula">f̂(x) ≤ f(x) + ε·N</div>
+                    <div class="formula-label">Estimarea nu depășește valoarea reală cu mai mult de ε·N</div>
+                </div>
+            </div>
+            
+            <div class="grid-2 mt-2">
+                <div class="info-card">
+                    <div class="card-title">📊 Exemplu Calcul</div>
+                    <pre><code><span class="comment">// ε = 0.01, δ = 0.01</span>
+w = ⌈e / <span class="number">0.01</span>⌉ = ⌈<span class="number">272</span>⌉ = <span class="number">272</span> coloane
+d = ⌈ln(<span class="number">1</span>/<span class="number">0.01</span>)⌉ = ⌈<span class="number">4.6</span>⌉ = <span class="number">5</span> rânduri
+
+<span class="comment">// Memorie: 272 × 5 × 8 bytes = 10.9 KB</span>
+<span class="comment">// Comparat cu HashMap: O(n) entries</span></code></pre>
+                </div>
+                
+                <div class="info-card warning">
+                    <div class="card-title">⚠️ Limitare</div>
+                    <p>CMS <strong>supraestimează</strong> întotdeauna (niciodată subestimează). Pentru N=1M și ε=0.01, eroarea maximă probabilă: 10,000.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SLIDE 13: COUNT-MIN SKETCH - IMPLEMENTATION
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div class="slide" id="slide-13">
+            <span class="slide-number">13 / 25</span>
+            <h2 class="slide-title">Count-Min Sketch — Implementare C</h2>
+            
+            <pre><code><span class="type">CountMinSketch</span>* <span class="function">cms_create</span>(<span class="type">double</span> epsilon, <span class="type">double</span> delta) {
+    <span class="type">CountMinSketch</span> *cms = <span class="function">malloc</span>(<span class="keyword">sizeof</span>(<span class="type">CountMinSketch</span>));
+    
+    <span class="comment">// Calculează dimensiuni</span>
+    cms->width = (<span class="type">size_t</span>)<span class="function">ceil</span>(M_E / epsilon);  <span class="comment">// e/ε</span>
+    cms->depth = (<span class="type">size_t</span>)<span class="function">ceil</span>(<span class="function">log</span>(<span class="number">1.0</span> / delta)); <span class="comment">// ln(1/δ)</span>
+    cms->epsilon = epsilon;
+    cms->delta = delta;
+    cms->total_count = <span class="number">0</span>;
+    
+    <span class="comment">// Alocă matricea</span>
+    cms->counters = <span class="function">malloc</span>(cms->depth * <span class="keyword">sizeof</span>(<span class="type">int64_t</span>*));
+    <span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i < cms->depth; i++) {
+        cms->counters[i] = <span class="function">calloc</span>(cms->width, <span class="keyword">sizeof</span>(<span class="type">int64_t</span>));
+    }
+    
+    <span class="keyword">return</span> cms;
+}
+
+<span class="type">void</span> <span class="function">cms_add</span>(<span class="type">CountMinSketch</span> *cms, <span class="keyword">const</span> <span class="type">char</span> *key, <span class="type">int64_t</span> count) {
+    <span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i < cms->depth; i++) {
+        <span class="type">size_t</span> col = <span class="function">hash_family</span>(key, i, cms->width);
+        cms->counters[i][col] += count;
+    }
+    cms->total_count += count;
+}
+
+<span class="type">int64_t</span> <span class="function">cms_estimate</span>(<span class="type">CountMinSketch</span> *cms, <span class="keyword">const</span> <span class="type">char</span> *key) {
+    <span class="type">int64_t</span> min_count = <span class="type">INT64_MAX</span>;
+    
+    <span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i < cms->depth; i++) {
+        <span class="type">size_t</span> col = <span class="function">hash_family</span>(key, i, cms->width);
+        <span class="keyword">if</span> (cms->counters[i][col] < min_count) {
+            min_count = cms->counters[i][col];
+        }
+    }
+    
+    <span class="keyword">return</span> min_count;
+}</code></pre>
+            
+            <div class="info-card">
+                <div class="card-title">💡 De ce MIN?</div>
+                <p>Fiecare celulă poate fi afectată de coliziuni (alte elemente hash-uiesc la aceeași poziție). Luând MIN peste toate rândurile, alegem valoarea cel mai puțin afectată de coliziuni.</p>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SLIDE 14: HYPERLOGLOG - CONCEPT
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div class="slide" id="slide-14">
+            <span class="slide-number">14 / 25</span>
+            <h2 class="slide-title">HyperLogLog — Conceptul</h2>
+            
+            <div class="info-card historical">
+                <div class="card-title">📜 Citatul Original</div>
+                <p><em>"HyperLogLog is near-optimal in terms of the accuracy/memory trade-off."</em></p>
+                <p class="text-muted">— Philippe Flajolet, 2007</p>
+            </div>
+            
+            <div class="grid-2 mt-2">
+                <div>
+                    <h3 class="subsection-title">Ce rezolvă?</h3>
+                    <p><strong>Estimarea cardinalității</strong> (câte elemente distincte) într-un set sau stream, folosind memorie sublineară.</p>
+                    
+                    <div class="info-card success">
+                        <div class="card-title">🎯 Performanță</div>
+                        <p>Estimează cardinalitatea a <strong>miliarde</strong> de elemente cu eroare ~0.8% folosind doar <strong>12 KB</strong> memorie!</p>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="subsection-title">Intuiția</h3>
+                    <p>Dacă hash-uim elemente uniform pe [0, 2⁶⁴), probabilitatea de a vedea un hash ce începe cu k zerouri este 2⁻ᵏ.</p>
+                    <p>Dacă am văzut un astfel de hash, <strong>probabil</strong> am văzut ~2ᵏ elemente distincte!</p>
+                </div>
+            </div>
+            
+            <div class="ascii-diagram hll-theme">
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    HYPERLOGLOG - INTUIȚIA                               │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  hash("elem1") = 00101...  → leading zeros = 2  → estimare ~4          │
+│  hash("elem2") = 10011...  → leading zeros = 0  → estimare ~1          │
+│  hash("elem3") = 00001...  → leading zeros = 4  → estimare ~16         │
+│                                                                         │
+│  ═══════════════════════════════════════════════════════════════════   │
+│                                                                         │
+│  Probabilitate de a vedea:                                              │
+│    0xxxxx → P = 1/2     → dacă văzut, n ≈ 2                            │
+│    00xxxx → P = 1/4     → dacă văzut, n ≈ 4                            │
+│    000xxx → P = 1/8     → dacă văzut, n ≈ 8                            │
+│    0000xx → P = 1/16    → dacă văzut, n ≈ 16                           │
+│    00000x → P = 1/32    → dacă văzut, n ≈ 32                           │
+│                                                                         │
+│  Cu M registre (buckets), estimarea finală folosește media armonică:   │
+│                                                                         │
+│         E = α × M² / Σⱼ(2^(-reg[j]))                                   │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SLIDE 15: HYPERLOGLOG - MATHEMATICS
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div class="slide" id="slide-15">
+            <span class="slide-number">15 / 25</span>
+            <h2 class="slide-title">HyperLogLog — Matematica</h2>
+            
+            <div class="grid-2">
+                <div>
+                    <h3 class="subsection-title">Parametri</h3>
+                    <ul style="list-style: none; padding: 0; line-height: 2;">
+                        <li><strong class="text-hll">p</strong> = precizie (biți pentru bucket index)</li>
+                        <li><strong class="text-hll">M</strong> = 2ᵖ = număr registre (buckets)</li>
+                        <li><strong class="text-hll">α</strong> = factor de corecție bias</li>
+                    </ul>
+                    
+                    <div class="formula-box">
+                        <div class="formula">Eroare Standard ≈ 1.04/√M</div>
+                        <div class="formula-label">Precizie relativă</div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="subsection-title">Structura în C</h3>
+                    <pre><code><span class="keyword">typedef struct</span> {
+    <span class="type">uint8_t</span>  *registers;      <span class="comment">// M registre</span>
+    <span class="type">size_t</span>   num_registers;   <span class="comment">// M = 2^p</span>
+    <span class="type">uint8_t</span>  precision;       <span class="comment">// p</span>
+    <span class="type">double</span>   alpha;           <span class="comment">// factor corecție</span>
+} <span class="type">HyperLogLog</span>;</code></pre>
+                </div>
+            </div>
+            
+            <h3 class="subsection-title mt-2">Factori de Corecție α</h3>
+            <pre><code><span class="type">double</span> <span class="function">get_alpha</span>(<span class="type">size_t</span> M) {
+    <span class="keyword">if</span> (M == <span class="number">16</span>)  <span class="keyword">return</span> <span class="number">0.673</span>;
+    <span class="keyword">if</span> (M == <span class="number">32</span>)  <span class="keyword">return</span> <span class="number">0.697</span>;
+    <span class="keyword">if</span> (M == <span class="number">64</span>)  <span class="keyword">return</span> <span class="number">0.709</span>;
+    <span class="comment">// M >= 128</span>
+    <span class="keyword">return</span> <span class="number">0.7213</span> / (<span class="number">1.0</span> + <span class="number">1.079</span> / M);
+}</code></pre>
+            
+            <div class="comparison-table mt-2">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Precizie (p)</th>
+                            <th>Registre (M)</th>
+                            <th>Memorie</th>
+                            <th>Eroare Std.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>10</td>
+                            <td>1,024</td>
+                            <td>1 KB</td>
+                            <td>3.25%</td>
+                        </tr>
+                        <tr>
+                            <td>12</td>
+                            <td>4,096</td>
+                            <td>4 KB</td>
+                            <td>1.63%</td>
+                        </tr>
+                        <tr>
+                            <td>14</td>
+                            <td>16,384</td>
+                            <td>12 KB</td>
+                            <td>0.81%</td>
+                        </tr>
+                        <tr>
+                            <td>16</td>
+                            <td>65,536</td>
+                            <td>64 KB</td>
+                            <td>0.41%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SLIDE 16: HYPERLOGLOG - IMPLEMENTATION
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div class="slide" id="slide-16">
+            <span class="slide-number">16 / 25</span>
+            <h2 class="slide-title">HyperLogLog — Implementare C</h2>
+            
+            <pre><code><span class="comment">// Numără zerouri de la stânga + 1</span>
+<span class="keyword">static</span> <span class="type">uint8_t</span> <span class="function">count_leading_zeros</span>(<span class="type">uint64_t</span> hash, <span class="type">uint8_t</span> max_bits) {
+    <span class="type">uint8_t</span> count = <span class="number">1</span>;
+    <span class="keyword">while</span> (count <= max_bits && ((hash >> (max_bits - count)) & <span class="number">1</span>) == <span class="number">0</span>) {
+        count++;
+    }
+    <span class="keyword">return</span> count;
+}
+
+<span class="type">void</span> <span class="function">hll_add</span>(<span class="type">HyperLogLog</span> *hll, <span class="keyword">const</span> <span class="type">char</span> *key) {
+    <span class="type">uint64_t</span> hash = <span class="function">hash64</span>(key);
+    
+    <span class="comment">// Primii p biți = index registru</span>
+    <span class="type">size_t</span> bucket = hash >> (<span class="number">64</span> - hll->precision);
+    
+    <span class="comment">// Restul biților - numără leading zeros</span>
+    <span class="type">uint64_t</span> remaining = hash << hll->precision;
+    <span class="type">uint8_t</span> zeros = <span class="function">count_leading_zeros</span>(remaining, <span class="number">64</span> - hll->precision);
+    
+    <span class="comment">// Păstrează maximul</span>
+    <span class="keyword">if</span> (zeros > hll->registers[bucket]) {
+        hll->registers[bucket] = zeros;
+    }
+}
+
+<span class="type">double</span> <span class="function">hll_count</span>(<span class="type">HyperLogLog</span> *hll) {
+    <span class="type">double</span> sum = <span class="number">0.0</span>;
+    <span class="type">size_t</span> zeros = <span class="number">0</span>;
+    
+    <span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i < hll->num_registers; i++) {
+        sum += <span class="function">pow</span>(<span class="number">2.0</span>, -(<span class="type">double</span>)hll->registers[i]);
+        <span class="keyword">if</span> (hll->registers[i] == <span class="number">0</span>) zeros++;
+    }
+    
+    <span class="type">double</span> estimate = hll->alpha * hll->num_registers * hll->num_registers / sum;
+    
+    <span class="comment">// Corecție pentru cardinalități mici</span>
+    <span class="keyword">if</span> (estimate <= <span class="number">2.5</span> * hll->num_registers && zeros > <span class="number">0</span>) {
+        estimate = hll->num_registers * <span class="function">log</span>((<span class="type">double</span>)hll->num_registers / zeros);
+    }
+    
+    <span class="keyword">return</span> estimate;
+}</code></pre>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SLIDE 17: HYPERLOGLOG - APPLICATIONS
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div class="slide" id="slide-17">
+            <span class="slide-number">17 / 25</span>
+            <h2 class="slide-title">HyperLogLog — Aplicații</h2>
+            
+            <div class="grid-3">
+                <div class="structure-card hll">
+                    <div class="structure-icon">🔴</div>
+                    <div class="structure-name">Redis PFCOUNT</div>
+                    <p class="text-secondary">Comandă nativă pentru cardinalitate. 12KB per key, eroare 0.81%.</p>
+                    <pre style="font-size: 0.75rem; margin-top: 0.5rem;"><code>PFADD visitors user123
+PFCOUNT visitors
+<span class="comment">> (integer) 2847291</span></code></pre>
+                </div>
+                
+                <div class="structure-card hll">
+                    <div class="structure-icon">📊</div>
+                    <div class="structure-name">Google BigQuery</div>
+                    <p class="text-secondary">APPROX_COUNT_DISTINCT pentru analize rapide pe petabytes de date.</p>
+                </div>
+                
+                <div class="structure-card hll">
+                    <div class="structure-icon">📈</div>
+                    <div class="structure-name">Analytics</div>
+                    <p class="text-secondary">Unique visitors, unique queries, unique IPs - fără a stoca fiecare valoare.</p>
+                </div>
+            </div>
+            
+            <div class="ascii-diagram hll-theme mt-2">
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    REDIS HYPERLOGLOG vs SET                             │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  Unique Visitors per day: ~10 million                                   │
+│                                                                         │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │  SET (exact)                                                     │   │
+│  │  Memory: ~800 MB per day                                         │   │
+│  │  30 days = 24 GB                                                 │   │
+│  │  Cost: ~$100/month (Redis Enterprise)                            │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                         │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │  HYPERLOGLOG (approximate, 0.81% error)                          │   │
+│  │  Memory: 12 KB per day                                           │   │
+│  │  30 days = 360 KB                                                │   │
+│  │  Cost: ~$0.001/month                                             │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                         │
+│  Factor de reducere: ~66,000x                                          │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SLIDE 18: SKIP LIST - CONCEPT
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div class="slide" id="slide-18">
+            <span class="slide-number">18 / 25</span>
+            <h2 class="slide-title">Skip List — Conceptul</h2>
+            
+            <div class="info-card historical">
+                <div class="card-title">📜 Citatul Original</div>
+                <p><em>"Skip lists are a probabilistic data structure that seem likely to supplant balanced trees as the implementation method of choice for many applications."</em></p>
+                <p class="text-muted">— William Pugh, 1990</p>
+            </div>
+            
+            <div class="grid-2 mt-2">
+                <div>
+                    <h3 class="subsection-title">Ce este?</h3>
+                    <p>O <strong>listă înlănțuită cu multiple niveluri</strong> care permite căutare, inserare și ștergere în O(log n) timp așteptat.</p>
+                    
+                    <h3 class="subsection-title">Avantaje vs. Arbori Echilibrați</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li>✅ <strong>Implementare</strong> mult mai simplă</li>
+                        <li>✅ <strong>Cache-friendly</strong> (parcurgere secvențială)</li>
+                        <li>✅ <strong>Concurrency</strong> mai ușor (lock-free variants)</li>
+                        <li>✅ <strong>Fără rotații</strong> complexe</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="subsection-title">Structura în C</h3>
+                    <pre><code><span class="keyword">typedef struct</span> <span class="type">SkipNode</span> {
+    <span class="type">int</span>    key;
+    <span class="type">void</span>   *value;
+    <span class="type">int</span>    level;  <span class="comment">// nivelul acestui nod</span>
+    <span class="keyword">struct</span> <span class="type">SkipNode</span> **forward;
+} <span class="type">SkipNode</span>;
+
+<span class="keyword">typedef struct</span> {
+    <span class="type">SkipNode</span> *header;
+    <span class="type">int</span>      max_level;
+    <span class="type">int</span>      current_level;
+    <span class="type">size_t</span>   size;
+    <span class="type">double</span>   p;  <span class="comment">// probabilitate (0.5)</span>
+} <span class="type">SkipList</span>;</code></pre>
+                </div>
+            </div>
+            
+            <div class="ascii-diagram skip-theme">
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         SKIP LIST - STRUCTURA                           │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  Level 3: HEAD ─────────────────────────────────────→ 50 ───────→ NIL  │
+│              │                                         │                │
+│  Level 2: HEAD ──────────→ 20 ─────────────────────→ 50 ───────→ NIL  │
+│              │              │                         │                │
+│  Level 1: HEAD ──────────→ 20 ───→ 30 ──────────→ 50 ──→ 70 ──→ NIL  │
+│              │              │       │              │       │           │
+│  Level 0: HEAD ──→ 10 ──→ 20 ──→ 30 ──→ 40 ──→ 50 ──→ 70 ──→ NIL    │
+│                                                                         │
+│  Căutare 40:                                                            │
+│  1. L3: HEAD → 50 (50>40, coboară)                                     │
+│  2. L2: HEAD → 20 (20<40) → 50 (50>40, coboară)                        │
+│  3. L1: 20 → 30 (30<40) → 50 (50>40, coboară)                          │
+│  4. L0: 30 → 40 ✓ GĂSIT!                                               │
+│                                                                         │
+│  Complexitate: O(log n) așteptat                                       │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SLIDE 19: SKIP LIST - IMPLEMENTATION
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div class="slide" id="slide-19">
+            <span class="slide-number">19 / 25</span>
+            <h2 class="slide-title">Skip List — Implementare C</h2>
+            
+            <div class="grid-2">
+                <div>
+                    <h3 class="subsection-title">Generare Nivel (Coin Flip)</h3>
+                    <pre><code><span class="type">int</span> <span class="function">random_level</span>(<span class="type">int</span> max, <span class="type">double</span> p) {
+    <span class="type">int</span> level = <span class="number">0</span>;
+    <span class="comment">// "Coin flip" cu prob. p</span>
+    <span class="keyword">while</span> ((<span class="type">double</span>)<span class="function">rand</span>() / RAND_MAX < p 
+           && level < max) {
+        level++;
+    }
+    <span class="keyword">return</span> level;
+}</code></pre>
+                    
+                    <div class="info-card">
+                        <div class="card-title">🎲 Distribuție</div>
+                        <p>Cu p=0.5:</p>
+                        <p>~50% noduri: level 0<br>
+                        ~25% noduri: level 1<br>
+                        ~12.5% noduri: level 2<br>
+                        ...</p>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="subsection-title">Căutare</h3>
+                    <pre><code><span class="type">SkipNode</span>* <span class="function">skiplist_search</span>(<span class="type">SkipList</span> *sl, <span class="type">int</span> key) {
+    <span class="type">SkipNode</span> *curr = sl->header;
+    
+    <span class="comment">// Start de la nivel maxim</span>
+    <span class="keyword">for</span> (<span class="type">int</span> i = sl->current_level; i >= <span class="number">0</span>; i--) {
+        <span class="comment">// Avansează pe nivel curent</span>
+        <span class="keyword">while</span> (curr->forward[i] && 
+               curr->forward[i]->key < key) {
+            curr = curr->forward[i];
+        }
+    }
+    
+    <span class="comment">// Verifică nodul următor pe L0</span>
+    curr = curr->forward[<span class="number">0</span>];
+    
+    <span class="keyword">if</span> (curr && curr->key == key) {
+        <span class="keyword">return</span> curr;
+    }
+    <span class="keyword">return</span> <span class="keyword">NULL</span>;
+}</code></pre>
+                </div>
+            </div>
+            
+            <h3 class="subsection-title mt-2">Inserare</h3>
+            <pre><code><span class="type">void</span> <span class="function">skiplist_insert</span>(<span class="type">SkipList</span> *sl, <span class="type">int</span> key, <span class="type">void</span> *value) {
+    <span class="type">SkipNode</span> *update[sl->max_level + <span class="number">1</span>];  <span class="comment">// Noduri de actualizat</span>
+    <span class="type">SkipNode</span> *curr = sl->header;
+    
+    <span class="comment">// Găsește pozițiile de inserare pe fiecare nivel</span>
+    <span class="keyword">for</span> (<span class="type">int</span> i = sl->current_level; i >= <span class="number">0</span>; i--) {
+        <span class="keyword">while</span> (curr->forward[i] && curr->forward[i]->key < key) {
+            curr = curr->forward[i];
+        }
+        update[i] = curr;
+    }
+    
+    <span class="type">int</span> level = <span class="function">random_level</span>(sl->max_level, sl->p);
+    <span class="type">SkipNode</span> *new_node = <span class="function">create_node</span>(level, key, value);
+    
+    <span class="comment">// Actualizează pointerii</span>
+    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i <= level; i++) {
+        new_node->forward[i] = update[i]->forward[i];
+        update[i]->forward[i] = new_node;
+    }
+    sl->size++;
+}</code></pre>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SLIDE 20: SKIP LIST - APPLICATIONS
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div class="slide" id="slide-20">
+            <span class="slide-number">20 / 25</span>
+            <h2 class="slide-title">Skip List — Aplicații</h2>
+            
+            <div class="grid-3">
+                <div class="structure-card skip">
+                    <div class="structure-icon">🔴</div>
+                    <div class="structure-name">Redis Sorted Sets</div>
+                    <p class="text-secondary">ZSET folosește Skip List pentru operații de range query rapide.</p>
+                </div>
+                
+                <div class="structure-card skip">
+                    <div class="structure-icon">📁</div>
+                    <div class="structure-name">LevelDB / RocksDB</div>
+                    <p class="text-secondary">MemTable implementat ca Skip List pentru inserări ordonate rapide.</p>
+                </div>
+                
+                <div class="structure-card skip">
+                    <div class="structure-icon">⚡</div>
+                    <div class="structure-name">Concurrent Structures</div>
+                    <p class="text-secondary">Lock-free Skip Lists în Java ConcurrentSkipListMap.</p>
+                </div>
+            </div>
+            
+            <div class="info-card mt-2">
+                <div class="card-title">📊 Redis ZSET Internal</div>
+                <pre><code><span class="comment">// Redis folosește Skip List când:</span>
+<span class="comment">// - Mai mult de 128 elemente</span>
+<span class="comment">// - Sau dimensiune element > 64 bytes</span>
+
+<span class="comment">// Comenzi Redis ce beneficiază de Skip List:</span>
+ZADD leaderboard <span class="number">1000</span> <span class="string">"player1"</span>     <span class="comment">// O(log N) inserare</span>
+ZRANGE leaderboard <span class="number">0</span> <span class="number">10</span>            <span class="comment">// O(log N + M) range</span>
+ZRANGEBYSCORE leaderboard <span class="number">500</span> <span class="number">1000</span> <span class="comment">// O(log N + M) range by score</span>
+ZRANK leaderboard <span class="string">"player1"</span>        <span class="comment">// O(log N) rank lookup</span></code></pre>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SLIDE 21: COMPARISON TABLE
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div class="slide" id="slide-21">
+            <span class="slide-number">21 / 25</span>
+            <h2 class="slide-title">Comparație Comprehensivă</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Structură</th>
+                        <th>Problemă</th>
+                        <th>Spațiu</th>
+                        <th>Insert</th>
+                        <th>Query</th>
+                        <th>Eroare</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="text-bloom">Bloom Filter</span></td>
+                        <td>Membership</td>
+                        <td>O(n) biți</td>
+                        <td>O(k)</td>
+                        <td>O(k)</td>
+                        <td>False +</td>
+                    </tr>
+                    <tr>
+                        <td><span class="text-cms">Count-Min Sketch</span></td>
+                        <td>Frequency</td>
+                        <td>O(1/ε · log(1/δ))</td>
+                        <td>O(d)</td>
+                        <td>O(d)</td>
+                        <td>Overestimate</td>
+                    </tr>
+                    <tr>
+                        <td><span class="text-hll">HyperLogLog</span></td>
+                        <td>Cardinality</td>
+                        <td>O(log log n)</td>
+                        <td>O(1)</td>
+                        <td>O(M)</td>
+                        <td>±1.04/√M</td>
+                    </tr>
+                    <tr>
+                        <td><span class="text-skip">Skip List</span></td>
+                        <td>Sorted Set</td>
+                        <td>O(n)</td>
+                        <td>O(log n)*</td>
+                        <td>O(log n)*</td>
+                        <td>Exact</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p class="text-muted text-center">* = timp așteptat, nu garantat în worst-case</p>
+            
+            <div class="ascii-diagram mt-2">
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    GHID DE SELECȚIE                                     │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  "Există elementul X în mulțime?"                                       │
+│       │                                                                 │
+│       ├─→ Memorie limitată? ──→ BLOOM FILTER                           │
+│       └─→ Nevoie de precizie 100%? ──→ HashSet                         │
+│                                                                         │
+│  "De câte ori apare elementul X?"                                       │
+│       │                                                                 │
+│       ├─→ Stream, memorie limitată? ──→ COUNT-MIN SKETCH               │
+│       └─→ Precizie exactă necesară? ──→ HashMap<T, int>                │
+│                                                                         │
+│  "Câte elemente distincte există?"                                      │
+│       │                                                                 │
+│       ├─→ Milioane/miliarde elemente? ──→ HYPERLOGLOG                  │
+│       └─→ Cardinalitate mică? ──→ HashSet.size()                       │
+│                                                                         │
+│  "Găsește elementele în ordinea cheii"                                  │
+│       │                                                                 │
+│       ├─→ Implementare simplă dorită? ──→ SKIP LIST                    │
+│       └─→ Worst-case garantat? ──→ Red-Black Tree                      │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SLIDE 22: MEMORY COMPARISON
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div class="slide" id="slide-22">
+            <span class="slide-number">22 / 25</span>
+            <h2 class="slide-title">Comparație Memorie — Scenariu Real</h2>
+            
+            <div class="info-card">
+                <div class="card-title">📊 Scenariu: 100 Milioane URL-uri</div>
+                <p>Un crawler web trebuie să verifice duplicate. Comparam abordările:</p>
+            </div>
+            
+            <div class="ascii-diagram">
+┌─────────────────────────────────────────────────────────────────────────┐
+│            MEMORIE NECESARĂ: 100M URL-uri (avg 80 chars)                │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  HashSet&lt;String&gt; (Java)                                                │
+│  ████████████████████████████████████████████████████████  ~12 GB      │
+│  - Overhead obiect: 16 bytes                                            │
+│  - String header: 24 bytes                                              │
+│  - Char array: ~160 bytes (80 chars × 2)                                │
+│  - HashMap entry: 32 bytes                                              │
+│                                                                         │
+│  unordered_set&lt;string&gt; (C++)                                            │
+│  ███████████████████████████████████████████  ~9.6 GB                  │
+│  - String: ~80 bytes + 32 overhead                                      │
+│  - Hash bucket: 8 bytes                                                 │
+│                                                                         │
+│  Bloom Filter (1% FPR)                                                  │
+│  █                                                                      │
+│  ~120 MB (0.12 GB)                                                      │
+│  - ~9.6 biți/element × 100M = 960 Mbits = 120 MB                        │
+│                                                                         │
+│  HyperLogLog (p=14, cardinality only)                                   │
+│  ·                                                                      │
+│  ~12 KB (0.000012 GB)                                                   │
+│  - 16384 registre × 6 biți ≈ 12 KB                                      │
+│                                                                         │
+│  Factor HashSet vs Bloom: 100×                                          │
+│  Factor HashSet vs HLL: 1,000,000×                                      │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SLIDE 23: EXERCISES OVERVIEW
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div class="slide" id="slide-23">
+            <span class="slide-number">23 / 25</span>
+            <h2 class="slide-title">Exerciții de Laborator</h2>
+            
+            <div class="grid-2">
+                <div class="structure-card bloom">
+                    <div class="structure-icon">📝</div>
+                    <div class="structure-name">Exercițiul 1</div>
+                    <p><strong>Sistem de Deduplicare URL-uri</strong></p>
+                    <p class="text-secondary">Implementați un Bloom Filter + HyperLogLog pentru a procesa un fișier de URL-uri, identificând duplicate și estimând cardinalitatea.</p>
+                    <p class="text-muted" style="margin-top: 0.5rem;">TODOs: ~9 | Timp: ~60 min</p>
+                </div>
+                
+                <div class="structure-card cms">
+                    <div class="structure-icon">📝</div>
+                    <div class="structure-name">Exercițiul 2</div>
+                    <p><strong>Analizor Heavy Hitters</strong></p>
+                    <p class="text-secondary">Implementați un Count-Min Sketch pentru a identifica cele mai frecvente cuvinte dintr-un stream de text, comparând cu un counter exact.</p>
+                    <p class="text-muted" style="margin-top: 0.5rem;">TODOs: ~6 | Timp: ~45 min</p>
+                </div>
+            </div>
+            
+            <div class="info-card mt-2">
+                <div class="card-title">🛠️ Setup</div>
+                <pre><code><span class="comment"># Compilare</span>
+make exercise1
+make exercise2
+
+<span class="comment"># Rulare cu date de test</span>
+./bin/exercise1 data/urls_100k.txt
+./bin/exercise2 data/words_stream.txt
+
+<span class="comment"># Verificare memorie</span>
+make valgrind PROG=exercise1</code></pre>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SLIDE 24: INTERVIEW QUESTIONS
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div class="slide" id="slide-24">
+            <span class="slide-number">24 / 25</span>
+            <h2 class="slide-title">Întrebări de Interviu</h2>
+            
+            <div class="grid-2">
+                <div>
+                    <div class="info-card">
+                        <div class="card-title">🎯 Nivel Junior</div>
+                        <p>1. Ce este un fals pozitiv într-un Bloom Filter?</p>
+                        <p>2. De ce Bloom Filter nu suportă ștergerea?</p>
+                        <p>3. Ce face HyperLogLog diferit de un HashSet?</p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="card-title">🎯 Nivel Mid</div>
+                        <p>1. Cum alegi numărul optim de funcții hash pentru Bloom Filter?</p>
+                        <p>2. De ce Count-Min Sketch ia MIN peste rânduri, nu MEAN?</p>
+                        <p>3. Care e avantajul Skip List față de arbori Red-Black?</p>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="info-card">
+                        <div class="card-title">🎯 Nivel Senior</div>
+                        <p>1. Proiectează un sistem de detectare DDoS folosind structuri probabilistice.</p>
+                        <p>2. Cum ai combina Bloom Filter cu HyperLogLog pentru un web crawler distribuit?</p>
+                        <p>3. Analizează trade-off-urile între acuratețe, latență și memorie pentru un sistem de analytics real-time.</p>
+                    </div>
+                    
+                    <div class="info-card warning">
+                        <div class="card-title">⚠️ Capcane Comune</div>
+                        <p>• Confuzie între fals pozitiv și fals negativ</p>
+                        <p>• Ignorarea factorilor de corecție în HLL</p>
+                        <p>• Uitarea că CMS supraestimează mereu</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SLIDE 25: SUMMARY & RESOURCES
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div class="slide" id="slide-25">
+            <span class="slide-number">25 / 25</span>
+            <h2 class="slide-title">Sumar și Resurse</h2>
+            
+            <div class="grid-2">
+                <div>
+                    <h3 class="subsection-title">📚 Concepte Cheie</h3>
+                    <div class="info-card success">
+                        <p>✅ Trade-off <strong>spațiu vs. acuratețe</strong></p>
+                        <p>✅ Funcții hash de calitate = fundație</p>
+                        <p>✅ Bloom: membership, fără false negative</p>
+                        <p>✅ CMS: frecvență, supraestimează</p>
+                        <p>✅ HLL: cardinalitate, ~1% eroare în 12KB</p>
+                        <p>✅ Skip List: sortare probabilistică simplă</p>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="subsection-title">📖 Bibliografie</h3>
+                    <div class="info-card historical">
+                        <p>Bloom, B.H. (1970). <em>Space/Time Trade-offs in Hash Coding</em></p>
+                        <p>Pugh, W. (1990). <em>Skip Lists: A Probabilistic Alternative to Balanced Trees</em></p>
+                        <p>Cormode, G. & Muthukrishnan, S. (2005). <em>Count-Min Sketch</em></p>
+                        <p>Flajolet, P. et al. (2007). <em>HyperLogLog</em></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-card mt-2">
+                <div class="card-title">🔗 Resurse Adiționale</div>
+                <div class="grid-3">
+                    <div>
+                        <p><strong>Redis Docs</strong></p>
+                        <p class="text-muted">redis.io/docs</p>
+                    </div>
+                    <div>
+                        <p><strong>Streaming Algorithms</strong></p>
+                        <p class="text-muted">Stanford CS168</p>
+                    </div>
+                    <div>
+                        <p><strong>CMU DB Notes</strong></p>
+                        <p class="text-muted">15-445/645</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-2">
+                <p style="font-size: 1.5rem; color: var(--accent-bloom);">🎯 Săptămâna viitoare: Algoritmi pe Grafuri pentru Rețele Sociale</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         NAVIGATION BAR
+         ═══════════════════════════════════════════════════════════════════ -->
+    <nav class="nav-bar">
+        <button class="nav-btn" onclick="goToSlide(1)" title="Start">⏮</button>
+        <button class="nav-btn" onclick="prevSlide()" title="Previous">◀</button>
+        <span id="nav-indicator" style="padding: 0.5rem 1rem; color: var(--text-muted);">1/25</span>
+        <button class="nav-btn" onclick="nextSlide()" title="Next">▶</button>
+        <button class="nav-btn" onclick="goToSlide(25)" title="End">⏭</button>
+    </nav>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         JAVASCRIPT
+         ═══════════════════════════════════════════════════════════════════ -->
+    <script>
+        // ══════════════════════════════════════════════════════════════════
+        // NAVIGATION
+        // ══════════════════════════════════════════════════════════════════
+        let currentSlide = 1;
+        const totalSlides = 25;
+
+        function goToSlide(n) {
+            currentSlide = Math.max(1, Math.min(n, totalSlides));
+            document.getElementById(`slide-${currentSlide}`).scrollIntoView({ behavior: 'smooth' });
+            updateNavIndicator();
+        }
+
+        function nextSlide() {
+            goToSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            goToSlide(currentSlide - 1);
+        }
+
+        function updateNavIndicator() {
+            document.getElementById('nav-indicator').textContent = `${currentSlide}/${totalSlides}`;
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            } else if (e.key === 'Home') {
+                goToSlide(1);
+            } else if (e.key === 'End') {
+                goToSlide(totalSlides);
+            }
+        });
+
+        // Scroll detection for nav indicator
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const slideNum = parseInt(entry.target.id.split('-')[1]);
+                    currentSlide = slideNum;
+                    updateNavIndicator();
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.slide').forEach(slide => observer.observe(slide));
+
+        // ══════════════════════════════════════════════════════════════════
+        // BLOOM FILTER DEMO
+        // ══════════════════════════════════════════════════════════════════
+        const BLOOM_SIZE = 32;
+        const BLOOM_HASHES = 3;
+        let bloomBitmap = new Array(BLOOM_SIZE).fill(0);
+        let bloomElements = new Set();
+
+        function initBloomDemo() {
+            const container = document.getElementById('bloom-bitmap');
+            container.innerHTML = '';
+            for (let i = 0; i < BLOOM_SIZE; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'bitmap-cell';
+                cell.id = `bloom-bit-${i}`;
+                cell.textContent = '0';
+                container.appendChild(cell);
+            }
+        }
+
+        function simpleHash(str, seed) {
+            let hash = seed;
+            for (let i = 0; i < str.length; i++) {
+                hash = ((hash << 5) - hash + str.charCodeAt(i)) | 0;
+            }
+            return Math.abs(hash) % BLOOM_SIZE;
+        }
+
+        function getBloomPositions(str) {
+            return [
+                simpleHash(str, 31),
+                simpleHash(str, 37),
+                simpleHash(str, 41)
+            ];
+        }
+
+        function bloomAdd() {
+            const input = document.getElementById('bloom-input');
+            const value = input.value.trim();
+            if (!value) return;
+
+            const positions = getBloomPositions(value);
+            positions.forEach(pos => {
+                bloomBitmap[pos] = 1;
+                const cell = document.getElementById(`bloom-bit-${pos}`);
+                cell.className = 'bitmap-cell set';
+                cell.textContent = '1';
+            });
+
+            bloomElements.add(value);
+            input.value = '';
+
+            const setBits = bloomBitmap.filter(b => b === 1).length;
+            const estimatedFPR = Math.pow(setBits / BLOOM_SIZE, BLOOM_HASHES) * 100;
+
+            document.getElementById('bloom-output').innerHTML = `
+                <p>✅ Adăugat: <strong>${value}</strong></p>
+                <p>Poziții setate: ${positions.join(', ')}</p>
+                <p class="text-muted">Biți setați: ${setBits}/${BLOOM_SIZE} | Elemente: ${bloomElements.size} | FPR estimată: ${estimatedFPR.toFixed(1)}%</p>
+            `;
+        }
+
+        function bloomCheck() {
+            const input = document.getElementById('bloom-input');
+            const value = input.value.trim();
+            if (!value) return;
+
+            const positions = getBloomPositions(value);
+            const allSet = positions.every(pos => bloomBitmap[pos] === 1);
+            const actuallyExists = bloomElements.has(value);
+
+            let result;
+            if (allSet) {
+                if (actuallyExists) {
+                    result = `<p style="color: var(--success);">✅ PROBABIL EXISTĂ (și chiar există!)</p>`;
+                } else {
+                    result = `<p style="color: var(--warning);">⚠️ PROBABIL EXISTĂ (FALS POZITIV - nu a fost adăugat)</p>`;
+                }
+            } else {
+                result = `<p style="color: var(--error);">❌ GARANTAT NU EXISTĂ</p>`;
+            }
+
+            document.getElementById('bloom-output').innerHTML = `
+                ${result}
+                <p>Verificat: <strong>${value}</strong></p>
+                <p>Poziții verificate: ${positions.join(', ')} → [${positions.map(p => bloomBitmap[p]).join(', ')}]</p>
+            `;
+        }
+
+        function bloomReset() {
+            bloomBitmap = new Array(BLOOM_SIZE).fill(0);
+            bloomElements = new Set();
+            initBloomDemo();
+            document.getElementById('bloom-output').innerHTML = `
+                <p>Filtru resetat. Adăugați cuvinte pentru a vedea cum funcționează!</p>
+                <p class="text-muted">Biți setați: 0 | Elemente: 0 | FPR estimată: 0%</p>
+            `;
+        }
+
+        // Initialize demo on load
+        document.addEventListener('DOMContentLoaded', initBloomDemo);
+    </script>
+</body>
+</html>

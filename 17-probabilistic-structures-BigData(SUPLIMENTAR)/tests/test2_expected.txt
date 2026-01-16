@@ -1,0 +1,19 @@
+ADD algorithm: count=1
+ADD algorithm: count=2
+ADD algorithm: count=3
+ADD algorithm: count=4
+ADD algorithm: count=5
+ADD data: count=1
+ADD data: count=2
+ADD data: count=3
+ADD structure: count=1
+ADD structure: count=2
+ESTIMATE algorithm: ~5 (actual: 5)
+ESTIMATE data: ~3 (actual: 3)
+ESTIMATE structure: ~2 (actual: 2)
+ESTIMATE missing: ~0 (actual: 0)
+ADD algorithm: count=6
+ADD algorithm: count=7
+ADD algorithm: count=8
+ESTIMATE algorithm: ~8 (actual: 8)
+TOPK 3: algorithm(8), data(3), structure(2)

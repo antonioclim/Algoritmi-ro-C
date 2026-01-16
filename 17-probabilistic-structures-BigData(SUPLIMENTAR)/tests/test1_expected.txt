@@ -1,0 +1,16 @@
+ADD hello: OK
+ADD world: OK
+ADD algorithm: OK
+ADD data: OK
+ADD structure: OK
+CHECK hello: FOUND
+CHECK world: FOUND
+CHECK algorithm: FOUND
+CHECK missing_element: NOT_FOUND_OR_FALSE_POSITIVE
+CHECK another_missing: NOT_FOUND_OR_FALSE_POSITIVE
+ADD bloom: OK
+ADD filter: OK
+CHECK bloom: FOUND
+CHECK filter: FOUND
+CHECK definitely_not_present: NOT_FOUND_OR_FALSE_POSITIVE
+COUNT: 7 elements

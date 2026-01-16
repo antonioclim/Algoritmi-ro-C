@@ -1,0 +1,57 @@
+# ==============================================================================
+# access_log.csv - Log de acces simulat pentru analiză combinată
+# ==============================================================================
+# Format CSV: timestamp,ip_address,url,method,status,bytes,user_agent
+# Poate fi folosit pentru toate structurile de date
+# ==============================================================================
+timestamp,ip_address,url,method,status,bytes,user_agent
+2025-01-15T10:00:01,192.168.1.1,/index.html,GET,200,1024,Mozilla/5.0
+2025-01-15T10:00:02,192.168.1.2,/api/users,GET,200,512,curl/7.68
+2025-01-15T10:00:03,192.168.1.1,/index.html,GET,200,1024,Mozilla/5.0
+2025-01-15T10:00:04,10.0.0.1,/products,GET,200,2048,Chrome/120
+2025-01-15T10:00:05,192.168.1.3,/login,POST,302,128,Firefox/121
+2025-01-15T10:00:06,192.168.1.1,/dashboard,GET,200,4096,Mozilla/5.0
+2025-01-15T10:00:07,10.0.0.1,/products,GET,200,2048,Chrome/120
+2025-01-15T10:00:08,172.16.0.1,/api/data,GET,200,256,Python/3.11
+2025-01-15T10:00:09,192.168.1.2,/api/users,GET,200,512,curl/7.68
+2025-01-15T10:00:10,8.8.8.8,/health,GET,200,64,HealthCheck/1.0
+2025-01-15T10:00:11,192.168.1.1,/logout,POST,302,0,Mozilla/5.0
+2025-01-15T10:00:12,10.0.0.2,/products/1,GET,200,1536,Safari/17
+2025-01-15T10:00:13,192.168.1.1,/index.html,GET,200,1024,Mozilla/5.0
+2025-01-15T10:00:14,10.0.0.1,/cart,GET,200,768,Chrome/120
+2025-01-15T10:00:15,172.16.0.1,/api/data,POST,201,128,Python/3.11
+2025-01-15T10:00:16,192.168.1.4,/register,GET,200,2048,Edge/120
+2025-01-15T10:00:17,8.8.8.8,/health,GET,200,64,HealthCheck/1.0
+2025-01-15T10:00:18,192.168.1.2,/api/posts,GET,200,4096,curl/7.68
+2025-01-15T10:00:19,10.0.0.3,/products,GET,200,2048,Chrome/119
+2025-01-15T10:00:20,192.168.1.1,/settings,GET,200,1280,Mozilla/5.0
+2025-01-15T10:00:21,1.1.1.1,/robots.txt,GET,200,256,Googlebot/2.1
+2025-01-15T10:00:22,10.0.0.1,/checkout,POST,200,512,Chrome/120
+2025-01-15T10:00:23,192.168.1.3,/dashboard,GET,200,4096,Firefox/121
+2025-01-15T10:00:24,172.16.0.2,/api/auth,POST,200,128,Go-http-client/1.1
+2025-01-15T10:00:25,192.168.1.1,/profile,GET,200,3072,Mozilla/5.0
+2025-01-15T10:00:26,10.0.0.1,/products,GET,200,2048,Chrome/120
+2025-01-15T10:00:27,192.168.1.5,/index.html,GET,200,1024,Opera/100
+2025-01-15T10:00:28,8.8.8.8,/health,GET,200,64,HealthCheck/1.0
+2025-01-15T10:00:29,192.168.1.2,/api/comments,GET,200,8192,curl/7.68
+2025-01-15T10:00:30,10.0.0.4,/search,GET,200,512,Chrome/120
+2025-01-15T10:00:31,192.168.1.1,/index.html,GET,200,1024,Mozilla/5.0
+2025-01-15T10:00:32,172.16.0.1,/api/data,DELETE,204,0,Python/3.11
+2025-01-15T10:00:33,192.168.1.6,/about,GET,200,2048,Safari/17
+2025-01-15T10:00:34,10.0.0.1,/products/2,GET,200,1536,Chrome/120
+2025-01-15T10:00:35,1.1.1.1,/sitemap.xml,GET,200,4096,Bingbot/2.0
+2025-01-15T10:00:36,192.168.1.1,/api/profile,GET,200,256,Mozilla/5.0
+2025-01-15T10:00:37,10.0.0.5,/products,GET,200,2048,Firefox/122
+2025-01-15T10:00:38,8.8.8.8,/health,GET,200,64,HealthCheck/1.0
+2025-01-15T10:00:39,192.168.1.2,/api/users/1,PUT,200,128,curl/7.68
+2025-01-15T10:00:40,172.16.0.3,/webhook,POST,200,64,GitHub-Hookshot/abc
+2025-01-15T10:00:41,192.168.1.1,/notifications,GET,200,512,Mozilla/5.0
+2025-01-15T10:00:42,10.0.0.1,/products,GET,200,2048,Chrome/120
+2025-01-15T10:00:43,192.168.1.7,/help,GET,200,3584,Edge/120
+2025-01-15T10:00:44,10.0.0.6,/contact,GET,200,1792,Safari/17
+2025-01-15T10:00:45,192.168.1.1,/messages,GET,200,8192,Mozilla/5.0
+2025-01-15T10:00:46,172.16.0.1,/api/data,GET,200,256,Python/3.11
+2025-01-15T10:00:47,8.8.8.8,/health,GET,200,64,HealthCheck/1.0
+2025-01-15T10:00:48,192.168.1.2,/api/search,GET,200,2048,curl/7.68
+2025-01-15T10:00:49,10.0.0.1,/products/3,GET,200,1536,Chrome/120
+2025-01-15T10:00:50,192.168.1.1,/index.html,GET,200,1024,Mozilla/5.0

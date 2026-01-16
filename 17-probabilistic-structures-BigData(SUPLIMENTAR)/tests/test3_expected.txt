@@ -1,0 +1,21 @@
+ADD user_001: OK
+ADD user_002: OK
+ADD user_003: OK
+ADD user_004: OK
+ADD user_005: OK
+ADD user_001: OK (duplicate)
+ADD user_001: OK (duplicate)
+ADD user_002: OK (duplicate)
+ADD user_003: OK (duplicate)
+ESTIMATE: ~5 unique elements
+ADD user_006: OK
+ADD user_007: OK
+ADD user_008: OK
+ADD user_009: OK
+ADD user_010: OK
+ESTIMATE: ~10 unique elements
+RESET: OK
+ADD item_a: OK
+ADD item_b: OK
+ADD item_c: OK
+ESTIMATE: ~3 unique elements

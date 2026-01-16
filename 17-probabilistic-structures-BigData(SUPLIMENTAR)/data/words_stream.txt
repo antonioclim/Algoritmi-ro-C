@@ -1,0 +1,134 @@
+# ==============================================================================
+# words_stream.txt - Date de test pentru Count-Min Sketch
+# ==============================================================================
+# Stream de cuvinte cu frecvențe cunoscute pentru validare
+# Heavy hitters: algorithm(50), data(45), structure(40), bloom(35), filter(30)
+# Medium: hash(25), function(20), probabilistic(15), sketch(12), count(10)
+# Light tail: restul cuvintelor
+# ==============================================================================
+
+algorithm data structure bloom filter hash function probabilistic sketch count
+algorithm data structure bloom filter hash function probabilistic
+algorithm data structure bloom filter hash function
+algorithm data structure bloom filter hash
+algorithm data structure bloom filter
+algorithm data structure bloom
+algorithm data structure
+algorithm data
+algorithm
+data structure bloom filter hash function probabilistic sketch count
+data structure bloom filter hash function probabilistic sketch
+data structure bloom filter hash function probabilistic
+data structure bloom filter hash function
+data structure bloom filter hash
+data structure bloom filter
+data structure bloom
+data structure
+data
+algorithm structure bloom filter hash function probabilistic sketch count
+algorithm structure bloom filter hash function probabilistic sketch
+algorithm structure bloom filter hash function probabilistic
+algorithm structure bloom filter hash function
+algorithm structure bloom filter hash
+algorithm structure bloom filter
+algorithm structure bloom
+algorithm structure
+structure
+algorithm data bloom filter hash function probabilistic sketch count
+algorithm data bloom filter hash function probabilistic sketch
+algorithm data bloom filter hash function probabilistic
+algorithm data bloom filter hash function
+algorithm data bloom filter hash
+algorithm data bloom filter
+algorithm data bloom
+algorithm data
+bloom filter hash function probabilistic sketch count
+bloom filter hash function probabilistic sketch
+bloom filter hash function probabilistic
+bloom filter hash function
+bloom filter hash
+bloom filter
+bloom
+filter hash function probabilistic sketch count
+filter hash function probabilistic sketch
+filter hash function probabilistic
+filter hash function
+filter hash
+filter
+hash function probabilistic sketch count
+hash function probabilistic sketch
+hash function probabilistic
+hash function
+hash
+function probabilistic sketch count
+function probabilistic sketch
+function probabilistic
+function
+probabilistic sketch count
+probabilistic sketch
+probabilistic
+sketch count
+sketch
+count
+algorithm data structure bloom filter hash function probabilistic sketch count
+algorithm data structure bloom filter hash function probabilistic sketch
+algorithm data structure bloom filter hash function probabilistic
+algorithm data structure bloom filter hash function
+algorithm data structure bloom filter
+algorithm data structure
+algorithm data
+algorithm
+hyperloglog cardinality estimation unique elements register
+hyperloglog cardinality estimation unique elements
+hyperloglog cardinality estimation unique
+hyperloglog cardinality estimation
+hyperloglog cardinality
+hyperloglog
+skiplist search insert delete level probability
+skiplist search insert delete level
+skiplist search insert delete
+skiplist search insert
+skiplist search
+skiplist
+memory efficient space complexity bit array
+memory efficient space complexity bit
+memory efficient space complexity
+memory efficient space
+memory efficient
+memory
+error rate false positive negative approximation
+error rate false positive negative
+error rate false positive
+error rate false
+error rate
+error
+redis implementation database cache performance
+redis implementation database cache
+redis implementation database
+redis implementation
+redis
+streaming analytics real time processing window
+streaming analytics real time processing
+streaming analytics real time
+streaming analytics real
+streaming analytics
+streaming
+network traffic analysis packet flow monitoring
+network traffic analysis packet flow
+network traffic analysis packet
+network traffic analysis
+network traffic
+network
+algorithm data structure algorithm data algorithm
+data structure bloom data structure data
+bloom filter hash bloom filter bloom
+filter hash function filter hash filter
+algorithm algorithm algorithm algorithm algorithm
+data data data data data data data
+structure structure structure structure
+bloom bloom bloom bloom
+filter filter filter
+hash hash hash
+function function
+probabilistic
+algorithm data structure bloom filter

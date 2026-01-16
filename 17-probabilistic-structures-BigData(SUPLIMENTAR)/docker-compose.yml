@@ -1,0 +1,243 @@
+# ==============================================================================
+# docker-compose.yml - Săptămâna 17: Structuri de Date Probabilistice
+# ==============================================================================
+# Algoritmi și Tehnici de Programare - ASE București CSIE
+# Orchestrare containere pentru dezvoltare, testare și benchmarking
+# ==============================================================================
+#
+# Utilizare:
+#   docker-compose up -d          # Pornește containerele
+#   docker-compose exec dev bash  # Intră în shell interactiv
+#   docker-compose run dev make   # Execută make în container
+#   docker-compose down           # Oprește totul
+#
+# ==============================================================================
+
+version: '3.8'
+
+services:
+  # ============================================================================
+  # SERVICIU PRINCIPAL DE DEZVOLTARE
+  # ============================================================================
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BUILD_DATE: ${BUILD_DATE:-2025-01-01}
+        VERSION: "1.0"
+    image: atp-week17-probabilistic:latest
+    container_name: atp_week17_dev
+    hostname: probabilistic-dev
+    
+    # Montări volume pentru dezvoltare live
+    volumes:
+      - ./src:/app/src:rw
+      - ./data:/app/data:rw
+      - ./tests:/app/tests:rw
+      - ./python_comparison:/app/python_comparison:rw
+      - ./slides:/app/slides:rw
+      - ./teme:/app/teme:rw
+      - ./solution:/app/solution:rw
+      - ./Makefile:/app/Makefile:ro
+      - ./README.md:/app/README.md:ro
+      # Directoare de output persistente
+      - ./output:/app/output:rw
+      - ./benchmarks:/app/benchmarks:rw
+    
+    # Variabile de mediu
+    environment:
+      - TERM=xterm-256color
+      - LANG=C.UTF-8
+      - LC_ALL=C.UTF-8
+      - CC=gcc
+      - CFLAGS=-Wall -Wextra -std=c11 -g -pedantic -O2
+    
+    # TTY interactiv
+    stdin_open: true
+    tty: true
+    
+    # Resurse limitate pentru testare realistă
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+    
+    # Rețea
+    networks:
+      - atp-network
+    
+    # Comandă implicită
+    command: ["bash"]
+
+  # ============================================================================
+  # SERVICIU DE COMPILARE ȘI TESTARE (one-shot)
+  # ============================================================================
+  build:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: atp-week17-probabilistic:latest
+    container_name: atp_week17_build
+    
+    volumes:
+      - ./src:/app/src:ro
+      - ./data:/app/data:ro
+      - ./tests:/app/tests:ro
+      - ./Makefile:/app/Makefile:ro
+      - ./output:/app/output:rw
+    
+    environment:
+      - TERM=xterm-256color
+    
+    command: ["make", "all"]
+    
+    networks:
+      - atp-network
+
+  # ============================================================================
+  # SERVICIU DE TESTARE AUTOMATĂ
+  # ============================================================================
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: atp-week17-probabilistic:latest
+    container_name: atp_week17_test
+    
+    volumes:
+      - ./src:/app/src:ro
+      - ./data:/app/data:ro
+      - ./tests:/app/tests:ro
+      - ./Makefile:/app/Makefile:ro
+      - ./output:/app/output:rw
+    
+    environment:
+      - TERM=xterm-256color
+    
+    command: ["make", "test"]
+    
+    networks:
+      - atp-network
+
+  # ============================================================================
+  # SERVICIU DE BENCHMARKING
+  # ============================================================================
+  benchmark:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: atp-week17-probabilistic:latest
+    container_name: atp_week17_benchmark
+    
+    volumes:
+      - ./src:/app/src:ro
+      - ./data:/app/data:ro
+      - ./Makefile:/app/Makefile:ro
+      - ./benchmarks:/app/benchmarks:rw
+    
+    environment:
+      - TERM=xterm-256color
+    
+    # Mai multe resurse pentru benchmark
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 2G
+    
+    command: ["make", "benchmark"]
+    
+    networks:
+      - atp-network
+
+  # ============================================================================
+  # SERVICIU VALGRIND (memory check)
+  # ============================================================================
+  valgrind:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: atp-week17-probabilistic:latest
+    container_name: atp_week17_valgrind
+    
+    volumes:
+      - ./src:/app/src:ro
+      - ./data:/app/data:ro
+      - ./Makefile:/app/Makefile:ro
+      - ./output:/app/output:rw
+    
+    environment:
+      - TERM=xterm-256color
+    
+    command: ["make", "valgrind"]
+    
+    networks:
+      - atp-network
+
+  # ============================================================================
+  # SERVICIU PYTHON COMPARISON
+  # ============================================================================
+  python:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: atp-week17-probabilistic:latest
+    container_name: atp_week17_python
+    
+    volumes:
+      - ./python_comparison:/app/python_comparison:ro
+      - ./data:/app/data:ro
+      - ./output:/app/output:rw
+    
+    environment:
+      - TERM=xterm-256color
+    
+    working_dir: /app/python_comparison
+    command: ["python3", "bloom_comparison.py"]
+    
+    networks:
+      - atp-network
+
+  # ============================================================================
+  # SERVICIU SERVER PREZENTĂRI (opțional)
+  # ============================================================================
+  slides:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: atp-week17-probabilistic:latest
+    container_name: atp_week17_slides
+    
+    volumes:
+      - ./slides:/app/slides:ro
+    
+    ports:
+      - "8080:8080"
+    
+    working_dir: /app/slides
+    command: ["python3", "-m", "http.server", "8080"]
+    
+    networks:
+      - atp-network
+
+# ==============================================================================
+# REȚELE
+# ==============================================================================
+networks:
+  atp-network:
+    driver: bridge
+    name: atp_week17_network
+
+# ==============================================================================
+# VOLUME PERSISTENTE
+# ==============================================================================
+volumes:
+  output-data:
+    name: atp_week17_output
+  benchmark-data:
+    name: atp_week17_benchmarks

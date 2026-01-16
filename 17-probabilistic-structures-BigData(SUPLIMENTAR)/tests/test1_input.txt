@@ -1,0 +1,20 @@
+# Test 1: Bloom Filter - Testare de bază
+# Fiecare linie este un element de adăugat/verificat
+# Format: COMMAND ELEMENT
+# Comenzi: ADD, CHECK, COUNT
+ADD hello
+ADD world
+ADD algorithm
+ADD data
+ADD structure
+CHECK hello
+CHECK world
+CHECK algorithm
+CHECK missing_element
+CHECK another_missing
+ADD bloom
+ADD filter
+CHECK bloom
+CHECK filter
+CHECK definitely_not_present
+COUNT
