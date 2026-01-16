@@ -1,0 +1,1495 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Săptămâna 18: Fundamente Machine Learning în C</title>
+    <style>
+        /* ================================================================
+           RESET ȘI VARIABILE CSS
+           ================================================================ */
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --bg-dark: #0f172a;
+            --bg-light: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --code-bg: #0d1117;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ================================================================
+           SLIDE CONTAINER
+           ================================================================ */
+        .presentation {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            padding: 60px 80px;
+            display: none;
+            flex-direction: column;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transform: translateX(100px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .slide.active {
+            display: flex;
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* ================================================================
+           TIPOGRAFIE
+           ================================================================ */
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: var(--primary);
+        }
+
+        h3 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--secondary);
+        }
+
+        p {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: var(--text-secondary);
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+        }
+
+        /* ================================================================
+           LAYOUTS
+           ================================================================ */
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            flex: 1;
+            align-items: start;
+        }
+
+        .three-column {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            flex: 1;
+        }
+
+        .center-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            flex: 1;
+        }
+
+        /* ================================================================
+           COMPONENTE
+           ================================================================ */
+        .card {
+            background: var(--bg-light);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+        }
+
+        .card p {
+            font-size: 1.1rem;
+        }
+
+        /* ================================================================
+           CODE BLOCKS
+           ================================================================ */
+        pre {
+            background: var(--code-bg);
+            border-radius: 12px;
+            padding: 25px;
+            overflow-x: auto;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        code {
+            font-family: 'Fira Code', 'Consolas', monospace;
+        }
+
+        .code-comment { color: #6a737d; }
+        .code-keyword { color: #ff7b72; }
+        .code-type { color: #79c0ff; }
+        .code-function { color: #d2a8ff; }
+        .code-string { color: #a5d6ff; }
+        .code-number { color: #79c0ff; }
+
+        /* ================================================================
+           FORMULE MATEMATICE
+           ================================================================ */
+        .formula {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(16, 185, 129, 0.2));
+            border-radius: 12px;
+            padding: 25px 35px;
+            margin: 20px 0;
+            font-family: 'Times New Roman', serif;
+            font-size: 1.5rem;
+            text-align: center;
+            border-left: 4px solid var(--primary);
+        }
+
+        .formula-inline {
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+            background: rgba(37, 99, 235, 0.1);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        /* ================================================================
+           LISTE
+           ================================================================ */
+        ul, ol {
+            font-size: 1.2rem;
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+        }
+
+        li::marker {
+            color: var(--primary);
+        }
+
+        /* ================================================================
+           DIAGRAME ASCII
+           ================================================================ */
+        .ascii-diagram {
+            background: var(--code-bg);
+            border-radius: 12px;
+            padding: 30px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            white-space: pre;
+            overflow-x: auto;
+            color: var(--secondary);
+        }
+
+        /* ================================================================
+           TABELE
+           ================================================================ */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        th {
+            background: var(--bg-light);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        /* ================================================================
+           BADGES ȘI ETICHETE
+           ================================================================ */
+        .badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin: 5px;
+        }
+
+        .badge-primary { background: var(--primary); color: white; }
+        .badge-secondary { background: var(--secondary); color: white; }
+        .badge-accent { background: var(--accent); color: black; }
+        .badge-danger { background: var(--danger); color: white; }
+
+        /* ================================================================
+           TIMELINE
+           ================================================================ */
+        .timeline {
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--gradient-1);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+            padding-left: 30px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -32px;
+            top: 5px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 3px solid var(--bg-dark);
+        }
+
+        .timeline-year {
+            font-size: 0.9rem;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* ================================================================
+           HIGHLIGHT BOX
+           ================================================================ */
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(239, 68, 68, 0.2));
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+            border-left: 4px solid var(--accent);
+        }
+
+        .highlight-box h4 {
+            color: var(--accent);
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        /* ================================================================
+           PROGRESS BAR
+           ================================================================ */
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--bg-light);
+            z-index: 1000;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--gradient-1);
+            transition: width 0.3s ease;
+        }
+
+        /* ================================================================
+           NAVIGARE
+           ================================================================ */
+        .nav-controls {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: var(--bg-light);
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 12px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .slide-counter {
+            position: fixed;
+            bottom: 30px;
+            right: 40px;
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        /* ================================================================
+           ANIMAȚII
+           ================================================================ */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+
+        /* ================================================================
+           INTERACTIVE ELEMENTS
+           ================================================================ */
+        .interactive-demo {
+            background: var(--bg-light);
+            border-radius: 16px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+
+        .slider-container {
+            margin: 20px 0;
+        }
+
+        .slider-container label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: var(--bg-dark);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+        }
+
+        .output-display {
+            background: var(--code-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            font-family: monospace;
+        }
+
+        /* ================================================================
+           RESPONSIVE
+           ================================================================ */
+        @media (max-width: 1200px) {
+            .slide { padding: 40px 50px; }
+            h1 { font-size: 2.5rem; }
+            h2 { font-size: 2rem; }
+            .two-column { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div class="presentation" id="presentation">
+        
+        <!-- ============================================================
+             SLIDE 1: TITLU
+             ============================================================ -->
+        <div class="slide active" id="slide1">
+            <div class="center-content">
+                <h1 class="animate-in">Fundamente Machine Learning în C</h1>
+                <p class="subtitle animate-in delay-1">Săptămâna 18 - Algoritmi și Tehnici de Programare</p>
+                <div class="animate-in delay-2">
+                    <span class="badge badge-primary">Linear Regression</span>
+                    <span class="badge badge-secondary">K-Means</span>
+                    <span class="badge badge-accent">K-NN</span>
+                    <span class="badge badge-danger">Perceptron</span>
+                </div>
+                <p class="animate-in delay-3" style="margin-top: 60px; font-size: 1.1rem;">
+                    ASE București - Facultatea CSIE<br>
+                    Curs: Algoritmi și Tehnici de Programare
+                </p>
+            </div>
+        </div>
+
+        <!-- ============================================================
+             SLIDE 2: OBIECTIVE
+             ============================================================ -->
+        <div class="slide" id="slide2">
+            <h2>🎯 Obiectivele Săptămânii</h2>
+            <div class="two-column">
+                <div>
+                    <h3>Cunoștințe (Knowledge)</h3>
+                    <ul>
+                        <li>Definiția și tipurile de Machine Learning</li>
+                        <li>Algoritmi de bază: regresie, clustering, clasificare</li>
+                        <li>Concepte: cost function, gradient, convergență</li>
+                        <li>Trade-off-uri: bias-variance, overfitting</li>
+                    </ul>
+                    
+                    <h3 style="margin-top: 30px;">Abilități (Skills)</h3>
+                    <ul>
+                        <li>Implementare algoritmi ML de la zero în C</li>
+                        <li>Operații matriceale eficiente</li>
+                        <li>Normalizare și preprocesare date</li>
+                        <li>Evaluare modele: MSE, R², acuratețe</li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="card">
+                        <div class="card-icon">📊</div>
+                        <h3>De ce ML în C?</h3>
+                        <ul>
+                            <li><strong>Înțelegere profundă</strong> - vedem fiecare operație</li>
+                            <li><strong>Performanță</strong> - control total asupra memoriei</li>
+                            <li><strong>Embedded ML</strong> - dispozitive cu resurse limitate</li>
+                            <li><strong>Fundament</strong> - bibliotecile ML sunt scrise în C/C++</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="highlight-box" style="margin-top: 20px;">
+                        <h4>💡 Notă importantă</h4>
+                        <p>În producție se folosesc biblioteci optimizate (scikit-learn, TensorFlow). 
+                           Implementăm de la zero pentru a înțelege mecanismele interne.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+             SLIDE 3: ISTORIE ML
+             ============================================================ -->
+        <div class="slide" id="slide3">
+            <h2>📜 Scurtă Istorie a Machine Learning</h2>
+            <div class="two-column">
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <span class="timeline-year">1805</span>
+                        <h3>Metoda Celor Mai Mici Pătrate</h3>
+                        <p>Adrien-Marie Legendre publică metoda pentru regresie. 
+                           Carl Friedrich Gauss o dezvoltase independent.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="timeline-year">1943</span>
+                        <h3>Primul Model Neural</h3>
+                        <p>McCulloch & Pitts propun neuronul artificial, 
+                           inspirat din neurobiologie.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="timeline-year">1957</span>
+                        <h3>Perceptronul</h3>
+                        <p>Frank Rosenblatt (Cornell) inventează perceptronul - 
+                           primul algoritm de învățare pentru rețele neurale.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="timeline-year">1967</span>
+                        <h3>K-Nearest Neighbors</h3>
+                        <p>Cover & Hart formalizează algoritmul K-NN 
+                           pentru clasificare non-parametrică.</p>
+                    </div>
+                </div>
+                <div>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <span class="timeline-year">1957</span>
+                            <h3>Lloyd's Algorithm (K-Means)</h3>
+                            <p>Stuart Lloyd (Bell Labs) propune algoritmul, 
+                               publicat oficial în 1982.</p>
+                        </div>
+                        <div class="timeline-item">
+                            <span class="timeline-year">1986</span>
+                            <h3>Backpropagation</h3>
+                            <p>Rumelhart, Hinton & Williams popularizează 
+                               antrenarea rețelelor multi-strat.</p>
+                        </div>
+                        <div class="timeline-item">
+                            <span class="timeline-year">2012</span>
+                            <h3>Deep Learning Revolution</h3>
+                            <p>AlexNet câștigă ImageNet cu CNN profund - 
+                               începe era modernă a AI.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card" style="margin-top: 20px;">
+                        <p style="font-style: italic; color: var(--text-secondary);">
+                            "A computer program is said to learn from experience E 
+                            with respect to some task T and performance measure P, 
+                            if its performance at T improves with experience E."
+                        </p>
+                        <p style="text-align: right; color: var(--accent);">— Tom Mitchell, 1997</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+             SLIDE 4: TIPURI DE ML
+             ============================================================ -->
+        <div class="slide" id="slide4">
+            <h2>🔄 Tipuri de Machine Learning</h2>
+            <div class="three-column">
+                <div class="card">
+                    <div class="card-icon">📚</div>
+                    <h3>Supervised Learning</h3>
+                    <p>Învățare cu "profesor" - avem date etichetate (X, y).</p>
+                    <ul style="margin-top: 15px; font-size: 1rem;">
+                        <li><strong>Regresie</strong>: y continuu (prețuri)</li>
+                        <li><strong>Clasificare</strong>: y discret (categorii)</li>
+                    </ul>
+                    <div style="margin-top: 15px;">
+                        <span class="badge badge-primary">Linear Reg.</span>
+                        <span class="badge badge-primary">K-NN</span>
+                        <span class="badge badge-primary">Perceptron</span>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-icon">🔍</div>
+                    <h3>Unsupervised Learning</h3>
+                    <p>Descoperim structura în date fără etichete.</p>
+                    <ul style="margin-top: 15px; font-size: 1rem;">
+                        <li><strong>Clustering</strong>: grupare similară</li>
+                        <li><strong>Dim. Reduction</strong>: PCA, t-SNE</li>
+                    </ul>
+                    <div style="margin-top: 15px;">
+                        <span class="badge badge-secondary">K-Means</span>
+                        <span class="badge badge-secondary">DBSCAN</span>
+                        <span class="badge badge-secondary">PCA</span>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-icon">🎮</div>
+                    <h3>Reinforcement Learning</h3>
+                    <p>Agent învață prin interacțiune cu mediul.</p>
+                    <ul style="margin-top: 15px; font-size: 1rem;">
+                        <li><strong>Reward/Penalty</strong>: feedback</li>
+                        <li><strong>Explorare</strong>: trial & error</li>
+                    </ul>
+                    <div style="margin-top: 15px;">
+                        <span class="badge badge-accent">Q-Learning</span>
+                        <span class="badge badge-accent">Policy Grad.</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="ascii-diagram" style="margin-top: 40px; text-align: center;">
+Machine Learning
+       │
+       ├── Supervised ──────┬── Regression (y ∈ ℝ)
+       │                    └── Classification (y ∈ {0,1,...,K})
+       │
+       ├── Unsupervised ────┬── Clustering
+       │                    └── Dimensionality Reduction
+       │
+       └── Reinforcement ───── Agent ↔ Environment
+            </div>
+        </div>
+
+        <!-- ============================================================
+             SLIDE 5: LINEAR REGRESSION - CONCEPT
+             ============================================================ -->
+        <div class="slide" id="slide5">
+            <h2>📈 Linear Regression - Concept</h2>
+            <div class="two-column">
+                <div>
+                    <h3>Problema</h3>
+                    <p>Găsește relația liniară între variabile independente X 
+                       și variabila dependentă y.</p>
+                    
+                    <div class="formula">
+                        ŷ = w₀ + w₁x₁ + w₂x₂ + ... + wₙxₙ
+                    </div>
+                    
+                    <p>Sau în formă vectorială:</p>
+                    <div class="formula">
+                        ŷ = w · x + b
+                    </div>
+                    
+                    <h3 style="margin-top: 30px;">Obiectiv</h3>
+                    <p>Minimizează eroarea dintre predicții și valorile reale.</p>
+                    
+                    <div class="formula">
+                        MSE = (1/n) · Σᵢ (yᵢ - ŷᵢ)²
+                    </div>
+                </div>
+                <div>
+                    <div class="ascii-diagram">
+    y
+    │      ·    
+    │    · ·  ·    Puncte: date reale
+    │  ·   ·    ·  
+    │ ·  ·────────── Linie: model
+    │·  ·    ·      
+    │ ·   ·         
+    │·                 
+    └──────────────── x
+    
+    Scopul: Găsește linia care
+    minimizează distanța totală
+    la toate punctele.
+                    </div>
+                    
+                    <div class="highlight-box">
+                        <h4>🎯 Intuiție</h4>
+                        <p>Imaginează-te că tragi un elastic prin puncte - 
+                           linia optimă este poziția cu tensiune minimă.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+             SLIDE 6: GRADIENT DESCENT
+             ============================================================ -->
+        <div class="slide" id="slide6">
+            <h2>⛰️ Gradient Descent - Coborârea Gradientului</h2>
+            <div class="two-column">
+                <div>
+                    <h3>Algoritmul</h3>
+                    <p>Metodă iterativă pentru minimizarea funcției de cost.</p>
+                    
+                    <ol style="margin: 20px 0;">
+                        <li>Inițializează weights aleator</li>
+                        <li>Calculează gradientul (direcția de creștere)</li>
+                        <li>Actualizează weights în direcția opusă</li>
+                        <li>Repetă până la convergență</li>
+                    </ol>
+                    
+                    <div class="formula">
+                        w = w - α · ∇J(w)
+                    </div>
+                    
+                    <p>Unde <span class="formula-inline">α</span> = learning rate 
+                       (pas de învățare)</p>
+                    
+                    <h3 style="margin-top: 20px;">Gradient pentru MSE</h3>
+                    <div class="formula">
+                        ∂J/∂wⱼ = (2/n) · Σᵢ (ŷᵢ - yᵢ) · xᵢⱼ
+                    </div>
+                </div>
+                <div>
+                    <div class="ascii-diagram">
+    Cost J(w)
+    │
+    │  ╭─╮
+    │ ╱   ╲        Start: w₀
+    │╱     ╲          ↓
+    │   ·───→·        w₁
+    │    ╲   │          ↓
+    │     ╲  │        w₂
+    │      ╲ │          ↓
+    │       ╲│        w₃
+    │        ·══════► w* (minim)
+    └───────────────────── w
+    
+    La fiecare pas, ne deplasăm
+    în direcția de scădere maximă
+    a funcției de cost.
+                    </div>
+                    
+                    <div class="card" style="margin-top: 20px;">
+                        <h4 style="color: var(--accent);">⚠️ Learning Rate</h4>
+                        <p>• α prea mic → convergență lentă</p>
+                        <p>• α prea mare → oscilații, divergență</p>
+                        <p>• Valori tipice: 0.001 - 0.1</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+             SLIDE 7: LINEAR REGRESSION - COD
+             ============================================================ -->
+        <div class="slide" id="slide7">
+            <h2>💻 Linear Regression - Implementare C</h2>
+            <div class="two-column">
+                <div>
+                    <pre><code><span class="code-comment">// Structura modelului</span>
+<span class="code-keyword">typedef struct</span> {
+    <span class="code-type">double</span> *weights;
+    <span class="code-type">double</span> bias;
+    <span class="code-type">int</span> n_features;
+    <span class="code-type">double</span> learning_rate;
+} <span class="code-type">LinearRegression</span>;
+
+<span class="code-comment">// Predicție: ŷ = w·x + b</span>
+<span class="code-type">double</span> <span class="code-function">predict</span>(<span class="code-type">LinearRegression</span> *m, 
+               <span class="code-type">double</span> *x) {
+    <span class="code-type">double</span> pred = m->bias;
+    <span class="code-keyword">for</span> (<span class="code-type">int</span> j = <span class="code-number">0</span>; j < m->n_features; j++) {
+        pred += m->weights[j] * x[j];
+    }
+    <span class="code-keyword">return</span> pred;
+}</code></pre>
+                </div>
+                <div>
+                    <pre><code><span class="code-comment">// O iterație de Gradient Descent</span>
+<span class="code-type">void</span> <span class="code-function">train_step</span>(<span class="code-type">LinearRegression</span> *m,
+               <span class="code-type">double</span> **X, <span class="code-type">double</span> *y, <span class="code-type">int</span> n) {
+    <span class="code-comment">// Calculează gradienți</span>
+    <span class="code-type">double</span> *grad = <span class="code-function">calloc</span>(m->n_features, 
+                         <span class="code-keyword">sizeof</span>(<span class="code-type">double</span>));
+    <span class="code-type">double</span> bias_grad = <span class="code-number">0.0</span>;
+    
+    <span class="code-keyword">for</span> (<span class="code-type">int</span> i = <span class="code-number">0</span>; i < n; i++) {
+        <span class="code-type">double</span> error = <span class="code-function">predict</span>(m, X[i]) - y[i];
+        <span class="code-keyword">for</span> (<span class="code-type">int</span> j = <span class="code-number">0</span>; j < m->n_features; j++)
+            grad[j] += error * X[i][j];
+        bias_grad += error;
+    }
+    
+    <span class="code-comment">// Update weights</span>
+    <span class="code-keyword">for</span> (<span class="code-type">int</span> j = <span class="code-number">0</span>; j < m->n_features; j++)
+        m->weights[j] -= m->learning_rate * 
+                         (<span class="code-number">2.0</span>/n) * grad[j];
+    m->bias -= m->learning_rate * (<span class="code-number">2.0</span>/n) * bias_grad;
+    
+    <span class="code-function">free</span>(grad);
+}</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+             SLIDE 8: K-MEANS - CONCEPT
+             ============================================================ -->
+        <div class="slide" id="slide8">
+            <h2>🎯 K-Means Clustering - Concept</h2>
+            <div class="two-column">
+                <div>
+                    <h3>Problema</h3>
+                    <p>Grupează n puncte în k clustere astfel încât 
+                       punctele din același cluster să fie similare.</p>
+                    
+                    <h3 style="margin-top: 20px;">Lloyd's Algorithm</h3>
+                    <ol>
+                        <li><strong>Inițializare</strong>: Alege k centroizi</li>
+                        <li><strong>Asignare</strong>: Fiecare punct → cel mai apropiat centroid</li>
+                        <li><strong>Update</strong>: Recalculează centroizii ca media membrilor</li>
+                        <li><strong>Repetă</strong>: Până când asignările nu se schimbă</li>
+                    </ol>
+                    
+                    <div class="formula" style="margin-top: 20px;">
+                        Obiectiv: min Σₖ Σₓ∈Cₖ ||x - μₖ||²
+                    </div>
+                    <p style="font-size: 1rem;">
+                        (Minimizează suma distanțelor intra-cluster)
+                    </p>
+                </div>
+                <div>
+                    <div class="ascii-diagram">
+    Iterația 0:        Iterația 1:        Final:
+    
+    · ·   ·            ·○·   ·            ·○·   ·
+     ·  ·               · ○·              ·○○·  
+    ○    ·  ·          ○    ·  ·          ·    ·○·
+         ·  ○               ·○ ○              ·○○
+    ·  ·                ·○ ·               ·○·○
+     ○                   ○                  ○
+    
+    ○ = centroid        Centroizii se      Convergență!
+    · = punct           deplasează         Clustere stabile
+                    </div>
+                    
+                    <div class="highlight-box">
+                        <h4>💡 K-Means++ Initialization</h4>
+                        <p>Alegerea inteligentă a centroizilor inițiali:</p>
+                        <ul style="font-size: 1rem;">
+                            <li>Primul: aleator uniform</li>
+                            <li>Următorii: probabilitate ∝ D(x)²</li>
+                        </ul>
+                        <p>Evită convergența la minime locale proaste.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+             SLIDE 9: K-MEANS - COD
+             ============================================================ -->
+        <div class="slide" id="slide9">
+            <h2>💻 K-Means - Implementare C</h2>
+            <pre style="font-size: 0.85rem;"><code><span class="code-comment">// Asignare: fiecare punct → cel mai apropiat centroid</span>
+<span class="code-type">int</span> <span class="code-function">kmeans_assign</span>(<span class="code-type">double</span> **data, <span class="code-type">int</span> n, <span class="code-type">int</span> d, 
+                 <span class="code-type">double</span> **centroids, <span class="code-type">int</span> k, <span class="code-type">int</span> *assignments) {
+    <span class="code-type">int</span> changed = <span class="code-number">0</span>;
+    
+    <span class="code-keyword">for</span> (<span class="code-type">int</span> i = <span class="code-number">0</span>; i < n; i++) {
+        <span class="code-type">double</span> min_dist = <span class="code-number">DBL_MAX</span>;
+        <span class="code-type">int</span> best = <span class="code-number">0</span>;
+        
+        <span class="code-keyword">for</span> (<span class="code-type">int</span> c = <span class="code-number">0</span>; c < k; c++) {
+            <span class="code-type">double</span> dist = <span class="code-function">euclidean_distance</span>(data[i], centroids[c], d);
+            <span class="code-keyword">if</span> (dist < min_dist) { min_dist = dist; best = c; }
+        }
+        
+        <span class="code-keyword">if</span> (assignments[i] != best) { changed = <span class="code-number">1</span>; assignments[i] = best; }
+    }
+    <span class="code-keyword">return</span> changed;
+}
+
+<span class="code-comment">// Update: recalculează centroizii ca media membrilor</span>
+<span class="code-type">void</span> <span class="code-function">kmeans_update</span>(<span class="code-type">double</span> **data, <span class="code-type">int</span> n, <span class="code-type">int</span> d,
+                   <span class="code-type">int</span> *assignments, <span class="code-type">int</span> k, <span class="code-type">double</span> **centroids) {
+    <span class="code-type">int</span> *counts = <span class="code-function">calloc</span>(k, <span class="code-keyword">sizeof</span>(<span class="code-type">int</span>));
+    
+    <span class="code-comment">// Reset și sumă</span>
+    <span class="code-keyword">for</span> (<span class="code-type">int</span> c = <span class="code-number">0</span>; c < k; c++)
+        <span class="code-keyword">for</span> (<span class="code-type">int</span> j = <span class="code-number">0</span>; j < d; j++) centroids[c][j] = <span class="code-number">0</span>;
+    
+    <span class="code-keyword">for</span> (<span class="code-type">int</span> i = <span class="code-number">0</span>; i < n; i++) {
+        <span class="code-type">int</span> c = assignments[i];
+        counts[c]++;
+        <span class="code-keyword">for</span> (<span class="code-type">int</span> j = <span class="code-number">0</span>; j < d; j++) centroids[c][j] += data[i][j];
+    }
+    
+    <span class="code-comment">// Medie</span>
+    <span class="code-keyword">for</span> (<span class="code-type">int</span> c = <span class="code-number">0</span>; c < k; c++)
+        <span class="code-keyword">if</span> (counts[c] > <span class="code-number">0</span>)
+            <span class="code-keyword">for</span> (<span class="code-type">int</span> j = <span class="code-number">0</span>; j < d; j++) centroids[c][j] /= counts[c];
+    
+    <span class="code-function">free</span>(counts);
+}</code></pre>
+        </div>
+
+        <!-- ============================================================
+             SLIDE 10: K-NN - CONCEPT
+             ============================================================ -->
+        <div class="slide" id="slide10">
+            <h2>👥 K-Nearest Neighbors - Concept</h2>
+            <div class="two-column">
+                <div>
+                    <h3>Principiu</h3>
+                    <p>"Spune-mi cine sunt vecinii tăi și îți voi spune cine ești."</p>
+                    
+                    <h3 style="margin-top: 20px;">Algoritm</h3>
+                    <ol>
+                        <li>Pentru un punct nou x</li>
+                        <li>Calculează distanța la toate punctele de antrenare</li>
+                        <li>Selectează cei mai apropiați k vecini</li>
+                        <li>Votează: clasa majoritară câștigă</li>
+                    </ol>
+                    
+                    <div class="highlight-box" style="margin-top: 20px;">
+                        <h4>🔑 Caracteristici</h4>
+                        <ul style="font-size: 1rem;">
+                            <li><strong>Lazy learning</strong>: nu există fază de antrenare</li>
+                            <li><strong>Non-parametric</strong>: nu presupune distribuție</li>
+                            <li><strong>Instance-based</strong>: memorează toate datele</li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <div class="ascii-diagram">
+        k=3 Example:
+        
+              ○         ○ = Clasa A
+        ○   ·   △       △ = Clasa B
+          ○   ┌───┐     · = Punct nou
+        △   △ │ ? │     
+              └───┘     Cei 3 vecini:
+          △      ○      2× ○, 1× △
+                        
+                        → Predicție: ○
+    
+    
+    Distanță Euclidiană:
+    d(x,y) = √(Σᵢ(xᵢ-yᵢ)²)
+                    </div>
+                    
+                    <table style="margin-top: 20px;">
+                        <tr>
+                            <th>k</th>
+                            <th>Proprietăți</th>
+                        </tr>
+                        <tr>
+                            <td>k mic (1,3)</td>
+                            <td>Sensibil la zgomot, flexibil</td>
+                        </tr>
+                        <tr>
+                            <td>k mare (15+)</td>
+                            <td>Robust, dar poate pierde detalii</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+             SLIDE 11: PERCEPTRON
+             ============================================================ -->
+        <div class="slide" id="slide11">
+            <h2>🧠 Perceptron - Primul Neuron Artificial</h2>
+            <div class="two-column">
+                <div>
+                    <h3>Modelul Perceptron (Rosenblatt, 1958)</h3>
+                    <div class="formula">
+                        ŷ = sign(w · x + b)
+                    </div>
+                    <p>Clasificator binar liniar.</p>
+                    
+                    <h3 style="margin-top: 20px;">Regula de Învățare</h3>
+                    <p>Dacă predicția este greșită:</p>
+                    <div class="formula">
+                        w = w + α · y · x
+                    </div>
+                    <p>Unde y ∈ {-1, +1} este eticheta corectă.</p>
+                    
+                    <div class="card" style="margin-top: 20px;">
+                        <h4 style="color: var(--danger);">⚠️ Limitare Fundamentală</h4>
+                        <p>Perceptronul poate învăța <strong>doar funcții liniar separabile</strong>!</p>
+                        <p>Nu poate rezolva XOR - dovedit de Minsky & Papert (1969).</p>
+                    </div>
+                </div>
+                <div>
+                    <div class="ascii-diagram">
+    Neuronul Perceptron:
+    
+         x₁ ──┐
+              │ w₁
+         x₂ ──┼────►[Σ]────►[sign]────► ŷ
+              │ w₂     ↑
+         x₃ ──┘       b (bias)
+              w₃
+    
+    
+    Liniar separabil:      NU liniar separabil:
+    
+      │  + + +              │  +   -
+      │+ + + +              │-   +
+      │─────────            │  -   +
+      │- - - -              │+   -
+    Poate!                 NU poate (XOR)!
+                    </div>
+                    
+                    <div class="highlight-box">
+                        <h4>💡 Soluție: Multi-Layer Perceptron</h4>
+                        <p>Adăugând straturi ascunse, putem aproxima 
+                           orice funcție (Universal Approximation Theorem).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+             SLIDE 12: EVALUARE MODELE
+             ============================================================ -->
+        <div class="slide" id="slide12">
+            <h2>📊 Evaluarea Modelelor</h2>
+            <div class="two-column">
+                <div>
+                    <h3>Pentru Regresie</h3>
+                    
+                    <div class="formula">
+                        MSE = (1/n) · Σ(y - ŷ)²
+                    </div>
+                    <p>Mean Squared Error - penalizează erori mari.</p>
+                    
+                    <div class="formula">
+                        R² = 1 - SS_res / SS_tot
+                    </div>
+                    <p>Coeficient de determinare (0-1, 1 = perfect).</p>
+                    
+                    <h3 style="margin-top: 30px;">Pentru Clasificare</h3>
+                    
+                    <div class="formula">
+                        Acuratețe = Corecte / Total
+                    </div>
+                    
+                    <div class="formula">
+                        Precision = TP / (TP + FP)
+                    </div>
+                    
+                    <div class="formula">
+                        Recall = TP / (TP + FN)
+                    </div>
+                </div>
+                <div>
+                    <h3>Matricea de Confuzie</h3>
+                    <div class="ascii-diagram" style="font-size: 0.85rem;">
+                    Predicție
+                    │  Pozitiv    Negativ
+    ────────────────┼─────────────────────
+    Real  Pozitiv   │    TP         FN
+          Negativ   │    FP         TN
+    
+    
+    TP = True Positive  (corect pozitiv)
+    TN = True Negative  (corect negativ)
+    FP = False Positive (fals alarmă)
+    FN = False Negative (ratat)
+                    </div>
+                    
+                    <div class="card" style="margin-top: 20px;">
+                        <h4 style="color: var(--accent);">🎯 F1-Score</h4>
+                        <div class="formula">
+                            F1 = 2 · (Precision · Recall) / (Precision + Recall)
+                        </div>
+                        <p>Media armonică - balansează precision și recall.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+             SLIDE 13: NORMALIZARE
+             ============================================================ -->
+        <div class="slide" id="slide13">
+            <h2>⚖️ Normalizarea Datelor</h2>
+            <div class="two-column">
+                <div>
+                    <h3>De ce normalizăm?</h3>
+                    <ul>
+                        <li>Algoritmi sensibili la scală (K-NN, Gradient Descent)</li>
+                        <li>Caracteristici cu range-uri diferite</li>
+                        <li>Convergență mai rapidă</li>
+                    </ul>
+                    
+                    <h3 style="margin-top: 30px;">Min-Max Scaling</h3>
+                    <div class="formula">
+                        x' = (x - x_min) / (x_max - x_min)
+                    </div>
+                    <p>Transformă în intervalul [0, 1].</p>
+                    
+                    <h3 style="margin-top: 20px;">Z-Score (Standardization)</h3>
+                    <div class="formula">
+                        x' = (x - μ) / σ
+                    </div>
+                    <p>Media 0, deviație standard 1.</p>
+                </div>
+                <div>
+                    <pre><code><span class="code-comment">// Min-Max Normalization</span>
+<span class="code-type">void</span> <span class="code-function">normalize_minmax</span>(<span class="code-type">double</span> *data, <span class="code-type">int</span> n,
+                      <span class="code-type">double</span> *min, <span class="code-type">double</span> *max) {
+    <span class="code-comment">// Găsește min și max</span>
+    *min = *max = data[<span class="code-number">0</span>];
+    <span class="code-keyword">for</span> (<span class="code-type">int</span> i = <span class="code-number">1</span>; i < n; i++) {
+        <span class="code-keyword">if</span> (data[i] < *min) *min = data[i];
+        <span class="code-keyword">if</span> (data[i] > *max) *max = data[i];
+    }
+    
+    <span class="code-comment">// Normalizează</span>
+    <span class="code-type">double</span> range = *max - *min;
+    <span class="code-keyword">if</span> (range > <span class="code-number">1e-10</span>) {
+        <span class="code-keyword">for</span> (<span class="code-type">int</span> i = <span class="code-number">0</span>; i < n; i++) {
+            data[i] = (data[i] - *min) / range;
+        }
+    }
+}</code></pre>
+                    
+                    <div class="highlight-box" style="margin-top: 20px;">
+                        <h4>⚠️ Atenție!</h4>
+                        <p>Calculează min/max doar pe datele de antrenare, 
+                           apoi aplică aceleași valori pe datele de test!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+             SLIDE 14: BIAS-VARIANCE TRADEOFF
+             ============================================================ -->
+        <div class="slide" id="slide14">
+            <h2>⚖️ Bias-Variance Tradeoff</h2>
+            <div class="two-column">
+                <div>
+                    <h3>Decompoziția Erorii</h3>
+                    <div class="formula">
+                        Error = Bias² + Variance + Noise
+                    </div>
+                    
+                    <div class="card" style="margin-top: 20px;">
+                        <h4 style="color: var(--primary);">Bias (Underfitting)</h4>
+                        <p>Modelul este prea simplu. Nu captează pattern-urile din date.</p>
+                        <p>Soluție: model mai complex, mai multe caracteristici.</p>
+                    </div>
+                    
+                    <div class="card" style="margin-top: 20px;">
+                        <h4 style="color: var(--danger);">Variance (Overfitting)</h4>
+                        <p>Modelul memorează zgomotul. Performanță bună pe train, 
+                           proastă pe test.</p>
+                        <p>Soluție: regularizare, mai multe date, model mai simplu.</p>
+                    </div>
+                </div>
+                <div>
+                    <div class="ascii-diagram">
+    Underfitting       Just Right        Overfitting
+    (High Bias)                          (High Variance)
+    
+        ·                  ·                  ·
+      · · ·              ·   ·            ·╭─╮·
+     ·─────·            ·──○──·          ╭╯ ·╰╮
+      · · ·              ·   ·          ╭╯·   ╰╮
+        ·                  ·           ·       ·
+    
+    Model prea         Model potrivit   Model prea
+    simplu                              complex
+    
+    
+    Error vs Complexitate Model:
+    
+    Error│ ╲
+         │  ╲    Total Error
+         │   ╲  ╱
+         │    ╲╱
+         │   ╱ ╲
+         │  ╱   Variance
+         │ Bias
+         └────────────────────► Complexitate
+                   Optim
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+             SLIDE 15: APLICAȚII PRACTICE
+             ============================================================ -->
+        <div class="slide" id="slide15">
+            <h2>🏭 Aplicații Practice în Industrie</h2>
+            <div class="three-column">
+                <div class="card">
+                    <div class="card-icon">🏠</div>
+                    <h3>Linear Regression</h3>
+                    <ul style="font-size: 1rem;">
+                        <li>Predicție prețuri imobiliare</li>
+                        <li>Estimare vânzări</li>
+                        <li>Analiză riscuri financiare</li>
+                        <li>Prognoza cererii</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <div class="card-icon">🛒</div>
+                    <h3>K-Means Clustering</h3>
+                    <ul style="font-size: 1rem;">
+                        <li>Segmentarea clienților</li>
+                        <li>Gruparea documentelor</li>
+                        <li>Compresia imaginilor</li>
+                        <li>Detectare anomalii</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <div class="card-icon">🔍</div>
+                    <h3>K-NN Classification</h3>
+                    <ul style="font-size: 1rem;">
+                        <li>Sisteme de recomandare</li>
+                        <li>Recunoașterea scrisului</li>
+                        <li>Diagnosticare medicală</li>
+                        <li>Detectarea fraudelor</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="card" style="margin-top: 40px;">
+                <h3>🏢 Studiu de Caz: Segmentarea Clienților (E-commerce)</h3>
+                <div class="two-column" style="margin-top: 20px;">
+                    <div>
+                        <p><strong>Input:</strong> Annual Income, Spending Score, Age, Visits/Month</p>
+                        <p><strong>Output:</strong> 4 segmente de clienți</p>
+                    </div>
+                    <div>
+                        <ul style="font-size: 1rem;">
+                            <li>🌟 Premium VIP - venit mare, spending mare</li>
+                            <li>🛍️ Young Enthusiasts - venit mic, spending mare</li>
+                            <li>💰 Budget Savers - venit mare, spending mic</li>
+                            <li>👤 Standard - venit mediu, spending mediu</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+             SLIDE 16: SUMAR
+             ============================================================ -->
+        <div class="slide" id="slide16">
+            <h2>📋 Sumar Săptămâna 18</h2>
+            <div class="two-column">
+                <div>
+                    <h3>Ce am învățat</h3>
+                    <table>
+                        <tr>
+                            <th>Algoritm</th>
+                            <th>Tip</th>
+                            <th>Când folosim</th>
+                        </tr>
+                        <tr>
+                            <td>Linear Reg.</td>
+                            <td>Supervised</td>
+                            <td>Predicție valori continue</td>
+                        </tr>
+                        <tr>
+                            <td>K-Means</td>
+                            <td>Unsupervised</td>
+                            <td>Grupare date similare</td>
+                        </tr>
+                        <tr>
+                            <td>K-NN</td>
+                            <td>Supervised</td>
+                            <td>Clasificare bazată pe similaritate</td>
+                        </tr>
+                        <tr>
+                            <td>Perceptron</td>
+                            <td>Supervised</td>
+                            <td>Clasificare binară liniară</td>
+                        </tr>
+                    </table>
+                </div>
+                <div>
+                    <h3>Concepte Cheie</h3>
+                    <ul>
+                        <li><strong>Gradient Descent</strong> - optimizare iterativă</li>
+                        <li><strong>Cost Function</strong> - măsurăm eroarea</li>
+                        <li><strong>Normalizare</strong> - pregătirea datelor</li>
+                        <li><strong>Bias-Variance</strong> - echilibrul modelării</li>
+                        <li><strong>Evaluare</strong> - MSE, R², Acuratețe, F1</li>
+                    </ul>
+                    
+                    <div class="highlight-box" style="margin-top: 20px;">
+                        <h4>📚 Teme pentru acasă</h4>
+                        <ol style="font-size: 1rem;">
+                            <li>Ridge Regression (regularizare L2)</li>
+                            <li>Weighted K-NN (ponderare vecini)</li>
+                        </ol>
+                        <p>Deadline: Săptămâna 19</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+             SLIDE 17: ÎNTREBĂRI
+             ============================================================ -->
+        <div class="slide" id="slide17">
+            <div class="center-content">
+                <h1>❓ Întrebări?</h1>
+                <p class="subtitle">Săptămâna 18: Fundamente Machine Learning în C</p>
+                
+                <div style="margin-top: 60px;">
+                    <div class="card" style="display: inline-block; text-align: left;">
+                        <h3>📧 Contact</h3>
+                        <p>Email: cursuri@ase.ro</p>
+                        <p>Forum: Moodle - Secțiunea Întrebări</p>
+                        <p>Consultații: Joi, 14:00-16:00</p>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 40px;">
+                    <p style="color: var(--text-secondary);">
+                        "The goal is to turn data into information, 
+                        and information into insight."
+                    </p>
+                    <p style="color: var(--accent);">— Carly Fiorina</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Navigation Controls -->
+    <div class="nav-controls">
+        <button class="nav-btn" onclick="prevSlide()">◀ Înapoi</button>
+        <button class="nav-btn" onclick="nextSlide()">Înainte ▶</button>
+    </div>
+
+    <div class="slide-counter" id="slideCounter">1 / 17</div>
+
+    <script>
+        // ================================================================
+        // NAVIGATION LOGIC
+        // ================================================================
+        let currentSlide = 1;
+        const totalSlides = 17;
+
+        function showSlide(n) {
+            if (n < 1) n = totalSlides;
+            if (n > totalSlides) n = 1;
+            
+            // Hide all slides
+            document.querySelectorAll('.slide').forEach(slide => {
+                slide.classList.remove('active');
+            });
+            
+            // Show current slide
+            document.getElementById('slide' + n).classList.add('active');
+            
+            // Update counter
+            document.getElementById('slideCounter').textContent = n + ' / ' + totalSlides;
+            
+            // Update progress bar
+            document.getElementById('progressBar').style.width = 
+                ((n / totalSlides) * 100) + '%';
+            
+            currentSlide = n;
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+                nextSlide();
+                e.preventDefault();
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                prevSlide();
+                e.preventDefault();
+            } else if (e.key === 'Home') {
+                showSlide(1);
+                e.preventDefault();
+            } else if (e.key === 'End') {
+                showSlide(totalSlides);
+                e.preventDefault();
+            }
+        });
+
+        // Touch navigation for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            if (touchEndX < touchStartX - swipeThreshold) {
+                nextSlide();
+            }
+            if (touchEndX > touchStartX + swipeThreshold) {
+                prevSlide();
+            }
+        }
+
+        // Initialize
+        showSlide(1);
+
+        // Optional: Add slide number via URL hash
+        window.addEventListener('hashchange', function() {
+            const slideNum = parseInt(window.location.hash.replace('#slide', ''));
+            if (slideNum >= 1 && slideNum <= totalSlides) {
+                showSlide(slideNum);
+            }
+        });
+
+        // Check initial hash
+        if (window.location.hash) {
+            const slideNum = parseInt(window.location.hash.replace('#slide', ''));
+            if (slideNum >= 1 && slideNum <= totalSlides) {
+                showSlide(slideNum);
+            }
+        }
+    </script>
+</body>
+</html>

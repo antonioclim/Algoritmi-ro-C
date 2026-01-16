@@ -1,0 +1,38 @@
+# Test 2: K-Means Clustering
+# Verifică implementarea K-Means cu inițializare K-Means++
+# Format: x,y (date 2D pentru vizualizare simplă)
+
+# Cluster 1 (centroid aproximativ la 2,2)
+1.8,2.1
+2.2,1.9
+2.0,2.0
+1.9,2.2
+2.1,1.8
+
+# Cluster 2 (centroid aproximativ la 8,8)
+7.9,8.1
+8.1,7.9
+8.0,8.0
+8.2,8.1
+7.8,8.2
+
+# Cluster 3 (centroid aproximativ la 2,8)
+1.9,7.8
+2.1,8.2
+2.0,8.0
+1.8,8.1
+2.2,7.9
+
+# Cluster 4 (centroid aproximativ la 8,2)
+8.1,2.0
+7.9,1.9
+8.0,2.1
+8.2,1.8
+7.8,2.2
+
+# Parametri
+k=4
+max_iterations=100
+convergence_threshold=1e-6
+init_method=kmeans++
+random_seed=42

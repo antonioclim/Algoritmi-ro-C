@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparație: ML în C vs Python/sklearn</title>
+    <style>
+        :root {
+            --c-color: #00599C;
+            --python-color: #3776AB;
+            --bg-dark: #0f172a;
+            --bg-light: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .presentation { width: 100vw; height: 100vh; overflow: hidden; position: relative; }
+
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            padding: 50px 70px;
+            display: none;
+            flex-direction: column;
+            position: absolute;
+            top: 0; left: 0;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .slide.active { display: flex; opacity: 1; }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--c-color), var(--python-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 { font-size: 2.2rem; color: var(--python-color); margin-bottom: 25px; }
+        h3 { font-size: 1.6rem; color: var(--success); margin-bottom: 15px; }
+
+        .two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; flex: 1; }
+        .center-content { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; flex: 1; }
+
+        .card {
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .card-c { border-left: 4px solid var(--c-color); }
+        .card-python { border-left: 4px solid var(--python-color); }
+
+        pre {
+            background: #0d1117;
+            border-radius: 10px;
+            padding: 20px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            line-height: 1.5;
+        }
+
+        .code-keyword { color: #ff7b72; }
+        .code-type { color: #79c0ff; }
+        .code-function { color: #d2a8ff; }
+        .code-string { color: #a5d6ff; }
+        .code-comment { color: #6a737d; }
+        .code-number { color: #79c0ff; }
+
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        th { background: var(--bg-light); color: var(--python-color); }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .badge-c { background: var(--c-color); color: white; }
+        .badge-python { background: var(--python-color); color: white; }
+        .badge-success { background: var(--success); color: white; }
+        .badge-warning { background: var(--warning); color: black; }
+        .badge-danger { background: var(--danger); color: white; }
+
+        .comparison-table td:nth-child(2) { color: var(--c-color); }
+        .comparison-table td:nth-child(3) { color: var(--python-color); }
+
+        .metric-box {
+            background: linear-gradient(135deg, rgba(0,89,156,0.2), rgba(55,118,171,0.2));
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin: 10px 0;
+        }
+        .metric-value { font-size: 2.5rem; font-weight: bold; }
+        .metric-label { font-size: 0.9rem; color: var(--text-secondary); }
+
+        .progress-bar { position: fixed; top: 0; left: 0; width: 100%; height: 4px; background: var(--bg-light); z-index: 1000; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--c-color), var(--python-color)); transition: width 0.3s; }
+
+        .nav-controls { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; z-index: 100; }
+        .nav-btn {
+            background: var(--bg-light);
+            border: 2px solid var(--python-color);
+            color: var(--python-color);
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .nav-btn:hover { background: var(--python-color); color: white; }
+
+        .slide-counter { position: fixed; bottom: 25px; right: 30px; color: var(--text-secondary); }
+
+        .highlight-box {
+            background: rgba(245,158,11,0.15);
+            border-left: 4px solid var(--warning);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        ul { margin-left: 25px; }
+        li { margin-bottom: 10px; color: var(--text-secondary); }
+
+        .ascii-diagram {
+            background: #0d1117;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            white-space: pre;
+            color: var(--success);
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar"><div class="progress-fill" id="progressBar"></div></div>
+
+    <div class="presentation">
+
+        <!-- SLIDE 1: TITLU -->
+        <div class="slide active" id="slide1">
+            <div class="center-content">
+                <h1>Comparație: ML în C vs Python</h1>
+                <p style="font-size: 1.3rem; color: var(--text-secondary); margin-bottom: 40px;">
+                    De ce implementăm de la zero când avem sklearn?
+                </p>
+                <div>
+                    <span class="badge badge-c">C11</span>
+                    <span style="margin: 0 20px; font-size: 1.5rem;">⚔️</span>
+                    <span class="badge badge-python">Python + sklearn</span>
+                </div>
+                <p style="margin-top: 60px; color: var(--text-secondary);">
+                    Material complementar - Săptămâna 18
+                </p>
+            </div>
+        </div>
+
+        <!-- SLIDE 2: DE CE C? -->
+        <div class="slide" id="slide2">
+            <h2>🤔 De Ce Implementăm ML în C?</h2>
+            <div class="two-column">
+                <div>
+                    <h3>Argumente Educaționale</h3>
+                    <ul>
+                        <li><strong>Înțelegere profundă</strong> - vedem fiecare calcul</li>
+                        <li><strong>Demistificare</strong> - sklearn nu e magie</li>
+                        <li><strong>Fundament solid</strong> - bază pentru advanced ML</li>
+                        <li><strong>Debugging</strong> - știm unde să căutăm probleme</li>
+                    </ul>
+
+                    <h3 style="margin-top: 30px;">Argumente Practice</h3>
+                    <ul>
+                        <li><strong>Embedded Systems</strong> - MCU fără Python</li>
+                        <li><strong>Edge AI</strong> - IoT, automotive</li>
+                        <li><strong>Performanță critică</strong> - HFT, gaming</li>
+                        <li><strong>Customizare</strong> - modificări la nivel low-level</li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="card">
+                        <h3>🎯 Obiectivul Real</h3>
+                        <p style="color: var(--text-secondary);">
+                            Nu vrem să reinventăm roata în producție. 
+                            Vrem să înțelegem cum funcționează roata 
+                            pentru a o folosi mai bine.
+                        </p>
+                    </div>
+
+                    <div class="highlight-box" style="margin-top: 20px;">
+                        <h4 style="color: var(--warning);">💡 Fun Fact</h4>
+                        <p style="color: var(--text-secondary);">
+                            NumPy, scikit-learn, TensorFlow - toate au 
+                            nucleul scris în C/C++ pentru performanță. 
+                            Python e doar wrapper-ul prietenos.
+                        </p>
+                    </div>
+
+                    <div class="ascii-diagram" style="margin-top: 20px;">
+┌────────────────────────────┐
+│      Python API            │
+│    (sklearn, numpy)        │
+├────────────────────────────┤
+│    C/C++ Implementation    │
+│   (BLAS, LAPACK, eigen)    │
+├────────────────────────────┤
+│      Hardware (CPU/GPU)    │
+└────────────────────────────┘
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 3: SINTAXĂ COMPARAȚIE -->
+        <div class="slide" id="slide3">
+            <h2>📝 Comparație Sintaxă: Linear Regression</h2>
+            <div class="two-column">
+                <div class="card card-c">
+                    <h3 style="color: var(--c-color);">🔧 Implementare C (~100 linii)</h3>
+                    <pre><code><span class="code-comment">// Structura</span>
+<span class="code-keyword">typedef struct</span> {
+    <span class="code-type">double</span> *weights;
+    <span class="code-type">double</span> bias;
+    <span class="code-type">int</span> n_features;
+} <span class="code-type">LinearRegression</span>;
+
+<span class="code-comment">// Gradient Descent - o iterație</span>
+<span class="code-keyword">for</span> (<span class="code-type">int</span> i = <span class="code-number">0</span>; i < n; i++) {
+    <span class="code-type">double</span> error = <span class="code-function">predict</span>(m, X[i]) - y[i];
+    <span class="code-keyword">for</span> (<span class="code-type">int</span> j = <span class="code-number">0</span>; j < m->n_features; j++)
+        grad[j] += error * X[i][j];
+}
+
+<span class="code-keyword">for</span> (<span class="code-type">int</span> j = <span class="code-number">0</span>; j < m->n_features; j++)
+    m->weights[j] -= lr * (<span class="code-number">2.0</span>/n) * grad[j];
+
+<span class="code-comment">// Memory management</span>
+<span class="code-function">free</span>(model->weights);
+<span class="code-function">free</span>(model);</code></pre>
+                </div>
+                <div class="card card-python">
+                    <h3 style="color: var(--python-color);">🐍 sklearn Python (~5 linii)</h3>
+                    <pre><code><span class="code-keyword">from</span> sklearn.linear_model <span class="code-keyword">import</span> LinearRegression
+
+<span class="code-comment"># Creare și antrenare</span>
+model = <span class="code-function">LinearRegression</span>()
+model.<span class="code-function">fit</span>(X_train, y_train)
+
+<span class="code-comment"># Predicție</span>
+y_pred = model.<span class="code-function">predict</span>(X_test)
+
+<span class="code-comment"># Evaluare</span>
+<span class="code-keyword">from</span> sklearn.metrics <span class="code-keyword">import</span> r2_score
+r2 = <span class="code-function">r2_score</span>(y_test, y_pred)
+
+<span class="code-comment"># Weights</span>
+<span class="code-keyword">print</span>(model.coef_, model.intercept_)</code></pre>
+                    <div style="margin-top: 20px; padding: 15px; background: rgba(16,185,129,0.1); border-radius: 8px;">
+                        <p style="color: var(--success); font-size: 0.9rem;">
+                            ✓ Nu trebuie să gestionăm memoria<br>
+                            ✓ Optimizat cu SVD, nu Gradient Descent<br>
+                            ✓ Funcționează "out of the box"
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 4: BENCHMARK PERFORMANȚĂ -->
+        <div class="slide" id="slide4">
+            <h2>⚡ Benchmark: Timp de Execuție</h2>
+            <div class="two-column">
+                <div>
+                    <table class="comparison-table">
+                        <tr>
+                            <th>Algoritm</th>
+                            <th>C (ms)</th>
+                            <th>sklearn (ms)</th>
+                            <th>Notă</th>
+                        </tr>
+                        <tr>
+                            <td>Linear Regression</td>
+                            <td>5-10</td>
+                            <td>~0.5</td>
+                            <td>sklearn: SVD</td>
+                        </tr>
+                        <tr>
+                            <td>K-Means (k=4)</td>
+                            <td>10-20</td>
+                            <td>2-5</td>
+                            <td>sklearn: paralel</td>
+                        </tr>
+                        <tr>
+                            <td>K-NN (k=5)</td>
+                            <td>0.5-1</td>
+                            <td>~0.1</td>
+                            <td>sklearn: KD-Tree</td>
+                        </tr>
+                        <tr>
+                            <td>Perceptron</td>
+                            <td>5-10</td>
+                            <td>1-2</td>
+                            <td>sklearn: optimizat</td>
+                        </tr>
+                    </table>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary);">
+                        *Teste pe Iris dataset (150 exemple, 4 caracteristici)
+                    </p>
+                </div>
+                <div>
+                    <div class="metric-box">
+                        <div class="metric-value" style="color: var(--python-color);">10-50x</div>
+                        <div class="metric-label">sklearn mai rapid în medie</div>
+                    </div>
+
+                    <div class="card" style="margin-top: 20px;">
+                        <h3>De ce sklearn e mai rapid?</h3>
+                        <ul style="font-size: 0.95rem;">
+                            <li><strong>BLAS/LAPACK</strong> - algebra liniară optimizată</li>
+                            <li><strong>Cython</strong> - compilat, nu interpretat</li>
+                            <li><strong>Algoritmi avansați</strong> - KD-Tree, Ball Tree</li>
+                            <li><strong>Paralelizare</strong> - n_jobs=-1</li>
+                            <li><strong>Cache optimization</strong> - memory layout</li>
+                        </ul>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4 style="color: var(--warning);">⚠️ Dar...</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.95rem;">
+                            Pe embedded (fără Python), codul nostru C 
+                            este singura opțiune! Și e suficient de rapid 
+                            pentru majoritatea aplicațiilor.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 5: K-MEANS COMPARAȚIE -->
+        <div class="slide" id="slide5">
+            <h2>🎯 K-Means: C vs sklearn</h2>
+            <div class="two-column">
+                <div class="card card-c">
+                    <h3 style="color: var(--c-color);">Implementare C</h3>
+                    <pre><code><span class="code-comment">// Funcție de asignare</span>
+<span class="code-keyword">for</span> (<span class="code-type">int</span> i = <span class="code-number">0</span>; i < n; i++) {
+    <span class="code-type">double</span> min_dist = <span class="code-number">DBL_MAX</span>;
+    <span class="code-keyword">for</span> (<span class="code-type">int</span> c = <span class="code-number">0</span>; c < k; c++) {
+        <span class="code-type">double</span> d = <span class="code-function">euclidean</span>(data[i], 
+                            centroids[c], dim);
+        <span class="code-keyword">if</span> (d < min_dist) {
+            min_dist = d;
+            assignments[i] = c;
+        }
+    }
+}
+
+<span class="code-comment">// Update centroizi</span>
+<span class="code-keyword">for</span> (<span class="code-type">int</span> c = <span class="code-number">0</span>; c < k; c++) {
+    <span class="code-keyword">for</span> (<span class="code-type">int</span> j = <span class="code-number">0</span>; j < dim; j++) {
+        centroids[c][j] = <span class="code-number">0</span>;
+    }
+}
+<span class="code-comment">// ... sum and divide</span></code></pre>
+                </div>
+                <div class="card card-python">
+                    <h3 style="color: var(--python-color);">sklearn</h3>
+                    <pre><code><span class="code-keyword">from</span> sklearn.cluster <span class="code-keyword">import</span> KMeans
+
+kmeans = <span class="code-function">KMeans</span>(
+    n_clusters=<span class="code-number">4</span>,
+    init=<span class="code-string">'k-means++'</span>,
+    n_init=<span class="code-number">10</span>,
+    random_state=<span class="code-number">42</span>
+)
+
+kmeans.<span class="code-function">fit</span>(X)
+
+<span class="code-comment"># Rezultate</span>
+labels = kmeans.labels_
+centers = kmeans.cluster_centers_
+inertia = kmeans.inertia_
+
+<span class="code-comment"># Silhouette score</span>
+<span class="code-keyword">from</span> sklearn.metrics <span class="code-keyword">import</span> silhouette_score
+sil = <span class="code-function">silhouette_score</span>(X, labels)</code></pre>
+                </div>
+            </div>
+            <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
+                <div class="metric-box">
+                    <div class="metric-value" style="font-size: 1.8rem; color: var(--c-color);">~50</div>
+                    <div class="metric-label">Linii C</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value" style="font-size: 1.8rem; color: var(--python-color);">~10</div>
+                    <div class="metric-label">Linii Python</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value" style="font-size: 1.8rem; color: var(--success);">100%</div>
+                    <div class="metric-label">Înțelegere algoritm</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value" style="font-size: 1.8rem; color: var(--warning);">Embedded</div>
+                    <div class="metric-label">Doar C funcționează</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 6: OPERAȚII NUMPY -->
+        <div class="slide" id="slide6">
+            <h2>🔢 Operații Matriceale: Manual vs NumPy</h2>
+            <div class="two-column">
+                <div class="card card-c">
+                    <h3 style="color: var(--c-color);">C - Manual O(n³)</h3>
+                    <pre><code><span class="code-comment">// Înmulțire matrice A × B = C</span>
+<span class="code-keyword">for</span> (<span class="code-type">int</span> i = <span class="code-number">0</span>; i < A_rows; i++) {
+    <span class="code-keyword">for</span> (<span class="code-type">int</span> j = <span class="code-number">0</span>; j < B_cols; j++) {
+        C[i][j] = <span class="code-number">0</span>;
+        <span class="code-keyword">for</span> (<span class="code-type">int</span> k = <span class="code-number">0</span>; k < A_cols; k++) {
+            C[i][j] += A[i][k] * B[k][j];
+        }
+    }
+}
+
+<span class="code-comment">// Dot product</span>
+<span class="code-type">double</span> dot = <span class="code-number">0</span>;
+<span class="code-keyword">for</span> (<span class="code-type">int</span> i = <span class="code-number">0</span>; i < n; i++) {
+    dot += v1[i] * v2[i];
+}
+
+<span class="code-comment">// Distanță Euclidiană</span>
+<span class="code-type">double</span> dist = <span class="code-number">0</span>;
+<span class="code-keyword">for</span> (<span class="code-type">int</span> i = <span class="code-number">0</span>; i < n; i++) {
+    <span class="code-type">double</span> d = v1[i] - v2[i];
+    dist += d * d;
+}
+dist = <span class="code-function">sqrt</span>(dist);</code></pre>
+                </div>
+                <div class="card card-python">
+                    <h3 style="color: var(--python-color);">NumPy - Vectorizat</h3>
+                    <pre><code><span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
+
+<span class="code-comment"># Înmulțire matrice</span>
+C = A @ B  <span class="code-comment"># sau np.matmul(A, B)</span>
+
+<span class="code-comment"># Dot product</span>
+dot = np.<span class="code-function">dot</span>(v1, v2)
+<span class="code-comment"># sau: v1 @ v2</span>
+
+<span class="code-comment"># Distanță Euclidiană</span>
+dist = np.linalg.<span class="code-function">norm</span>(v1 - v2)
+
+<span class="code-comment"># Broadcasting magic</span>
+A_plus_10 = A + <span class="code-number">10</span>
+A_normalized = (A - A.<span class="code-function">min</span>()) / (A.<span class="code-function">max</span>() - A.<span class="code-function">min</span>())
+
+<span class="code-comment"># Gradient în o linie!</span>
+grad = (<span class="code-number">2</span>/n) * X.T @ (X @ w - y)</code></pre>
+                    <div style="margin-top: 15px; padding: 12px; background: rgba(16,185,129,0.1); border-radius: 8px;">
+                        <p style="color: var(--success); font-size: 0.85rem;">
+                            NumPy folosește BLAS (Basic Linear Algebra Subprograms) 
+                            care exploatează SIMD, cache, și paralelism.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 7: CÂND FOLOSIM CE -->
+        <div class="slide" id="slide7">
+            <h2>🎯 Când Folosim Ce?</h2>
+            <div class="two-column">
+                <div>
+                    <div class="card card-c">
+                        <h3 style="color: var(--c-color);">✅ Folosește C când:</h3>
+                        <ul>
+                            <li><strong>Embedded/IoT</strong> - microcontrolere fără Python</li>
+                            <li><strong>Real-time systems</strong> - latență critică</li>
+                            <li><strong>Resurse limitate</strong> - RAM < 1MB</li>
+                            <li><strong>Integrare cu C/C++</strong> - biblioteci existente</li>
+                            <li><strong>Învățare</strong> - să înțelegi algoritmii</li>
+                            <li><strong>Customizare extremă</strong> - modificări profunde</li>
+                        </ul>
+                    </div>
+
+                    <div class="highlight-box" style="margin-top: 20px;">
+                        <h4 style="color: var(--warning);">🏭 Exemple industriale C/C++</h4>
+                        <ul style="font-size: 0.9rem;">
+                            <li>TensorFlow Lite - mobile, embedded</li>
+                            <li>OpenCV - computer vision</li>
+                            <li>Game engines - ML în jocuri</li>
+                            <li>Automotive - self-driving, ADAS</li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <div class="card card-python">
+                        <h3 style="color: var(--python-color);">✅ Folosește Python când:</h3>
+                        <ul>
+                            <li><strong>Prototipare rapidă</strong> - experimentare</li>
+                            <li><strong>Analiză de date</strong> - explorare, vizualizare</li>
+                            <li><strong>Producție standard</strong> - servere, cloud</li>
+                            <li><strong>Ecosistem ML</strong> - sklearn, pandas, etc.</li>
+                            <li><strong>Deep Learning</strong> - PyTorch, TensorFlow</li>
+                            <li><strong>Colaborare</strong> - notebooks, echipă</li>
+                        </ul>
+                    </div>
+
+                    <div class="card" style="margin-top: 20px;">
+                        <h3>📊 Workflow tipic în industrie</h3>
+                        <div class="ascii-diagram" style="font-size: 0.8rem;">
+1. Explorare   → Python/Jupyter
+2. Prototip    → sklearn
+3. Optimizare  → PyTorch/TF
+4. Producție   → Python API
+5. Edge Deploy → C/C++ (TFLite)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 8: SUMAR -->
+        <div class="slide" id="slide8">
+            <h2>📋 Sumar Comparație</h2>
+            <table>
+                <tr>
+                    <th>Aspect</th>
+                    <th style="color: var(--c-color);">C</th>
+                    <th style="color: var(--python-color);">Python/sklearn</th>
+                </tr>
+                <tr>
+                    <td>Productivitate</td>
+                    <td><span class="badge badge-warning">Lent</span></td>
+                    <td><span class="badge badge-success">Rapid</span></td>
+                </tr>
+                <tr>
+                    <td>Performanță runtime</td>
+                    <td><span class="badge badge-success">Excelent</span></td>
+                    <td><span class="badge badge-success">Foarte bun*</span></td>
+                </tr>
+                <tr>
+                    <td>Memorie</td>
+                    <td><span class="badge badge-success">Control total</span></td>
+                    <td><span class="badge badge-warning">Overhead GC</span></td>
+                </tr>
+                <tr>
+                    <td>Debugging</td>
+                    <td><span class="badge badge-danger">Dificil</span></td>
+                    <td><span class="badge badge-success">Ușor</span></td>
+                </tr>
+                <tr>
+                    <td>Ecosistem ML</td>
+                    <td><span class="badge badge-danger">Limitat</span></td>
+                    <td><span class="badge badge-success">Vast</span></td>
+                </tr>
+                <tr>
+                    <td>Embedded</td>
+                    <td><span class="badge badge-success">Perfect</span></td>
+                    <td><span class="badge badge-danger">Imposibil</span></td>
+                </tr>
+                <tr>
+                    <td>Învățare algoritmi</td>
+                    <td><span class="badge badge-success">Excelent</span></td>
+                    <td><span class="badge badge-warning">Black box</span></td>
+                </tr>
+            </table>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 10px;">
+                *sklearn este rapid pentru că nucleul e scris în C/Cython
+            </p>
+
+            <div style="margin-top: 30px; text-align: center;">
+                <h3>🎓 Concluzie</h3>
+                <p style="font-size: 1.2rem; max-width: 800px; margin: 0 auto; color: var(--text-secondary);">
+                    Învață să implementezi în C pentru <strong>înțelegere</strong>.<br>
+                    Folosește Python/sklearn în <strong>producție</strong>.<br>
+                    Știi când să folosești fiecare? Ai câștigat!
+                </p>
+            </div>
+        </div>
+
+        <!-- SLIDE 9: FINAL -->
+        <div class="slide" id="slide9">
+            <div class="center-content">
+                <h1>🚀 Acum Știi Amândouă!</h1>
+                <p style="font-size: 1.3rem; color: var(--text-secondary); margin: 30px 0;">
+                    C pentru fundament. Python pentru productivitate.
+                </p>
+                <div style="display: flex; gap: 30px; margin-top: 40px;">
+                    <div class="card" style="flex: 1;">
+                        <div class="card-icon" style="font-size: 2.5rem;">🔧</div>
+                        <h3 style="color: var(--c-color);">Săptămâna 18</h3>
+                        <p style="color: var(--text-secondary);">
+                            Implementări C de la zero.<br>
+                            Înțelegere profundă.
+                        </p>
+                    </div>
+                    <div class="card" style="flex: 1;">
+                        <div class="card-icon" style="font-size: 2.5rem;">🐍</div>
+                        <h3 style="color: var(--python-color);">Viitor</h3>
+                        <p style="color: var(--text-secondary);">
+                            sklearn, PyTorch, TensorFlow.<br>
+                            Proiecte la scară mare.
+                        </p>
+                    </div>
+                </div>
+                <p style="margin-top: 60px; color: var(--text-secondary); font-style: italic;">
+                    "Înțelege fundamentele și vei stăpâni orice framework."
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="nav-controls">
+        <button class="nav-btn" onclick="prevSlide()">◀ Înapoi</button>
+        <button class="nav-btn" onclick="nextSlide()">Înainte ▶</button>
+    </div>
+    <div class="slide-counter" id="slideCounter">1 / 9</div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 9;
+
+        function showSlide(n) {
+            if (n < 1) n = totalSlides;
+            if (n > totalSlides) n = 1;
+            document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+            document.getElementById('slide' + n).classList.add('active');
+            document.getElementById('slideCounter').textContent = n + ' / ' + totalSlides;
+            document.getElementById('progressBar').style.width = ((n / totalSlides) * 100) + '%';
+            currentSlide = n;
+        }
+
+        function nextSlide() { showSlide(currentSlide + 1); }
+        function prevSlide() { showSlide(currentSlide - 1); }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') { nextSlide(); e.preventDefault(); }
+            else if (e.key === 'ArrowLeft') { prevSlide(); e.preventDefault(); }
+        });
+
+        showSlide(1);
+    </script>
+</body>
+</html>

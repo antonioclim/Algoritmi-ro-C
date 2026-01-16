@@ -1,0 +1,76 @@
+# =============================================================================
+# SĂPTĂMÂNA 18: FUNDAMENTE MACHINE LEARNING ÎN C
+# Docker Compose pentru setup complet
+# =============================================================================
+
+version: '3.8'
+
+services:
+  # Serviciul principal pentru dezvoltare ML în C
+  ml-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: atp-week18-ml
+    stdin_open: true
+    tty: true
+    volumes:
+      # Mount local pentru dezvoltare live
+      - .:/workspace
+      # Persistență pentru date generate
+      - ml-data:/workspace/output
+    working_dir: /workspace
+    environment:
+      - TERM=xterm-256color
+    # Resurse (opțional, pentru benchmark-uri consistente)
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+    networks:
+      - ml-network
+
+  # Serviciu Python pentru comparații și vizualizări
+  python-compare:
+    image: python:3.11-slim
+    container_name: atp-week18-python
+    stdin_open: true
+    tty: true
+    volumes:
+      - .:/workspace
+      - ml-data:/workspace/output
+    working_dir: /workspace/python_comparison
+    command: >
+      bash -c "pip install --quiet numpy scipy scikit-learn matplotlib pandas && bash"
+    networks:
+      - ml-network
+
+volumes:
+  ml-data:
+    driver: local
+
+networks:
+  ml-network:
+    driver: bridge
+
+# =============================================================================
+# UTILIZARE:
+# =============================================================================
+#
+# Pornire mediu complet:
+#   docker-compose up -d
+#
+# Accesare container C:
+#   docker-compose exec ml-dev bash
+#
+# Accesare container Python:
+#   docker-compose exec python-compare bash
+#
+# Oprire:
+#   docker-compose down
+#
+# Rebuild după modificări Dockerfile:
+#   docker-compose build --no-cache
+#
+# =============================================================================

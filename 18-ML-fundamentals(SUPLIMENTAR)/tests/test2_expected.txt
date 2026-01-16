@@ -1,0 +1,44 @@
+# Test 2 Expected Output: K-Means Clustering
+# Verificare automată a rezultatelor
+# Toleranță pentru comparații numerice: ±0.5
+
+# Centroizi așteptați (oricare ordine, toleranță ±0.5)
+CENTROID_1=2.0,2.0
+CENTROID_2=8.0,8.0
+CENTROID_3=2.0,8.0
+CENTROID_4=8.0,2.0
+
+# Metrici așteptate
+CLUSTER_SIZE_EACH=5
+TOTAL_POINTS=20
+CONVERGENCE_ITERATIONS_MAX=20
+INERTIA_MAX=5.0
+
+# Fiecare punct trebuie să fie asignat la centroidul cel mai apropiat
+# Verificări de consistență:
+VALIDATION_RULES:
+- all_clusters_non_empty
+- each_cluster_size == 5
+- inertia_decreased_each_iteration
+- final_centroids_stable
+
+# Silhouette score (pentru date așa de bine separate)
+SILHOUETTE_MIN=0.8
+SILHOUETTE_MAX=1.0
+
+# Format output așteptat:
+# K-Means Results:
+# ================
+# Iterations: XX
+# Inertia: X.XXXX
+# Centroids:
+#   Cluster 0: (X.XX, X.XX) - 5 members
+#   Cluster 1: (X.XX, X.XX) - 5 members
+#   Cluster 2: (X.XX, X.XX) - 5 members
+#   Cluster 3: (X.XX, X.XX) - 5 members
+# Silhouette Score: X.XXXX
+
+# Note pentru evaluare:
+# - Ordinea clusterelor nu contează
+# - Centroizii trebuie să fie aproape de (2,2), (8,8), (2,8), (8,2)
+# - Toate punctele din același "grup original" trebuie să fie în același cluster

@@ -1,0 +1,40 @@
+# Test 1 Expected Output: Linear Regression
+# Verificare automată a rezultatelor
+# Toleranță pentru comparații numerice: ±5%
+
+# Metrici de antrenare așteptate
+R2_SCORE_MIN=0.90
+R2_SCORE_MAX=1.00
+MSE_MAX=500.0
+CONVERGENCE=true
+
+# Predicții așteptate (cu toleranță ±10%)
+# Format: predict_id,min_expected,max_expected
+PREDICT_1_MIN=190
+PREDICT_1_MAX=230
+PREDICT_2_MIN=290
+PREDICT_2_MAX=350
+PREDICT_3_MIN=150
+PREDICT_3_MAX=190
+
+# Verificări de validare
+# - Weights trebuie să fie pozitive pentru sqft
+# - R² trebuie să fie > 0.9 pentru date așa de simple
+# - Numărul de iterații trebuie să fie < max_iterations
+
+VALIDATION_RULES:
+- weight_sqft > 0
+- weight_bedrooms > 0  
+- weight_bathrooms > 0
+- iterations < 1000
+- final_loss < initial_loss
+
+# Format output așteptat de la program:
+# Linear Regression Results:
+# ==========================
+# R² Score: X.XXXX
+# MSE: XX.XXXX
+# Iterations: XXX
+# Weights: [w1, w2, w3]
+# Bias: X.XX
+# Predictions: [p1, p2, p3]

@@ -1,0 +1,28 @@
+# Test 1: Linear Regression
+# Verifică implementarea gradient descent și predicții
+# Format: sqft,bedrooms,bathrooms,price
+#
+# Test cu date simple pentru verificare rapidă
+# Relație aproximativă: price ≈ 0.1*sqft + 20*bedrooms + 15*bathrooms
+
+1000,2,1,150
+1500,3,2,220
+2000,4,2,280
+1200,2,1,165
+1800,3,2,250
+2200,4,3,320
+1100,2,1,155
+1600,3,2,230
+1900,4,2,270
+1300,2,2,180
+
+# Parametri de antrenare
+learning_rate=0.01
+max_iterations=1000
+tolerance=1e-6
+
+# Date pentru predicție (fără preț)
+# Aceste valori vor fi folosite pentru a testa predicțiile
+predict:1400,3,2
+predict:2100,4,3
+predict:1250,2,1
