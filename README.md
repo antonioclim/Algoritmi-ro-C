@@ -19,7 +19,7 @@
 ```
 
 **Versiune:** 1.0.0 · **Data:** Ianuarie 2025  
-**Limbaj:** C (C11) · **Linii de cod:** 250.000+ · **Fișiere:** 237  
+**Limbaj:** C (C11) · **Linii de cod:** 250.000+ · **Fișiere:** 350+  
 
 [![License: Restrictivă](https://img.shields.io/badge/Licență-Restrictivă-red.svg)](#licență)
 [![Language: C](https://img.shields.io/badge/Limbaj-C11-blue.svg)](#)
